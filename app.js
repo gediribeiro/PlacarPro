@@ -1386,6 +1386,97 @@ const PlacarApp = (function() {
     console.log('PlacarApp inicializado com sucesso!');
   }
 
+  // === NOVA FUNÇÃO: Backup de dados ===
+function verificarBackupDados() {
+  const backupKey = 'placar_backup_v1';
+  const currentData = {
+    jogadores: localStorage.getItem("jogadores"),
+    historico: localStorage.getItem("historico"),
+    nomes: {
+      timeA: localStorage.getItem("nomeTimeA"),
+      timeB: localStorage.getItem("nomeTimeB")
+    },
+    theme: localStorage.getItem("theme"),
+    lastBackup: new Date().toISOString()
+  };
+  
+  // Fazer backup
+  localStorage.setItem(backupKey, JSON.stringify(currentData));
+  console.log('Backup realizado:', currentData.lastBackup);
+  
+  // Verificar se precisa restaurar
+  const mainJogadores = localStorage.getItem("jogadores");
+  const mainHistorico = localStorage.getItem("historico");
+  
+  const precisaRestaurar = 
+    !mainJogadores || 
+    mainJogadores === '[]' || 
+    mainJogadores === 'null' ||
+    mainJogadores === '' ||
+    (!mainHistorico || mainHistorico === '[]' || mainHistorico === 'null');
+  
+  if (precisaRestaurar) {
+    const backup = localStorage.getItem(backupKey);
+    if (backup) {
+      try {
+        const parsed = JSON.parse(backup);
+        let restaurouAlgo = false;
+        
+        if (parsed.jogadores && parsed.jogadores !== 'null' && parsed.jogadores !== '[]') {
+          localStorage.setItem("jogadores", parsed.jogadores);
+          restaurouAlgo = true;
+        }
+        
+        if (parsed.historico && parsed.historico !== 'null' && parsed.historico !== '[]') {
+          localStorage.setItem("historico", parsed.historico);
+          restaurouAlgo = true;
+        }
+        
+        if (parsed.nomes.timeA) {
+          localStorage.setItem("nomeTimeA", parsed.nomes.timeA);
+        }
+        
+        if (parsed.nomes.timeB) {
+          localStorage.setItem("nomeTimeB", parsed.nomes.timeB);
+        }
+        
+        if (parsed.theme) {
+          localStorage.setItem("theme", parsed.theme);
+        }
+        
+        if (restaurouAlgo) {
+          console.log('Dados restaurados do backup!');
+          showToast('Dados restaurados do backup automático', 'success');
+        }
+      } catch (e) {
+        console.log('Erro ao restaurar backup:', e);
+      }
+    }
+  }
+}
+
+// === MODIFICAR a função init() ===
+// Encontre a função init() no seu app.js (por volta da linha ~900)
+// E adicione a linha de verificação de backup:
+
+function init() {
+  carregarTema();
+  carregarNomesTimes();
+  renderJogadores();
+  configurarPWA();
+  
+  // === NOVO: VERIFICAR BACKUP DE DADOS ===
+  verificarBackupDados();
+  
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js?v=3')
+      .then(() => console.log('Service Worker v3 registrado!'))
+      .catch(err => console.log('Erro no Service Worker:', err));
+  }
+  
+  console.log('PlacarApp inicializado com sucesso!');
+}
+
   return {
     init: init,
     toggleTheme: toggleTheme,
