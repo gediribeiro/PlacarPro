@@ -33,27 +33,34 @@
   -webkit-tap-highlight-color: transparent
 }
 
+/* ===== CORREÇÃO DO FUNDO BRANCO ===== */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  background: #f8f9fa;
+  background: #1a1a2e !important; /* Forçar fundo escuro padrão */
   color: var(--text);
   overflow-x: hidden;
   transition: background 0.3s;
   min-height: 100vh;
   padding-bottom: env(safe-area-inset-bottom);
+  margin: 0 !important;
 }
 
+/* Garantir que o padrão de campo cubra TUDO */
 body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--field);
-  opacity: 1;
-  pointer-events: none;
-  z-index: 0
+  content: '' !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: var(--field, 
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%230fb858' fill-opacity='0.03'/%3E%3Cpath d='M30 0v60M0 30h60' stroke='%230fb858' stroke-opacity='0.05' stroke-width='0.5'/%3E%3C/svg%3E")
+  ) !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: -1 !important; /* Ficar ATRÁS de tudo */
 }
 
 /* Toast notifications */
@@ -92,7 +99,7 @@ body::before {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Header */
+/* Header corrigido */
 header {
   position: sticky;
   top: 0;
@@ -105,6 +112,7 @@ header {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  border: none !important;
 }
 
 .header-content {
@@ -155,7 +163,7 @@ header {
   transform: scale(0.9) rotate(180deg)
 }
 
-/* Tabs */
+/* Tabs corrigidas */
 .tabs {
   display: flex;
   background: var(--bg-card);
@@ -165,6 +173,7 @@ header {
   position: relative;
   z-index: 10;
   width: 100%;
+  border: none !important;
 }
 
 .tabs::-webkit-scrollbar {
@@ -208,7 +217,7 @@ header {
   transform: translateX(-50%) scaleX(1)
 }
 
-/* Sections */
+/* Sections corrigidas */
 section {
   display: none;
   padding: 16px;
@@ -219,6 +228,7 @@ section {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  border: none !important;
 }
 
 section.active {
@@ -231,8 +241,8 @@ section.active {
 }
 
 .card {
-  background: var(--bg-card);
-  backdrop-filter: blur(10px);
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(10px) !important;
   padding: 20px;
   border-radius: 16px;
   margin: 12px 0;
@@ -242,6 +252,7 @@ section.active {
   position: relative;
   overflow: hidden;
   width: 100%;
+  border: none !important;
 }
 
 .card::before {
@@ -265,7 +276,7 @@ section.active {
   overflow: hidden;
   border-radius: 20px;
   width: 100%;
-  padding: 0 8px; /* ← ADICIONADO: margem interna */
+  border: none !important;
 }
 
 .placar-container::before {
@@ -293,8 +304,8 @@ section.active {
   position: relative;
   z-index: 2;
   width: 100%;
-  gap: 10px;
-  padding: 0 4px; /* ← ADICIONADO: evita borda colada */
+  gap: 8px;
+  padding: 0 4px;
 }
 
 .nome-time {
@@ -305,7 +316,7 @@ section.active {
   align-items: center;
   gap: 8px;
   flex: 1;
-  padding: 8px 12px;
+  padding: 8px 10px;
   background: rgba(15, 184, 88, 0.1);
   border-radius: 8px;
   backdrop-filter: blur(5px);
@@ -352,7 +363,7 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px; /* ← EQUILIBRADO: nem muito perto, nem muito longe */
+  gap: 12px;
   padding: 20px 0;
   position: relative;
   z-index: 2;
@@ -375,7 +386,7 @@ section.active {
 .placar-time {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
   justify-content: center;
   min-width: 0;
@@ -390,9 +401,9 @@ section.active {
 .botoes-verticais {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
-  margin: 0 2px; /* ← ADICIONADO: pequena margem */
+  margin: 0 2px;
 }
 
 .btn-mais, .btn-menos, .btn-falta {
@@ -431,25 +442,25 @@ section.active {
 .btn-mais {
   background: linear-gradient(135deg, #0fb858, #0ea04d);
   color: white;
-  width: 54px; /* ← TAMANHO EQUILIBRADO */
-  height: 66px;
-  font-size: 34px
+  width: 50px;
+  height: 60px;
+  font-size: 32px;
 }
 
 .btn-menos {
   background: linear-gradient(135deg, #ff4757, #e63946);
   color: white;
-  width: 54px;
-  height: 44px;
-  font-size: 24px
+  width: 50px;
+  height: 40px;
+  font-size: 22px;
 }
 
 .btn-falta {
   background: linear-gradient(135deg, #ffa502, #ff8c00);
   color: white;
-  width: 54px;
-  height: 44px;
-  font-size: 20px
+  width: 50px;
+  height: 40px;
+  font-size: 18px;
 }
 
 .btn-mais:active, .btn-menos:active, .btn-falta:active {
@@ -457,11 +468,12 @@ section.active {
 }
 
 .placar .vs {
-  font-size: 36px; /* ← TAMANHO EQUILIBRADO */
+  font-size: 32px;
   color: var(--text-sec);
   font-weight: 400;
   opacity: 0.5;
   flex-shrink: 0;
+  margin: 0 4px;
 }
 
 .tempo-container {
@@ -547,17 +559,18 @@ section.active {
 
 .actions button {
   flex: 1;
-  min-width: 100px; /* ← VOLTOU ao padrão */
-  padding: 16px;    /* ← VOLTOU ao padrão */
+  min-width: 80px;
+  padding: 12px 16px;
   border: none;
-  border-radius: 12px; /* ← VOLTOU ao padrão */
-  font-size: 16px;     /* ← VOLTOU ao padrão */
-  font-weight: 700;    /* ← VOLTOU ao padrão */
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: var(--shadow);
   position: relative;
-  overflow: hidden
+  overflow: hidden;
+  margin: 2px;
 }
 
 .actions button::before {
@@ -1175,7 +1188,7 @@ svg {
   display: none !important
 }
 
-/* Correções gerais para mobile (sem ser específico iPhone 8) */
+/* Correções específicas para iPhone */
 @supports (padding: max(0px)) {
   body, header, section {
     padding-left: max(16px, env(safe-area-inset-left));
@@ -1194,12 +1207,33 @@ svg {
 
 @media (max-width: 768px) {
   .placar { 
-    font-size: 56px; 
+    font-size: 52px; 
     gap: 16px;
+    flex-direction: column;
+  }
+  
+  .placar-time {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
   }
   
   .placar .vs {
     font-size: 32px;
+    order: -1;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  .comparacao-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  
+  .compare-vs {
+    order: -1;
+    margin: 10px 0;
   }
   
   .game-overlay-text {
@@ -1223,19 +1257,16 @@ svg {
     gap: 12px;
   }
   
-  .placar .vs {
-    font-size: 28px;
-  }
-  
   .btn-mais { 
-    width: 50px; 
-    height: 60px; 
-    font-size: 30px 
+    width: 46px;
+    height: 54px; 
+    font-size: 28px 
   }
   
   .btn-menos, .btn-falta { 
-    width: 50px; 
-    height: 40px;
+    width: 46px; 
+    height: 36px;
+    font-size: 20px;
   }
   
   .popup-jogadores { 
@@ -1257,36 +1288,92 @@ svg {
     max-width: 200px;
   }
   
-  /* Ajustes gerais para telas muito pequenas */
-  .actions {
-    flex-direction: column;
-  }
-  
-  .actions button {
-    width: 100%;
+  @media (max-width: 414px) {
+    .placar {
+      font-size: 56px;
+      gap: 8px;
+      padding: 16px 0;
+      flex-direction: row;
+    }
+    
+    .placar .vs {
+      font-size: 28px;
+      margin: 0 2px;
+    }
+    
+    .placar-time {
+      gap: 8px;
+    }
+    
+    .actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .actions button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      min-height: 48px;
+    }
   }
 }
 
-@media (orientation: landscape) and (max-height: 500px) {
-  .placar { 
-    font-size: 48px; 
+@media (max-width: 414px) and (orientation: portrait) {
+  .placar-container {
+    padding: 0 8px;
+  }
+  
+  .placar {
+    font-size: 48px;
+    gap: 6px;
     padding: 12px 0;
   }
   
-  header { 
-    padding: 12px 20px 
+  .placar .vs {
+    font-size: 24px;
+    margin: 0 2px;
   }
   
-  .card { 
-    padding: 16px 
+  .placar-time {
+    gap: 6px;
+    flex-wrap: nowrap;
   }
   
-  section {
-    padding-bottom: 60px;
+  .botoes-verticais {
+    gap: 4px;
+    margin: 0;
+  }
+  
+  .btn-mais {
+    width: 42px;
+    height: 50px;
+    font-size: 26px;
+  }
+  
+  .btn-menos {
+    width: 42px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .btn-falta {
+    width: 42px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .nome-time {
+    padding: 6px 8px;
+    font-size: 16px;
+  }
+  
+  .placar-header {
+    padding: 0 2px;
+    gap: 4px;
   }
 }
 
-/* Correção para não quebrar layout */
 .no-wrap {
   white-space: nowrap;
 }
