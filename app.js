@@ -398,17 +398,18 @@ const PlacarApp = (function() {
   }
 
   function animarGol() {
-    const placarDiv = document.getElementById('placarDiv');
-    placarDiv.classList.add("gol-animation");
-    
-    if (navigator.vibrate) {
-      navigator.vibrate([100, 50, 100, 50, 100]);
-    }
-    
-    setTimeout(() => {
-      placarDiv.classList.remove("gol-animation");
-    }, 600);
+  const placar = document.querySelector('.placar');
+  placar.classList.add("gol-animation");
+
+  if (navigator.vibrate) {
+    navigator.vibrate([100, 50, 100, 50, 100]);
   }
+
+  setTimeout(() => {
+    placar.classList.remove("gol-animation");
+  }, 600);
+}
+
 
   function aumentarGol(time) {
     if (!state.partida) {
