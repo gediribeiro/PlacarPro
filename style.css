@@ -92,7 +92,7 @@ body::before {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Header corrigido */
+/* Header */
 header {
   position: sticky;
   top: 0;
@@ -155,7 +155,7 @@ header {
   transform: scale(0.9) rotate(180deg)
 }
 
-/* Tabs corrigidas */
+/* Tabs */
 .tabs {
   display: flex;
   background: var(--bg-card);
@@ -208,7 +208,7 @@ header {
   transform: translateX(-50%) scaleX(1)
 }
 
-/* Sections corrigidas */
+/* Sections */
 section {
   display: none;
   padding: 16px;
@@ -265,6 +265,7 @@ section.active {
   overflow: hidden;
   border-radius: 20px;
   width: 100%;
+  padding: 0 8px; /* ← ADICIONADO: margem interna */
 }
 
 .placar-container::before {
@@ -292,8 +293,8 @@ section.active {
   position: relative;
   z-index: 2;
   width: 100%;
-  gap: 8px;            /* ← CORRIGIDO: reduzido de 10px */
-  padding: 0 4px;      /* ← NOVO: margem interna */
+  gap: 10px;
+  padding: 0 4px; /* ← ADICIONADO: evita borda colada */
 }
 
 .nome-time {
@@ -304,7 +305,7 @@ section.active {
   align-items: center;
   gap: 8px;
   flex: 1;
-  padding: 8px 10px;   /* ← CORRIGIDO: reduzido de 12px */
+  padding: 8px 12px;
   background: rgba(15, 184, 88, 0.1);
   border-radius: 8px;
   backdrop-filter: blur(5px);
@@ -351,8 +352,8 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;           /* ← CORRIGIDO: reduzido de 24px */
-  padding: 20px 0;     /* ← CORRIGIDO: reduzido de 24px */
+  gap: 20px; /* ← EQUILIBRADO: nem muito perto, nem muito longe */
+  padding: 20px 0;
   position: relative;
   z-index: 2;
   font-variant-numeric: tabular-nums;
@@ -374,7 +375,7 @@ section.active {
 .placar-time {
   display: flex;
   align-items: center;
-  gap: 12px;           /* ← CORRIGIDO: reduzido de 16px */
+  gap: 16px;
   flex: 1;
   justify-content: center;
   min-width: 0;
@@ -389,9 +390,9 @@ section.active {
 .botoes-verticais {
   display: flex;
   flex-direction: column;
-  gap: 6px;            /* ← CORRIGIDO: reduzido de 8px */
+  gap: 8px;
   flex-shrink: 0;
-  margin: 0 2px;       /* ← NOVO: margem interna */
+  margin: 0 2px; /* ← ADICIONADO: pequena margem */
 }
 
 .btn-mais, .btn-menos, .btn-falta {
@@ -430,25 +431,25 @@ section.active {
 .btn-mais {
   background: linear-gradient(135deg, #0fb858, #0ea04d);
   color: white;
-  width: 50px;         /* ← CORRIGIDO: reduzido de 56px */
-  height: 60px;        /* ← CORRIGIDO: reduzido de 70px */
-  font-size: 32px;     /* ← CORRIGIDO: reduzido de 36px */
+  width: 54px; /* ← TAMANHO EQUILIBRADO */
+  height: 66px;
+  font-size: 34px
 }
 
 .btn-menos {
   background: linear-gradient(135deg, #ff4757, #e63946);
   color: white;
-  width: 50px;         /* ← CORRIGIDO: reduzido de 56px */
-  height: 40px;        /* ← CORRIGIDO: reduzido de 46px */
-  font-size: 22px;     /* ← CORRIGIDO: reduzido de 24px */
+  width: 54px;
+  height: 44px;
+  font-size: 24px
 }
 
 .btn-falta {
   background: linear-gradient(135deg, #ffa502, #ff8c00);
   color: white;
-  width: 50px;         /* ← CORRIGIDO: reduzido de 56px */
-  height: 40px;        /* ← CORRIGIDO: reduzido de 46px */
-  font-size: 18px;     /* ← CORRIGIDO: reduzido de 20px */
+  width: 54px;
+  height: 44px;
+  font-size: 20px
 }
 
 .btn-mais:active, .btn-menos:active, .btn-falta:active {
@@ -456,12 +457,11 @@ section.active {
 }
 
 .placar .vs {
-  font-size: 32px;     /* ← CORRIGIDO: reduzido de 40px */
+  font-size: 36px; /* ← TAMANHO EQUILIBRADO */
   color: var(--text-sec);
   font-weight: 400;
   opacity: 0.5;
   flex-shrink: 0;
-  margin: 0 4px;       /* ← NOVO: menos espaçamento */
 }
 
 .tempo-container {
@@ -547,18 +547,17 @@ section.active {
 
 .actions button {
   flex: 1;
-  min-width: 80px;      /* ← CORRIGIDO: reduzido de 100px */
-  padding: 12px 16px;   /* ← CORRIGIDO: reduzido de 16px */
+  min-width: 100px; /* ← VOLTOU ao padrão */
+  padding: 16px;    /* ← VOLTOU ao padrão */
   border: none;
-  border-radius: 10px;  /* ← CORRIGIDO: reduzido de 12px */
-  font-size: 15px;      /* ← CORRIGIDO: reduzido de 16px */
-  font-weight: 600;     /* ← CORRIGIDO: reduzido de 700 */
+  border-radius: 12px; /* ← VOLTOU ao padrão */
+  font-size: 16px;     /* ← VOLTOU ao padrão */
+  font-weight: 700;    /* ← VOLTOU ao padrão */
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: var(--shadow);
   position: relative;
-  overflow: hidden;
-  margin: 2px;          /* ← NOVO: espaçamento */
+  overflow: hidden
 }
 
 .actions button::before {
@@ -1176,7 +1175,7 @@ svg {
   display: none !important
 }
 
-/* Correções específicas para iPhone */
+/* Correções gerais para mobile (sem ser específico iPhone 8) */
 @supports (padding: max(0px)) {
   body, header, section {
     padding-left: max(16px, env(safe-area-inset-left));
@@ -1195,33 +1194,12 @@ svg {
 
 @media (max-width: 768px) {
   .placar { 
-    font-size: 52px; 
+    font-size: 56px; 
     gap: 16px;
-    flex-direction: column;
-  }
-  
-  .placar-time {
-    flex-direction: row;
-    width: 100%;
-    justify-content: center;
   }
   
   .placar .vs {
     font-size: 32px;
-    order: -1;
-    width: 100%;
-    text-align: center;
-    margin: 10px 0;
-  }
-  
-  .comparacao-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-  }
-  
-  .compare-vs {
-    order: -1;
-    margin: 10px 0;
   }
   
   .game-overlay-text {
@@ -1245,16 +1223,19 @@ svg {
     gap: 12px;
   }
   
+  .placar .vs {
+    font-size: 28px;
+  }
+  
   .btn-mais { 
-    width: 46px;       /* ← CORRIGIDO para iPhone */
-    height: 54px; 
-    font-size: 28px 
+    width: 50px; 
+    height: 60px; 
+    font-size: 30px 
   }
   
   .btn-menos, .btn-falta { 
-    width: 46px; 
-    height: 36px;
-    font-size: 20px;
+    width: 50px; 
+    height: 40px;
   }
   
   .popup-jogadores { 
@@ -1276,92 +1257,32 @@ svg {
     max-width: 200px;
   }
   
-  /* BÔNUS: Otimização específica iPhone 8 Plus */
-  @media (max-width: 414px) {
-    .placar {
-      font-size: 56px;
-      gap: 8px;
-      padding: 16px 0;
-      flex-direction: row;
-    }
-    
-    .placar .vs {
-      font-size: 28px;
-      margin: 0 2px;
-    }
-    
-    .placar-time {
-      gap: 8px;
-    }
-    
-    .actions {
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .actions button {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      min-height: 48px;
-    }
+  /* Ajustes gerais para telas muito pequenas */
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    width: 100%;
   }
 }
 
-/* CORREÇÃO PARA VERTICAL (iPhone 8 Plus) */
-@media (max-width: 414px) and (orientation: portrait) {
-  .placar-container {
-    padding: 0 8px; /* ← Margem interna no container */
-  }
-  
-  .placar {
-    font-size: 48px; /* ← Menor em vertical */
-    gap: 6px;        /* ← Muito mais próximo */
+@media (orientation: landscape) and (max-height: 500px) {
+  .placar { 
+    font-size: 48px; 
     padding: 12px 0;
   }
   
-  .placar .vs {
-    font-size: 24px;
-    margin: 0 2px;
+  header { 
+    padding: 12px 20px 
   }
   
-  .placar-time {
-    gap: 6px;
-    flex-wrap: nowrap;
+  .card { 
+    padding: 16px 
   }
   
-  .botoes-verticais {
-    gap: 4px;
-    margin: 0;
-  }
-  
-  .btn-mais {
-    width: 42px;  /* ← Ainda menor */
-    height: 50px;
-    font-size: 26px;
-  }
-  
-  .btn-menos {
-    width: 42px;
-    height: 32px;
-    font-size: 18px;
-  }
-  
-  .btn-falta {
-    width: 42px;
-    height: 32px;
-    font-size: 16px;
-  }
-  
-  /* Garante que tudo caiba */
-  .nome-time {
-    padding: 6px 8px;
-    font-size: 16px;
-  }
-  
-  .placar-header {
-    padding: 0 2px;
-    gap: 4px;
+  section {
+    padding-bottom: 60px;
   }
 }
 
