@@ -148,7 +148,7 @@ header {
 /* ===== TABS ELEGANTES ===== */
 .tabs {
   display: flex;
-  background: white;
+  background: black;
   overflow-x: auto;
   scrollbar-width: none;
   width: 100%;
