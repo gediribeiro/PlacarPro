@@ -1,571 +1,64 @@
-/* ===== RESET MOBILE-FIRST ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-:root {
-  /* TEMA CLARO (PADRÃO) */
-  --bg-body: #f8f9fa;
-  --bg-card: #ffffff;
-  --text: #1a1a2e;
-  --text-sec: #6c757d;
-  --green: #0fb858;
-  --red: #ff4757;
-  --yellow: #ffa502;
-  --blue: #3742fa;
-  --border: #e0e0e0;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-[data-theme="dark"] {
-  --bg-body: #0a0a14;
-  --bg-card: #1a1a2e;
-  --text: #ffffff;
-  --text-sec: #a0a0a0;
-  --border: #2a2a3e;
-  --shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-body);
-  color: var(--text);
-  min-height: 100vh;
-  padding: 0;
-  margin: 0;
-  /* BLOQUEAR ORIENTAÇÃO HORIZONTAL EM MOBILE */
-  overflow-y: auto;
-}
-
-/* ===== HEADER FIXO ===== */
-header {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  height: 60px;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-logo {
-  font-size: 28px;
-}
-
-.header-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: white;
-}
-
-.theme-toggle {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-/* ===== TABS FIXAS ===== */
-.tabs {
-  display: flex;
-  overflow-x: auto;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  width: 100%;
-  position: sticky;
-  top: 60px;
-  z-index: 90;
-  height: 50px;
-}
-
-.tabs button {
-  flex: 1;
-  min-width: 80px;
-  padding: 14px 12px;
-  border: none;
-  background: transparent;
-  color: var(--text-sec);
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  height: 100%;
-}
-
-.tabs button.active {
-  color: var(--green);
-  border-bottom: 3px solid var(--green);
-}
-
-/* ===== CONTEÚDO PRINCIPAL (100% VERTICAL) ===== */
-main {
-  width: 100%;
-  max-width: 100%;
-  padding: 16px;
-  padding-bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-section {
-  display: none;
-  width: 100%;
-  max-width: 500px;
-}
-
-section.active {
-  display: block;
-}
-
-/* ===== PLACAR - LAYOUT VERTICAL OTIMIZADO ===== */
-.placar-container {
-  width: 100%;
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-
-/* NOMES DOS TIMES - UM EM CIMA DO OUTRO */
-.placar-header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.nome-time-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.nome-time {
-  flex: 1;
-  padding: 14px;
-  background: rgba(15, 184, 88, 0.1);
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 700;
-  text-align: center;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  border: 2px solid rgba(15, 184, 88, 0.2);
-}
-
-.btn-edit {
-  background: none;
-  border: none;
-  font-size: 20px;
-  padding: 8px;
-  opacity: 0.7;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.05);
-}
-
-/* PLACAR PRINCIPAL - CENTRALIZADO E GRANDE */
-.placar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  margin: 20px 0;
-  width: 100%;
-}
-
-/* LINHA DO TIME A */
-.placar-time-a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  width: 100%;
-}
-
-/* LINHA DO TIME B */
-.placar-time-b {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  width: 100%;
-}
-
-/* NÚMERO GRANDE DO PLACAR */
-.placar-numero {
-  font-size: 80px; /* GRANDE para vertical */
-  font-weight: 900;
-  min-width: 100px;
-  text-align: center;
-  color: var(--text);
-  line-height: 1;
-}
-
-/* BOTÕES ALINHADOS VERTICALMENTE */
-.botoes-verticais {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.btn-mais, .btn-menos, .btn-falta {
-  width: 56px;
-  height: 56px;
-  border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-.btn-mais:active, .btn-menos:active, .btn-falta:active {
-  transform: scale(0.95);
-}
-
-.btn-mais {
-  background: var(--green);
-  color: white;
-  height: 64px;
-  font-size: 32px;
-}
-
-.btn-menos {
-  background: var(--red);
-  color: white;
-  font-size: 24px;
-}
-
-.btn-falta {
-  background: var(--yellow);
-  color: white;
-  font-size: 22px;
-}
-
-/* LINHA DO VS (X) CENTRAL */
-.placar-vs-row {
-  width: 100%;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.placar-vs {
-  font-size: 32px;
-  color: var(--text-sec);
-  opacity: 0.5;
-  font-weight: 400;
-}
-
-/* TIMER GRANDE */
-.tempo-container {
-  text-align: center;
-  margin: 30px 0;
-  width: 100%;
-}
-
-#tempo {
-  font-size: 40px; /* GRANDE */
-  font-weight: 700;
-  padding: 16px 32px;
-  background: rgba(15, 184, 88, 0.1);
-  border-radius: 16px;
-  display: inline-block;
-  min-width: 150px;
-  border: 2px solid rgba(15, 184, 88, 0.2);
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
-/* FALTAS - UMA EMBAIXO DA OUTRA */
-.contador-faltas {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin: 25px 0;
-  width: 100%;
-}
-
-.falta-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: rgba(255, 165, 2, 0.1);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 165, 2, 0.2);
-  width: 100%;
-  font-size: 16px;
-}
-
-.falta-numero {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--yellow);
-}
-
-/* BOTÕES DE AÇÃO - COLUNA */
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  margin: 25px 0;
-}
-
-.actions button {
-  width: 100%;
-  padding: 20px;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-}
-
-.green { background: var(--green); }
-.yellow { background: var(--yellow); }
-.red { background: var(--red); }
-
-/* ===== FORMULÁRIOS ===== */
-input, select {
-  width: 100%;
-  padding: 18px;
-  margin: 10px 0;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg-card);
-  color: var(--text);
-  font-size: 16px;
-}
-
-/* ===== LISTAS ===== */
-ul {
-  width: 100%;
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  width: 100%;
-  padding: 18px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid var(--border);
-  font-size: 16px;
-}
-
-/* ===== POPUPS MOBILE FULLSCREEN ===== */
-.popup-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.95);
-  z-index: 1000;
-  padding: 20px;
-}
-
-.popup-overlay.show {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.popup-content {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 24px;
-  width: 100%;
-  max-width: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.popup-jogadores {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin: 20px 0;
-}
-
-.popup-jogadores button {
-  padding: 20px 12px;
-  border: 2px solid var(--green);
-  background: transparent;
-  color: var(--green);
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* ===== BOTÕES FIXOS MOBILE ===== */
-#installBtn {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--green);
-  color: white;
-  border: none;
-  padding: 16px 32px;
-  border-radius: 30px;
-  font-weight: 600;
-  z-index: 1000;
-  display: none;
-}
-
-#undoBtn {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  background: var(--yellow);
-  color: white;
-  border: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 28px;
-  z-index: 999;
-  display: none;
-}
-
-/* ===== MEDIA QUERIES PARA VERTICAL APENAS ===== */
-
-/* Telas muito pequenas (iPhone SE, etc) */
-@media (max-width: 375px) {
-  .placar-numero {
-    font-size: 70px;
-    min-width: 85px;
-  }
+<!-- SUBSTITUIR a seção do placar atual por esta: -->
+<section id="jogo" class="active">
+  <div class="card placar-container">
+    <div class="placar-header">
+      <div class="nome-time left">
+        <span id="nomeTimeA">Time A</span>
+      </div>
+      <button class="btn-edit" onclick="PlacarApp.editarNomeTime('A')">✏️</button>
+      <button class="btn-edit" onclick="PlacarApp.editarNomeTime('B')">✏️</button>
+      <div class="nome-time right">
+        <span id="nomeTimeB">Time B</span>
+      </div>
+    </div>
+    
+    <div class="placar">
+      <!-- TIME A -->
+      <div class="placar-time-a">
+        <div class="botoes-controle">
+          <button class="btn-controle btn-gol" onclick="PlacarApp.aumentarGol('A')">+</button>
+          <button class="btn-controle btn-remover" onclick="PlacarApp.diminuirGol('A')">−</button>
+          <button class="btn-controle btn-falta" onclick="PlacarApp.registrarFalta('A')">!</button>
+        </div>
+        <div class="placar-numero" id="placarA">0</div>
+      </div>
+      
+      <!-- VS CENTRAL -->
+      <div class="placar-vs">×</div>
+      
+      <!-- TIME B -->
+      <div class="placar-time-b">
+        <div class="placar-numero" id="placarB">0</div>
+        <div class="botoes-controle">
+          <button class="btn-controle btn-gol" onclick="PlacarApp.aumentarGol('B')">+</button>
+          <button class="btn-controle btn-remover" onclick="PlacarApp.diminuirGol('B')">−</button>
+          <button class="btn-controle btn-falta" onclick="PlacarApp.registrarFalta('B')">!</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tempo-container">
+      <div id="tempo" onclick="PlacarApp.togglePause()">00:00</div>
+    </div>
+    
+    <div class="contador-faltas">
+      <div class="falta-item">
+        <span id="nomeFaltaA">Time A</span>
+        <span class="falta-numero" id="faltasA">0</span>
+      </div>
+      <div class="falta-item">
+        <span id="nomeFaltaB">Time B</span>
+        <span class="falta-numero" id="faltasB">0</span>
+      </div>
+    </div>
+  </div>
   
-  .btn-mais, .btn-menos, .btn-falta {
-    width: 52px;
-    height: 52px;
-    font-size: 26px;
-  }
+  <div class="actions">
+    <button id="btnIniciar" class="btn-acao btn-iniciar" onclick="PlacarApp.iniciar()">▶ Iniciar</button>
+    <button class="btn-acao btn-reset" onclick="PlacarApp.resetar()">🔄 Reset</button>
+    <button id="btnFim" class="btn-acao btn-fim" onclick="PlacarApp.fim()">⛔ Fim</button>
+  </div>
   
-  .btn-mais {
-    height: 60px;
-    font-size: 30px;
-  }
-  
-  #tempo {
-    font-size: 36px;
-    padding: 14px 28px;
-  }
-}
-
-/* Telas médias (iPhone 8 Plus, etc) - VERTICAL */
-@media (min-width: 376px) and (max-width: 414px) {
-  .placar-numero {
-    font-size: 85px;
-    min-width: 110px;
-  }
-  
-  .btn-mais, .btn-menos, .btn-falta {
-    width: 58px;
-    height: 58px;
-  }
-  
-  .btn-mais {
-    height: 66px;
-  }
-  
-  #tempo {
-    font-size: 42px;
-  }
-}
-
-/* BLOQUEAR AJUSTES EM HORIZONTAL - FORÇAR VERTICAL */
-@media (orientation: landscape) and (max-height: 600px) {
-  /* Aviso para usar em vertical */
-  body::before {
-    content: "📱 Gire para modo retrato (vertical) para melhor experiência";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: var(--green);
-    color: white;
-    text-align: center;
-    padding: 15px;
-    font-weight: 600;
-    z-index: 9999;
-  }
-  
-  /* Manter layout vertical mesmo em horizontal */
-  .placar {
-    flex-direction: column !important;
-  }
-  
-  .placar-time-a, .placar-time-b {
-    flex-direction: row !important;
-  }
-}
-
-/* iPhone X+ safe areas */
-@supports (padding: max(0px)) {
-  body {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
-  header {
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
-  }
-  
-  #installBtn, #undoBtn {
-    margin-bottom: env(safe-area-inset-bottom);
-  }
-}
-
-/* Desativar zoom em inputs no iOS */
-@media (max-width: 768px) {
-  input, select, textarea {
-    font-size: 16px !important;
-  }
-}
+  <h3 id="tituloGols" class="hidden">📊 Visão Geral da Partida</h3>
+  <ul id="listaGols"></ul>
+</section>
