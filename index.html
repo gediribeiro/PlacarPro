@@ -1,88 +1,217 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Placar Fut 31</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Sistema de placar profissional">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <title>Placar Fut 31</title>
+    <style>
+        /* Estilos temporários para debug */
+        .debug { border: 2px solid red !important; }
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="header-content">
-      <div class="header-logo">⚽</div>
-      <h1 class="header-title">Placar Fut 31</h1>
+    <header>
+        <div class="header-content">
+            <div class="header-logo">⚽</div>
+            <div class="header-title">Placar Fut 31</div>
+        </div>
+        <button class="theme-toggle hidden" onclick="PlacarApp.toggleTheme()" title="Alternar tema">🌓</button>
+    </header>
+    
+    <div class="tabs">
+        <button class="active" onclick="PlacarApp.trocarTab('jogo', this)">Jogo</button>
+        <button onclick="PlacarApp.trocarTab('jogadores', this)">Jogadores</button>
+        <button onclick="PlacarApp.trocarTab('ranking', this)">Ranking</button>
+        <button onclick="PlacarApp.trocarTab('historico', this)">Histórico</button>
+        <button onclick="PlacarApp.trocarTab('stats', this)">Stats</button>
+        <button onclick="PlacarApp.trocarTab('comparar', this)">Comparar</button>
     </div>
-    <button class="theme-toggle" onclick="PlacarApp.toggleTheme()">🌓</button>
-  </header>
-
-  <div class="tabs">
-    <button class="active" onclick="PlacarApp.trocarTab('placar', this)">Placar</button>
-    <button onclick="PlacarApp.trocarTab('ranking', this)">Ranking</button>
-    <button onclick="PlacarApp.trocarTab('historico', this)">Histórico</button>
-    <button onclick="PlacarApp.trocarTab('stats', this)">Estatísticas</button>
-    <button onclick="PlacarApp.trocarTab('comparar', this)">Comparar</button>
-  </div>
-
-  <main>
-    <section id="placar" class="active">
-      <div class="placar-container">
-        <div class="placar-header">
-          <div id="nomeTimeA" class="nome-time">Time A</div>
-          <button class="btn-edit" onclick="PlacarApp.editarNomeTime('A')">✏️</button>
-          <div id="nomeTimeB" class="nome-time">Time B</div>
-          <button class="btn-edit" onclick="PlacarApp.editarNomeTime('B')">✏️</button>
+    
+    <main>
+        <!-- SEÇÃO JOGO -->
+        <section id="jogo" class="active">
+            <div class="placar-container">
+                <div class="placar-header">
+                    <div class="nome-time">
+                        <span id="nomeTimeA">Time A</span>
+                    </div>
+                    <button class="btn-edit" onclick="PlacarApp.editarNomeTime('A')">✏️</button>
+                    <button class="btn-edit" onclick="PlacarApp.editarNomeTime('B')">✏️</button>
+                    <div class="nome-time">
+                        <span id="nomeTimeB">Time B</span>
+                    </div>
+                </div>
+                
+                <div class="placar" id="placarDiv">
+                    <!-- Time A -->
+                    <div class="placar-time">
+                        <div class="botoes-controle">
+                            <button class="btn-controle btn-gol" onclick="PlacarApp.aumentarGol('A')">+</button>
+                            <button class="btn-controle btn-remover" onclick="PlacarApp.diminuirGol('A')">−</button>
+                            <button class="btn-controle btn-falta" onclick="PlacarApp.registrarFalta('A')">!</button>
+                        </div>
+                        <div class="placar-numero" id="placarA">0</div>
+                    </div>
+                    
+                    <div class="placar-vs">×</div>
+                    
+                    <!-- Time B -->
+                    <div class="placar-time">
+                        <div class="placar-numero" id="placarB">0</div>
+                        <div class="botoes-controle">
+                            <button class="btn-controle btn-gol" onclick="PlacarApp.aumentarGol('B')">+</button>
+                            <button class="btn-controle btn-remover" onclick="PlacarApp.diminuirGol('B')">−</button>
+                            <button class="btn-controle btn-falta" onclick="PlacarApp.registrarFalta('B')">!</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tempo-container">
+                    <div id="tempo" onclick="PlacarApp.togglePause()">00:00</div>
+                </div>
+                
+                <div class="contador-faltas">
+                    <div class="falta-item">
+                        <span id="nomeFaltaA">Time A</span>
+                        <span class="falta-numero" id="faltasA">0</span>
+                    </div>
+                    <div class="falta-item">
+                        <span id="nomeFaltaB">Time B</span>
+                        <span class="falta-numero" id="faltasB">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="btnIniciar" class="btn-acao btn-iniciar" onclick="PlacarApp.iniciar()">▶ Iniciar</button>
+                <button class="btn-acao btn-reset" onclick="PlacarApp.resetar()">🔄 Reset</button>
+                <button id="btnFim" class="btn-acao btn-fim" onclick="PlacarApp.fim()">⛔ Fim</button>
+            </div>
+            
+            <h3 id="tituloGols" class="hidden">📊 Visão Geral da Partida</h3>
+            <ul id="listaGols"></ul>
+        </section>
+        
+        <!-- SEÇÃO JOGADORES -->
+        <section id="jogadores">
+            <div class="card">
+                <input id="novoJogador" placeholder="Nome do jogador" maxlength="20">
+                <button class="btn-acao btn-iniciar" onclick="PlacarApp.addJogador()" style="margin-top:8px;">➕ Adicionar Jogador</button>
+            </div>
+            <ul id="listaJogadores"></ul>
+        </section>
+        
+        <!-- SEÇÃO RANKING -->
+        <section id="ranking">
+            <div class="card">
+                <h3>🏆 Ranking de Gols - Geral</h3>
+                <ul id="listaRankingGeral"></ul>
+            </div>
+            <div class="card">
+                <h3>📅 Ranking de Gols - Mês</h3>
+                <ul id="listaRankingMes"></ul>
+            </div>
+            <div class="card">
+                <h3>⚠️ Ranking de Faltas</h3>
+                <ul id="listaRankingFaltas"></ul>
+            </div>
+        </section>
+        
+        <!-- SEÇÃO HISTÓRICO -->
+        <section id="historico">
+            <button class="btn-acao btn-fim" onclick="PlacarApp.limparHistorico()" style="width:100%;margin-bottom:16px;">🗑️ Limpar Histórico</button>
+            <div id="listaHistorico"></div>
+        </section>
+        
+        <!-- SEÇÃO STATS -->
+        <section id="stats">
+            <div class="card">
+                <h3>📊 Estatísticas Gerais</h3>
+                <div id="statsGerais"></div>
+            </div>
+            <div class="card">
+                <h3>🔥 Últimas 5 Partidas</h3>
+                <div id="statsRecentes"></div>
+            </div>
+            <div class="card">
+                <h3>👤 Por Jogador</h3>
+                <div id="statsPorJogador"></div>
+            </div>
+            <div class="card">
+                <h4>📈 Evolução de Gols</h4>
+                <div id="graficoEvolucao"></div>
+            </div>
+        </section>
+        
+        <!-- SEÇÃO COMPARAR -->
+        <section id="comparar">
+            <div class="card">
+                <h3>⚖️ Comparar Jogadores</h3>
+                <select id="jogador1"><option value="">Selecione jogador 1</option></select>
+                <select id="jogador2"><option value="">Selecione jogador 2</option></select>
+                <button class="btn-acao btn-iniciar" onclick="PlacarApp.compararJogadores()" style="margin-top:8px;">⚖️ Comparar</button>
+            </div>
+            <div id="resultadoComparacao"></div>
+        </section>
+    </main>
+    
+    <!-- POPUPS -->
+    <div id="popupJogador" class="popup-overlay" onclick="PlacarApp.fecharPopup(event)">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <h3 id="popupTitulo">⚽ Quem fez o gol?</h3>
+            <div id="popupJogadores" class="popup-jogadores"></div>
+            <button class="btn-fechar" onclick="PlacarApp.fecharPopup()">✖ Cancelar</button>
         </div>
-
-        <div class="placar">
-          <div class="placar-time">
-            <div id="placarA" class="placar-numero">0</div>
-          </div>
-          <div class="placar-vs">×</div>
-          <div class="placar-time">
-            <div id="placarB" class="placar-numero">0</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tempo-container">
-        <div id="tempo">00:00</div>
-      </div>
-
-      <div class="contador-faltas">
-        <div class="falta-item">
-          <span id="nomeFaltaA">Time A</span>
-          <span id="faltasA" class="falta-numero">0</span>
-        </div>
-        <div class="falta-item">
-          <span id="nomeFaltaB">Time B</span>
-          <span id="faltasB" class="falta-numero">0</span>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button id="btnIniciar" class="btn-acao btn-iniciar" onclick="PlacarApp.iniciar()">▶️ Iniciar</button>
-        <button id="btnReset" class="btn-acao btn-reset" onclick="PlacarApp.resetar()">🔄 Resetar</button>
-        <button id="btnFim" class="btn-acao btn-fim" onclick="PlacarApp.fim()">⏹️ Fim</button>
-      </div>
-    </section>
-
-    <section id="ranking"></section>
-    <section id="historico"></section>
-    <section id="stats"></section>
-    <section id="comparar"></section>
-  </main>
-
-  <button id="installBtn" onclick="PlacarApp.instalarApp()">📲 Instalar</button>
-  <button id="undoBtn" onclick="PlacarApp.desfazer()">↩️</button>
-
-  <div id="gameOverlay" class="popup-overlay">
-    <div class="popup-content">
-      <div id="overlayIcon"></div>
-      <div id="overlayText"></div>
     </div>
-  </div>
-
-  <script src="app.js"></script>
+    
+    <div id="popupFalta" class="popup-overlay" onclick="PlacarApp.fecharPopupFalta(event)">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <h3 id="popupTituloFalta">⚠️ Quem fez a falta?</h3>
+            <div id="popupJogadoresFalta" class="popup-jogadores"></div>
+            <button class="btn-fechar" onclick="PlacarApp.fecharPopupFalta()">✖ Cancelar</button>
+        </div>
+    </div>
+    
+    <div id="popupRemover" class="popup-overlay" onclick="PlacarApp.fecharPopupRemover(event)">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <h3>🗑️ Remover qual gol?</h3>
+            <div id="popupGols" class="popup-jogadores"></div>
+            <button class="btn-fechar" onclick="PlacarApp.fecharPopupRemover()">✖ Cancelar</button>
+        </div>
+    </div>
+    
+    <div id="popupNomeTime" class="popup-overlay" onclick="PlacarApp.fecharPopupNome(event)">
+        <div class="popup-content" onclick="event.stopPropagation()">
+            <h3 id="popupTituloNome">✏️ Editar Nome do Time</h3>
+            <input id="inputNomeTime" type="text" placeholder="Nome do time" maxlength="20">
+            <button class="btn-confirmar" onclick="PlacarApp.salvarNomeTime()">✓ Confirmar</button>
+            <button class="btn-fechar" onclick="PlacarApp.fecharPopupNome()">✖ Cancelar</button>
+        </div>
+    </div>
+    
+    <div id="gameOverlay" class="popup-overlay">
+        <div class="popup-content" style="background:transparent;color:white;text-align:center">
+            <div style="font-size:80px;margin-bottom:20px" id="overlayIcon">⚽</div>
+            <div style="font-size:32px;font-weight:900" id="overlayText">INÍCIO DE JOGO</div>
+        </div>
+    </div>
+    
+    <button id="installBtn" onclick="PlacarApp.instalarApp()">📱 Instalar App</button>
+    <button id="undoBtn" onclick="PlacarApp.desfazer()">↶</button>
+    
+    <script>
+        // Debug helper
+        console.log('Página carregada');
+        if (typeof PlacarApp === 'undefined') {
+            console.error('PlacarApp não está definido!');
+        }
+    </script>
+    <script src="app.js"></script>
 </body>
 </html>
