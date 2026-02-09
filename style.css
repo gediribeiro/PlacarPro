@@ -368,14 +368,19 @@ section.active {
   display: flex;
   align-items: center;
   flex: 1;
+  gap: 12px;
 }
 
+/* Time A: botões à esquerda */
 .placar-time:first-child {
   justify-content: flex-start;
+  flex-direction: row;
 }
 
+/* Time B: botões à direita */
 .placar-time:last-child {
   justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
 .placar-numero {
@@ -437,7 +442,8 @@ section.active {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 50px;
+  width: 46px;
+  flex-shrink: 0; /* ← IMPEDE QUE ENCOLHA */
 }
 
 .placar-time:first-child .botoes-controle {
@@ -538,25 +544,21 @@ section.active {
 }
 
 #tempo {
-  font-size: 32px;               /* ← MUDEI: 40px → 32px */
+  font-size: 28px;
   font-weight: 800;
-  padding: 14px 24px;            /* ← MUDEI: 20px 40px → 14px 24px */
-  background: linear-gradient(135deg, 
-    rgba(15, 184, 88, 0.15), 
-    rgba(15, 184, 88, 0.08));
-  border-radius: 20px;           /* ← MUDEI: 24px → 20px */
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(15, 184, 88, 0.15), rgba(15, 184, 88, 0.08));
+  border-radius: 16px;
   display: inline-block;
-  min-width: 130px;              /* ← MUDEI: 160px → 130px */
-  border: 2px solid rgba(15, 184, 88, 0.25); /* ← MUDEI: 3px → 2px */
+  min-width: 110px;
+  border: 2px solid rgba(15, 184, 88, 0.25);
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   transition: all 0.3s ease;
-  box-shadow: 
-    inset 0 2px 8px rgba(15, 184, 88, 0.1),
-    0 6px 20px rgba(15, 184, 88, 0.15); /* ← REDUZI: 8px 25px → 6px 20px */
+  box-shadow: inset 0 2px 8px rgba(15, 184, 88, 0.1), 0 4px 16px rgba(15, 184, 88, 0.15);
   cursor: pointer;
-  margin: 16px 0;                /* ← ADICIONEI margin se não tiver */
+  margin: 10px 0;
 }
 
 #tempo:active {
