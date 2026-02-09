@@ -1776,4 +1776,82 @@ li button:active {
 .finalizar-btn {
     background: linear-gradient(135deg, #ef4444, #dc2626);
 }
+/* ===== CSS DE EMERGÊNCIA - TESTE RÁPIDO ===== */
+
+/* CORREÇÃO DO PLACAR */
+.placar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 20px 0 !important;
+}
+
+.time-section {
+    display: flex !important;
+    align-items: center !important;
+    width: 45% !important;
+}
+
+.time-a {
+    justify-content: flex-start !important;
+}
+
+.time-b {
+    justify-content: flex-end !important;
+}
+
+.botoes-time {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 50px !important;
+    margin: 0 15px !important;
+}
+
+.btn-acao {
+    width: 50px !important;
+    height: 50px !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    font-size: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    cursor: pointer !important;
+}
+
+.btn-plus {
+    background: linear-gradient(135deg, #0fb858, #0ea04d) !important;
+    height: 60px !important;
+    font-size: 26px !important;
+}
+
+.btn-minus {
+    background: linear-gradient(135deg, #ff4757, #e63946) !important;
+}
+
+.btn-foul {
+    background: linear-gradient(135deg, #ffa502, #ff8c00) !important;
+}
+
+.placar-numero {
+    font-size: 56px !important;
+    font-weight: 900 !important;
+    min-width: 80px !important;
+    text-align: center !important;
+    background: white !important;
+    padding: 10px 15px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+    border: 2px solid #f3f4f6 !important;
+}
+
+.placar-divisor {
+    font-size: 28px !important;
+    color: #6b7280 !important;
+    padding: 0 10px !important;
+}
 }
