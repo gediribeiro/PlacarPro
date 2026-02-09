@@ -1314,3 +1314,152 @@ body {
     background: var(--primary-green);
     border-radius: 3px;
 }
+
+/* ===== NOVAS ADIÇÕES ===== */
+
+/* BACKGROUND SUAVE */
+body.clean-bg {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+/* VERSÃO DO APP NO BACKUP */
+.version-display {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(15, 184, 88, 0.1), rgba(15, 184, 88, 0.05));
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(15, 184, 88, 0.2);
+}
+
+.version-display .app-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: var(--primary-green);
+    margin-bottom: 5px;
+}
+
+.version-display .app-version {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* LINHA DO TEMPO */
+.timeline-container {
+    margin: 20px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-lg);
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.timeline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.timeline-item {
+    padding: 10px 15px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Alinhamento por time */
+.timeline-item.event-left {
+    border-left: 4px solid var(--primary-green);
+    justify-content: flex-start;
+}
+
+.timeline-item.event-right {
+    border-left: 4px solid var(--primary-yellow);
+    justify-content: flex-start;
+}
+
+.timeline-item.event-center {
+    border-left: 4px solid var(--primary-red);
+    justify-content: center;
+    text-align: center;
+}
+
+.event-time {
+    font-weight: bold;
+    color: var(--primary-green);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    min-width: 45px;
+}
+
+.event-icon {
+    font-size: 1.2em;
+    min-width: 30px;
+    text-align: center;
+}
+
+.event-text {
+    flex-grow: 1;
+    font-size: 0.95em;
+}
+
+.timeline-empty {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px !important;
+    opacity: 0.7;
+}
+
+/* Scrollbar personalizada para timeline */
+.timeline-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.timeline-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.timeline-list::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+/* RESPONSIVIDADE DA TIMELINE */
+@media (max-width: 480px) {
+    .timeline-container {
+        margin: 15px 5px;
+        padding: 12px;
+    }
+    
+    .timeline-item {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    
+    .event-time {
+        min-width: 40px;
+        font-size: 0.85em;
+    }
+    
+    .event-icon {
+        min-width: 25px;
+        font-size: 1.1em;
+    }
+}
