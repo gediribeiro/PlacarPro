@@ -357,8 +357,8 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 12px 0;
+  gap: 20px;
+  padding: 20px 0;
   position: relative;
   z-index: 1;
 }
@@ -367,26 +367,35 @@ section.active {
 .placar-time {
   display: flex;
   align-items: center;
-  flex: 1;
+  width: 45%;
 }
 
-/* Time A: alinhado à esquerda */
+/* Time A: botões ESQUERDA, placar DIREITA */
 .placar-time:first-child {
   justify-content: flex-start;
 }
 
-/* Time B: alinhado à direita */
-.placar-time:last-child {
+.placar-time:first-child .botoes-controle {
+  order: 1;
+  margin-right: 15px;
+}
+
+.placar-time:first-child .placar-numero {
+  order: 2;
+}
+
+/* Time B: placar ESQUERDA, botões DIREITA */
+.time-b {
   justify-content: flex-end;
 }
 
-/* Forçar botões à direita no Time B */
-.placar-time:last-child .botoes-controle {
-  order: 2; /* Botões vêm DEPOIS do placar */
+.time-b .botoes-controle {
+  order: 2;
+  margin-left: 15px;
 }
 
-.placar-time:last-child .placar-numero {
-  order: 1; /* Placar vem ANTES dos botões */
+.time-b .placar-numero {
+  order: 1;
 }
 
 .placar-numero {
@@ -434,12 +443,11 @@ section.active {
 }
 
 .placar-vs {
+  width: 10%;
+  text-align: center;
   font-size: 24px;
   color: var(--text-secondary);
-  font-weight: 400;
   opacity: 0.7;
-  flex-shrink: 0;
-  padding: 0 4px;
 }
 
 /* BOTÕES DE CONTROLE INTEGRADOS */
