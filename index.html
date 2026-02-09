@@ -41,81 +41,83 @@
     <main class="app-main">
         <!-- SEÇÃO: JOGO (PLACAR) -->
         <section id="jogo" class="content-section active">
-            <div class="scoreboard-container">
-                <!-- CABEÇALHO DOS TIMES -->
-                <div class="teams-header">
-                    <div class="team-name-display" id="nomeTimeA">Time A</div>
-                    <div class="team-edit-buttons">
-                        <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('A')" title="Editar nome Time A">✏️</button>
-                        <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('B')" title="Editar nome Time B">✏️</button>
-                    </div>
-                    <div class="team-name-display" id="nomeTimeB">Time B</div>
+    <div class="scoreboard-container">
+        <!-- CABEÇALHO DOS TIMES -->
+        <div class="teams-header">
+            <div class="team-name-display" id="nomeTimeA">Time A</div>
+            <div class="team-edit-buttons">
+                <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('A')" title="Editar nome Time A">✏️</button>
+                <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('B')" title="Editar nome Time B">✏️</button>
+            </div>
+            <div class="team-name-display" id="nomeTimeB">Time B</div>
+        </div>
+
+        <!-- PLACAR PRINCIPAL -->
+        <div class="main-scoreboard">
+            <!-- TIME A -->
+            <div class="team-score team-left">
+                <div class="action-buttons">
+                    <button class="action-btn goal-btn" onclick="PlacarApp.aumentarGol('A')" title="Gol do Time A">+</button>
+                    <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('A')" title="Remover gol">−</button>
+                    <button class="action-btn foul-btn" onclick="PlacarApp.registrarFalta('A')" title="Registrar falta">!</button>
                 </div>
-
-                <!-- PLACAR PRINCIPAL -->
-                <div class="main-scoreboard">
-                    <!-- TIME A -->
-                    <div class="team-score team-left">
-                        <div class="action-buttons">
-                            <button class="action-btn goal-btn" onclick="PlacarApp.aumentarGol('A')" title="Gol do Time A">+</button>
-                            <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('A')" title="Remover gol">−</button>
-                            <button class="action-btn foul-btn" onclick="PlacarApp.registrarFalta('A')" title="Registrar falta">!</button>
-                        </div>
-                        <div class="score-number" id="placarA">0</div>
-                    </div>
-
-                    <!-- DIVISÓRIA CENTRAL -->
-                    <div class="score-divider">×</div>
-
-                    <!-- TIME B -->
-                    <div class="team-score team-right">
-                        <div class="score-number" id="placarB">0</div>
-                        <div class="action-buttons">
-                            <button class="action-btn goal-btn" onclick="PlacarApp.aumentarGol('B')" title="Gol do Time B">+</button>
-                            <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('B')" title="Remover gol">−</button>
-                            <button class="action-btn foul-btn" onclick="PlacarApp.registrarFalta('B')" title="Registrar falta">!</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CRONÔMETRO (MENOR E MAIS PRÓXIMO) -->
-                <div class="timer-section">
-                    <div class="game-timer" id="tempo" onclick="PlacarApp.togglePause()">00:00</div>
-                </div>
-
-                <!-- CONTADOR DE FALTAS (MENOR E COM TÍTULO) -->
-                <div class="fouls-section">
-                    <div class="section-label">Faltas</div>
-                    <div class="fouls-counter">
-                        <div class="foul-item">
-                            <span class="foul-team-name" id="nomeFaltaA">Time A</span>
-                            <span class="foul-count" id="faltasA">0</span>
-                        </div>
-                        <div class="foul-item">
-                            <span class="foul-team-name" id="nomeFaltaB">Time B</span>
-                            <span class="foul-count" id="faltasB">0</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="score-number" id="placarA">0</div>
             </div>
 
-            <!-- CONTROLES DO JOGO -->
-            <div class="game-controls">
-                <button class="control-btn start-game-btn" id="btnIniciar" onclick="PlacarApp.iniciar()">
-                    <span class="btn-icon">▶</span> Iniciar
-                </button>
-                <button class="control-btn reset-game-btn" onclick="PlacarApp.resetar()">
-                    <span class="btn-icon">🔄</span> Reset
-                </button>
-                <button class="control-btn end-game-btn" id="btnFim" onclick="PlacarApp.fim()">
-                    <span class="btn-icon">⛔</span> Fim
-                </button>
-            </div>
+            <!-- DIVISÓRIA CENTRAL -->
+            <div class="score-divider">×</div>
 
-            <!-- LISTA DE GOLS DA PARTIDA -->
-            <h3 id="tituloGols" class="section-subtitle hidden">📊 Gols da Partida</h3>
-            <ul id="listaGols" class="goals-list"></ul>
-        </section>
+            <!-- TIME B -->
+            <div class="team-score team-right">
+                <div class="score-number" id="placarB">0</div>
+                <div class="action-buttons">
+                    <button class="action-btn goal-btn" onclick="PlacarApp.aumentarGol('B')" title="Gol do Time B">+</button>
+                    <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('B')" title="Remover gol">−</button>
+                    <button class="action-btn foul-btn" onclick="PlacarApp.registrarFalta('B')" title="Registrar falta">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRONÔMETRO (MENOR E MAIS PRÓXIMO) -->
+        <div class="timer-section">
+            <div class="game-timer" id="tempo" onclick="PlacarApp.togglePause()">00:00</div>
+        </div>
+
+        <!-- CONTADOR DE FALTAS (MENOR E COM TÍTULO) -->
+        <div class="fouls-section">
+            <div class="section-label">Faltas</div>
+            <div class="fouls-counter">
+                <div class="foul-item">
+                    <span class="foul-team-name" id="nomeFaltaA">Time A</span>
+                    <span class="foul-count" id="faltasA">0</span>
+                </div>
+                <div class="foul-item">
+                    <span class="foul-team-name" id="nomeFaltaB">Time B</span>
+                    <span class="foul-count" id="faltasB">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ AQUI MOVEMOS OS CONTROLES ============ -->
+        <!-- CONTROLES DO JOGO (AGORA DENTRO DO SCOREBOARD) -->
+        <div class="game-controls">
+            <button class="control-btn start-game-btn" id="btnIniciar" onclick="PlacarApp.iniciar()">
+                <span class="btn-icon">▶</span> Iniciar
+            </button>
+            <button class="control-btn reset-game-btn" onclick="PlacarApp.resetar()">
+                <span class="btn-icon">🔄</span> Reset
+            </button>
+            <button class="control-btn end-game-btn" id="btnFim" onclick="PlacarApp.fim()">
+                <span class="btn-icon">⛔</span> Fim
+            </button>
+        </div>
+        <!-- ============ FIM DOS CONTROLES ============ -->
+    </div> <!-- FIM DO SCOREBOARD-CONTAINER -->
+
+    <!-- LISTA DE GOLS DA PARTIDA (PERMANECE FORA) -->
+    <h3 id="tituloGols" class="section-subtitle hidden">📊 Gols da Partida</h3>
+    <ul id="listaGols" class="goals-list"></ul>
+</section>
 
         <!-- SEÇÃO: JOGADORES -->
         <section id="jogadores" class="content-section">
