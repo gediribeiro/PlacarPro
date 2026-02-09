@@ -51,7 +51,6 @@ const PlacarApp = (function() {
     });
   }
 
-
   // ===== NAVEGAÇÃO =====
   function trocarTab(tabId, button) {
     document.querySelectorAll("section").forEach(section => {
@@ -197,15 +196,20 @@ const PlacarApp = (function() {
   }
 
   function carregarNomesTimes() {
-  state.nomeA = localStorage.getItem("nomeTimeA") || "Time A";
-  state.nomeB = localStorage.getItem("nomeTimeB") || "Time B";
-  
-  // NOVOS SELETORES:
-  document.querySelector('.team-name-display:nth-child(1)').textContent = state.nomeA;
-  document.querySelector('.team-name-display:nth-child(3)').textContent = state.nomeB;
-  document.getElementById('nomeFaltaA').textContent = state.nomeA;
-  document.getElementById('nomeFaltaB').textContent = state.nomeB;
-}
+    state.nomeA = localStorage.getItem("nomeTimeA") || "Time A";
+    state.nomeB = localStorage.getItem("nomeTimeB") || "Time B";
+    
+    // CORREÇÃO: Usar os IDs corretos do HTML
+    const nomeTimeAElem = document.getElementById('nomeTimeA');
+    const nomeTimeBElem = document.getElementById('nomeTimeB');
+    const nomeFaltaAElem = document.getElementById('nomeFaltaA');
+    const nomeFaltaBElem = document.getElementById('nomeFaltaB');
+    
+    if (nomeTimeAElem) nomeTimeAElem.textContent = state.nomeA;
+    if (nomeTimeBElem) nomeTimeBElem.textContent = state.nomeB;
+    if (nomeFaltaAElem) nomeFaltaAElem.textContent = state.nomeA;
+    if (nomeFaltaBElem) nomeFaltaBElem.textContent = state.nomeB;
+  }
 
   // ===== CONTROLE DO JOGO =====
   async function iniciar() {
@@ -414,19 +418,19 @@ const PlacarApp = (function() {
   }
 
   function animarGol() {
-  const placarDiv = document.querySelector('.main-scoreboard');
-  if (!placarDiv) return;
-  
-  placarDiv.classList.add("gol-animation");
-  
-  if (navigator.vibrate) {
-    navigator.vibrate([100, 50, 100, 50, 100]);
+    const placarDiv = document.querySelector('.main-scoreboard');
+    if (!placarDiv) return;
+    
+    placarDiv.classList.add("gol-animation");
+    
+    if (navigator.vibrate) {
+      navigator.vibrate([100, 50, 100, 50, 100]);
+    }
+    
+    setTimeout(() => {
+      placarDiv.classList.remove("gol-animation");
+    }, 800);
   }
-  
-  setTimeout(() => {
-    placarDiv.classList.remove("gol-animation");
-  }, 800);
-}
 
   // ===== CONTROLE DE GOLS =====
   function aumentarGol(time) {
@@ -507,9 +511,9 @@ const PlacarApp = (function() {
   }
 
   function renderGols() {
-  const lista = document.getElementById('listaGols');
-  if (!lista) return;
-    
+    const lista = document.getElementById('listaGols');
+    if (!lista) return;
+      
     const golsPorJogador = {};
     state.historicaGols.forEach(gol => {
       golsPorJogador[gol.jogador] = (golsPorJogador[gol.jogador] || 0) + 1;
@@ -993,15 +997,25 @@ const PlacarApp = (function() {
     const totalJogos = historico.length;
     let totalGols = 0;
     let totalFaltas = 0;
+    let golsPorTime = { A: 0, B: 0 };
+    let vitoriasPorTime = { A: 0, B: 0, empates: 0 };
     
     historico.forEach(partida => {
-      Object.values(partida.gols || {}).forEach(dados => {
+      Object.entries(partida.gols || {}).forEach(([jogador, dados]) => {
         totalGols += dados.q;
+        if (dados.t === 'A') golsPorTime.A += dados.q;
+        if (dados.t === 'B') golsPorTime.B += dados.q;
       });
       
       if (partida.faltas) {
         totalFaltas += (partida.faltas.A || 0) + (partida.faltas.B || 0);
       }
+      
+      // Contar vitórias/empates
+      const placar = partida.placar || [0, 0];
+      if (placar[0] > placar[1]) vitoriasPorTime.A++;
+      else if (placar[1] > placar[0]) vitoriasPorTime.B++;
+      else vitoriasPorTime.empates++;
     });
     
     const mediaGols = totalJogos > 0 ? (totalGols / totalJogos).toFixed(1) : '0';
@@ -1025,11 +1039,79 @@ const PlacarApp = (function() {
           <span class="stat-label">Total de Faltas</span>
           <span class="stat-value">${totalFaltas}</span>
         </div>
+        <div class="stat-row">
+          <span class="stat-label">Vitórias ${state.nomeA}</span>
+          <span class="stat-value">${vitoriasPorTime.A}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Vitórias ${state.nomeB}</span>
+          <span class="stat-value">${vitoriasPorTime.B}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Empates</span>
+          <span class="stat-value">${vitoriasPorTime.empates}</span>
+        </div>
       `;
+    }
+    
+    // Estatísticas Recentes
+    const statsRecentes = document.getElementById('statsRecentes');
+    if (statsRecentes) {
+      const ultimas5 = historico.slice(-5).reverse();
+      let html = '';
+      
+      if (ultimas5.length === 0) {
+        html = '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem partidas recentes</div>';
+      } else {
+        ultimas5.forEach(partida => {
+          const times = partida.nomeTimes || { A: "Time A", B: "Time B" };
+          const placar = partida.placar || [0, 0];
+          const data = partida.data.split(',')[0];
+          
+          html += `
+            <div class="stat-row">
+              <span class="stat-label">${data}</span>
+              <span class="stat-value">${placar[0]}×${placar[1]}</span>
+            </div>
+          `;
+        });
+      }
+      
+      statsRecentes.innerHTML = html;
+    }
+    
+    // Estatísticas por Jogador
+    const statsPorJogador = document.getElementById('statsPorJogador');
+    if (statsPorJogador) {
+      const rankingGeral = obterRankingGeral();
+      const top5 = Object.entries(rankingGeral)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      let html = '';
+      
+      if (top5.length === 0) {
+        html = '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem dados de jogadores</div>';
+      } else {
+        top5.forEach(([jogador, gols], index) => {
+          const medalha = index === 0 ? '🥇' : 
+                         index === 1 ? '🥈' : 
+                         index === 2 ? '🥉' : '🏅';
+          
+          html += `
+            <div class="stat-row">
+              <span class="stat-label">${medalha} ${jogador}</span>
+              <span class="stat-value">${gols} gol${gols > 1 ? 's' : ''}</span>
+            </div>
+          `;
+        });
+      }
+      
+      statsPorJogador.innerHTML = html;
     }
   }
 
-  // ===== COMPARAÇÃO =====
+  // ===== COMPARAÇÃO DE JOGADORES =====
   function carregarComparacao() {
     const select1 = document.getElementById('jogador1');
     const select2 = document.getElementById('jogador2');
@@ -1043,6 +1125,150 @@ const PlacarApp = (function() {
       select1.innerHTML += `<option value="${escapeHTML(jogador)}">${escapeHTML(jogador)}</option>`;
       select2.innerHTML += `<option value="${escapeHTML(jogador)}">${escapeHTML(jogador)}</option>`;
     });
+  }
+
+  function calcularComparacao(jogador1, jogador2) {
+    const historico = JSON.parse(localStorage.getItem("historico")) || [];
+    
+    let statsJ1 = { gols: 0, faltas: 0, partidas: 0, craque: 0 };
+    let statsJ2 = { gols: 0, faltas: 0, partidas: 0, craque: 0 };
+    
+    historico.forEach(partida => {
+      // Gols
+      if (partida.gols && partida.gols[jogador1]) {
+        statsJ1.gols += partida.gols[jogador1].q;
+        statsJ1.partidas++;
+      }
+      if (partida.gols && partida.gols[jogador2]) {
+        statsJ2.gols += partida.gols[jogador2].q;
+        statsJ2.partidas++;
+      }
+      
+      // Faltas
+      if (partida.faltas && partida.faltas.jogadores) {
+        if (partida.faltas.jogadores[jogador1]) {
+          statsJ1.faltas += partida.faltas.jogadores[jogador1];
+        }
+        if (partida.faltas.jogadores[jogador2]) {
+          statsJ2.faltas += partida.faltas.jogadores[jogador2];
+        }
+      }
+      
+      // Craque da partida
+      if (partida.craque && partida.craque.includes(jogador1)) {
+        statsJ1.craque++;
+      }
+      if (partida.craque && partida.craque.includes(jogador2)) {
+        statsJ2.craque++;
+      }
+    });
+    
+    return { jogador1: statsJ1, jogador2: statsJ2 };
+  }
+
+  function mostrarComparacao(jogador1, jogador2, stats) {
+    const resultadoDiv = document.getElementById('resultadoComparacao');
+    if (!resultadoDiv) return;
+    
+    const mediaJ1 = stats.jogador1.partidas > 0 ? (stats.jogador1.gols / stats.jogador1.partidas).toFixed(2) : '0';
+    const mediaJ2 = stats.jogador2.partidas > 0 ? (stats.jogador2.gols / stats.jogador2.partidas).toFixed(2) : '0';
+    
+    let vencedor = '';
+    if (stats.jogador1.gols > stats.jogador2.gols) {
+      vencedor = `${jogador1} tem mais gols!`;
+    } else if (stats.jogador2.gols > stats.jogador1.gols) {
+      vencedor = `${jogador2} tem mais gols!`;
+    } else {
+      vencedor = 'Empate em número de gols!';
+    }
+    
+    resultadoDiv.innerHTML = `
+      <div class="stats-card">
+        <h3 class="card-title">⚖️ Comparação: ${jogador1} vs ${jogador2}</h3>
+        
+        <div class="comparison-grid">
+          <div class="comparison-player">
+            <h4>${jogador1}</h4>
+            <div class="comparison-stat">
+              <span class="stat-label">Gols totais:</span>
+              <span class="stat-value">${stats.jogador1.gols}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Média por jogo:</span>
+              <span class="stat-value">${mediaJ1}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Faltas:</span>
+              <span class="stat-value">${stats.jogador1.faltas}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Vezes craque:</span>
+              <span class="stat-value">${stats.jogador1.craque}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Partidas com gol:</span>
+              <span class="stat-value">${stats.jogador1.partidas}</span>
+            </div>
+          </div>
+          
+          <div class="comparison-player">
+            <h4>${jogador2}</h4>
+            <div class="comparison-stat">
+              <span class="stat-label">Gols totais:</span>
+              <span class="stat-value">${stats.jogador2.gols}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Média por jogo:</span>
+              <span class="stat-value">${mediaJ2}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Faltas:</span>
+              <span class="stat-value">${stats.jogador2.faltas}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Vezes craque:</span>
+              <span class="stat-value">${stats.jogador2.craque}</span>
+            </div>
+            <div class="comparison-stat">
+              <span class="stat-label">Partidas com gol:</span>
+              <span class="stat-value">${stats.jogador2.partidas}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="comparison-result">
+          <h4>🏆 Resultado: ${vencedor}</h4>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${stats.jogador1.gols + stats.jogador2.gols === 0 ? 50 : (stats.jogador1.gols / (stats.jogador1.gols + stats.jogador2.gols)) * 100}%">
+              ${jogador1}: ${stats.jogador1.gols} gols
+            </div>
+            <div class="progress-fill" style="width: ${stats.jogador1.gols + stats.jogador2.gols === 0 ? 50 : (stats.jogador2.gols / (stats.jogador1.gols + stats.jogador2.gols)) * 100}%">
+              ${jogador2}: ${stats.jogador2.gols} gols
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function compararJogadores() {
+    const jogador1 = document.getElementById('jogador1').value;
+    const jogador2 = document.getElementById('jogador2').value;
+    
+    if (!jogador1 || !jogador2) {
+      showToast('Selecione dois jogadores', 'error');
+      return;
+    }
+    
+    if (jogador1 === jogador2) {
+      showToast('Selecione jogadores diferentes', 'warning');
+      return;
+    }
+    
+    const stats = calcularComparacao(jogador1, jogador2);
+    mostrarComparacao(jogador1, jogador2, stats);
+    
+    showToast('Comparação realizada!', 'success');
   }
 
   // ===== PWA =====
@@ -1144,7 +1370,6 @@ const PlacarApp = (function() {
           timeA: localStorage.getItem("nomeTimeA"),
           timeB: localStorage.getItem("nomeTimeB")
         },
-        theme: localStorage.getItem("theme"),
         lastBackup: new Date().toISOString()
       };
       
@@ -1206,9 +1431,7 @@ const PlacarApp = (function() {
     ranking: ranking,
     historico: historico,
     estatisticas: estatisticas,
-    compararJogadores: function() {
-      showToast('Funcionalidade em desenvolvimento', 'info');
-    },
+    compararJogadores: compararJogadores,
     carregarComparacao: carregarComparacao,
     instalarApp: instalarApp,
     getState: () => ({ ...state })
@@ -1221,3 +1444,19 @@ if (document.readyState === 'loading') {
 } else {
   PlacarApp.init();
 }
+// Testar Service Worker
+function testServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(registration => {
+      console.log('Service Worker registrado:', registration.active);
+      
+      // Verificar cache
+      caches.keys().then(cacheNames => {
+        console.log('Caches disponíveis:', cacheNames);
+      });
+    });
+  }
+}
+
+// Chamar após inicialização
+setTimeout(testServiceWorker, 2000);
