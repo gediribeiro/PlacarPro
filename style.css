@@ -129,7 +129,7 @@ body {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== 4. BARRA DE ABAS ===== */
+/* ===== 4. BARRA DE ABAS - CORRIGIDO ===== */
 .tabs-navigation {
     background: var(--bg-card);
     position: sticky;
@@ -169,6 +169,7 @@ body {
 .tab-button.active {
     color: var(--primary-green);
     font-weight: 700;
+    position: relative;
 }
 
 .tab-button.active::after {
@@ -183,9 +184,9 @@ body {
     border-radius: 3px 3px 0 0;
 }
 
-/* Remover linha das outras abas */
+/* Remover completamente a linha das outras */
 .tab-button:not(.active)::after {
-    display: none;
+    display: none !important;
 }
 
 /* ===== 5. CONTEÚDO PRINCIPAL ===== */
@@ -986,7 +987,7 @@ body {
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* ===== 14. BOTÕES FLUTUANTES ===== */
+/* ===== 14. BOTÕES FLUTUANTES - CORRIGIDO ===== */
 .floating-btn {
     position: fixed;
     border: none;
@@ -1034,23 +1035,9 @@ body {
     justify-content: center;
 }
 
-/* NOVO: Botão de Backup */
-.backup-btn {
-    bottom: 160px;
-    right: var(--space-xl);
-    background: #3498db;
-    color: var(--text-white);
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+/* REMOVIDO: .backup-btn - CORREÇÃO 2: Botão removido */
 
 /* ===== 15. TOAST NOTIFICATIONS ===== */
-/* CORREÇÃO 6: Popups bonitos para mensagens */
 .toast {
     position: fixed;
     bottom: 100px;
@@ -1310,11 +1297,6 @@ body {
     
     .undo-btn {
         bottom: max(90px, env(safe-area-inset-bottom) + 70px);
-        right: max(var(--space-xl), env(safe-area-inset-right) + 10px);
-    }
-    
-    .backup-btn {
-        bottom: max(160px, env(safe-area-inset-bottom) + 140px);
         right: max(var(--space-xl), env(safe-area-inset-right) + 10px);
     }
 }
