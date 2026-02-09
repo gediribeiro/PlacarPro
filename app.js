@@ -51,23 +51,6 @@ const PlacarApp = (function() {
     });
   }
 
-  // ===== TEMA =====
-  function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute("data-theme");
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-    
-    html.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
-    
-    if (navigator.vibrate) navigator.vibrate(10);
-    showToast(`Tema ${newTheme === 'dark' ? 'escuro' : 'claro'} ativado`, 'success');
-  }
-
-  function carregarTema() {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    document.documentElement.setAttribute("data-theme", savedTheme);
-  }
 
   // ===== NAVEGAÇÃO =====
   function trocarTab(tabId, button) {
@@ -1178,7 +1161,6 @@ const PlacarApp = (function() {
     console.log('Inicializando PlacarApp...');
     
     // Carregar configurações
-    carregarTema();
     carregarNomesTimes();
     renderJogadores();
     
@@ -1201,7 +1183,6 @@ const PlacarApp = (function() {
   // ===== INTERFACE PÚBLICA =====
   return {
     init: init,
-    toggleTheme: toggleTheme,
     trocarTab: trocarTab,
     addJogador: addJogador,
     removerJogador: removerJogador,
