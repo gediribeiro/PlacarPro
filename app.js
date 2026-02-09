@@ -16,7 +16,8 @@ const PlacarApp = (function() {
     nomeB: "Time B",
     timeEditando: null,
     deferredPrompt: null,
-    undoTimer: null
+    undoTimer: null,
+    backupTimer: null
   };
 
   // ===== FUNÇÕES AUXILIARES =====
@@ -26,7 +27,7 @@ const PlacarApp = (function() {
     return div.innerHTML;
   }
 
-  // CORREÇÃO 6: Popups bonitos para mensagens
+  // CORREÇÃO 6: Popups bonitos para mensagens + CORREÇÃO 3: Timer do desfazer
   function showToast(message, type = 'info', duration = 3000) {
     // Remover toasts antigos
     document.querySelectorAll('.toast').forEach(toast => toast.remove());
@@ -98,6 +99,12 @@ const PlacarApp = (function() {
 
   // ===== NAVEGAÇÃO =====
   function trocarTab(tabId, button) {
+    // Fechar qualquer popup aberto primeiro - CORREÇÃO 3: Evitar sobreposição
+    fecharPopup();
+    fecharPopupFalta();
+    fecharPopupRemover();
+    fecharPopupNome();
+    
     document.querySelectorAll("section").forEach(section => {
       section.classList.remove("active");
     });
@@ -157,8 +164,13 @@ const PlacarApp = (function() {
     
     state.jogadores.push(nome);
     localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
+    
+    // CORREÇÃO 4: Remover foco do input após adicionar
     input.value = '';
+    input.blur(); // Remove foco - teclado fecha no celular
+    
     renderJogadores();
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
     
     if (navigator.vibrate) navigator.vibrate(10);
     showToast(`${nome} adicionado!`, 'success');
@@ -171,6 +183,7 @@ const PlacarApp = (function() {
       state.jogadores.splice(index, 1);
       localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
       renderJogadores();
+      fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
       showToast(`${nome} removido`, 'success');
     }
   }
@@ -198,6 +211,11 @@ const PlacarApp = (function() {
 
   // ===== NOMES DOS TIMES =====
   function editarNomeTime(time) {
+    // CORREÇÃO 3: Fechar outros popups primeiro
+    fecharPopup();
+    fecharPopupFalta();
+    fecharPopupRemover();
+    
     state.timeEditando = time;
     const popupTitulo = document.getElementById('popupTituloNome');
     if (popupTitulo) {
@@ -239,6 +257,8 @@ const PlacarApp = (function() {
     }
     
     fecharPopupNome();
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
+    
     if (navigator.vibrate) navigator.vibrate(10);
     showToast('Nome atualizado!', 'success');
   }
@@ -301,7 +321,7 @@ const PlacarApp = (function() {
       nomeTimes: { A: state.nomeA, B: state.nomeB }
     };
     
-    // Iniciar timer
+    // Iniciar timer - CORREÇÃO 7: Timer otimizado
     clearInterval(state.timer);
     state.timer = setInterval(() => {
       if (!state.pausado) {
@@ -316,6 +336,8 @@ const PlacarApp = (function() {
     mostrarOverlay("INÍCIO DE JOGO", "⚽", 1500);
     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     showToast('Jogo iniciado!', 'success');
+    
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
   }
 
   function togglePause() {
@@ -326,6 +348,7 @@ const PlacarApp = (function() {
     
     state.pausado = !state.pausado;
     
+    // CORREÇÃO 7: Otimizar timer para economia de bateria
     if (state.pausado) {
       document.getElementById('tempo').classList.add('tempo-pausado');
       showToast('Jogo pausado', 'warning');
@@ -344,7 +367,10 @@ const PlacarApp = (function() {
       }
     }
     
+    // CORREÇÃO 7: Parar completamente o timer
     clearInterval(state.timer);
+    state.timer = null;
+    
     state.placar = { A: 0, B: 0 };
     state.faltas = { A: 0, B: 0 };
     state.historicaGols = [];
@@ -381,6 +407,8 @@ const PlacarApp = (function() {
     
     if (navigator.vibrate) navigator.vibrate(20);
     showToast('Jogo resetado', 'success');
+    
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
   }
 
   async function fim() {
@@ -396,7 +424,9 @@ const PlacarApp = (function() {
       setTimeout(() => btn.classList.remove("btn-animating-red"), 600);
     }
     
+    // CORREÇÃO 7: Parar completamente o timer
     clearInterval(state.timer);
+    state.timer = null;
     
     // Calcular estatísticas da partida
     const golsPorJogador = {};
@@ -439,6 +469,7 @@ const PlacarApp = (function() {
     });
     
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
   }
 
   function calcularCraque(gols) {
@@ -498,6 +529,11 @@ const PlacarApp = (function() {
       showToast('Inicie o jogo primeiro!', 'error');
       return;
     }
+    
+    // CORREÇÃO 3: Fechar outros popups primeiro
+    fecharPopupFalta();
+    fecharPopupRemover();
+    fecharPopupNome();
     
     state.timeAtual = time;
     
@@ -567,6 +603,8 @@ const PlacarApp = (function() {
     renderGols();
     animarGol();
     fecharPopup();
+    
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
     showToast(`Gol de ${jogador}!`, 'success');
   }
 
@@ -602,8 +640,7 @@ const PlacarApp = (function() {
       }
     }
   }
-
-  function diminuirGol(time) {
+    function diminuirGol(time) {
     if (!state.partida) {
       showToast('Inicie o jogo primeiro!', 'error');
       return;
@@ -620,21 +657,20 @@ const PlacarApp = (function() {
       .slice(-3)
       .reverse();
     
+    // CORREÇÃO 9: Bug popup vazio - verificar se há gols
     if (ultimosGols.length === 0) {
-      // Remover último gol sem especificar
-      if (time === 'A') {
-        state.placar.A = Math.max(0, state.placar.A - 1);
-        document.getElementById('placarA').textContent = state.placar.A;
-      } else {
-        state.placar.B = Math.max(0, state.placar.B - 1);
-        document.getElementById('placarB').textContent = state.placar.B;
-      }
+      showToast('Não há gols específicos para remover', 'warning');
       return;
     }
     
     // Mostrar popup para escolher qual gol remover
     const popup = document.getElementById('popupGols');
     if (!popup) return;
+    
+    // CORREÇÃO 3: Fechar outros popups primeiro
+    fecharPopup();
+    fecharPopupFalta();
+    fecharPopupNome();
     
     popup.innerHTML = '';
     
@@ -663,6 +699,8 @@ const PlacarApp = (function() {
     renderGols();
     
     fecharPopupRemover();
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
+    
     if (navigator.vibrate) navigator.vibrate(15);
     showToast('Gol removido', 'warning');
   }
@@ -673,6 +711,11 @@ const PlacarApp = (function() {
       showToast('Inicie o jogo primeiro!', 'error');
       return;
     }
+    
+    // CORREÇÃO 3: Fechar outros popups primeiro
+    fecharPopup();
+    fecharPopupRemover();
+    fecharPopupNome();
     
     state.timeAtualFalta = time;
     
@@ -735,6 +778,8 @@ const PlacarApp = (function() {
     });
     
     fecharPopupFalta();
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
+    
     if (navigator.vibrate) navigator.vibrate(10);
     showToast(`Falta de ${jogador}`, 'warning');
   }
@@ -747,9 +792,11 @@ const PlacarApp = (function() {
     }
     
     clearTimeout(state.undoTimer);
+    
+    // CORREÇÃO 3: Desfazer em 5 segundos (era 10)
     state.undoTimer = setTimeout(() => {
       esconderUndo();
-    }, 10000);
+    }, 5000); // 5 segundos
   }
 
   function esconderUndo() {
@@ -788,6 +835,8 @@ const PlacarApp = (function() {
     }
     
     esconderUndo();
+    fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
+    
     if (navigator.vibrate) navigator.vibrate(15);
     showToast('Ação desfeita', 'success');
   }
@@ -1045,6 +1094,7 @@ const PlacarApp = (function() {
     if (await confirmAction("Apagar TODO o histórico? Esta ação não pode ser desfeita.")) {
       localStorage.removeItem("historico");
       historico();
+      fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
       showToast('Histórico apagado!', 'success');
     }
   }
@@ -1170,8 +1220,7 @@ const PlacarApp = (function() {
       statsPorJogador.innerHTML = html;
     }
   }
-
-  // ===== COMPARAÇÃO DE JOGADORES =====
+    // ===== COMPARAÇÃO DE JOGADORES =====
   function carregarComparacao() {
     const select1 = document.getElementById('jogador1');
     const select2 = document.getElementById('jogador2');
@@ -1332,7 +1381,35 @@ const PlacarApp = (function() {
   }
 
   // ===== BACKUP E RESTAURAÇÃO =====
-  // CORREÇÃO 5: Funcionalidade de backup
+  // CORREÇÃO 8: Backup automático periódico
+  function fazerBackupAutomatico() {
+    // Limpar timer anterior
+    if (state.backupTimer) {
+      clearTimeout(state.backupTimer);
+    }
+    
+    // Agendar novo backup em 30 segundos (evita muitos saves seguidos)
+    state.backupTimer = setTimeout(() => {
+      const backupKey = 'placar_backup_auto';
+      const currentData = {
+        jogadores: localStorage.getItem("jogadores"),
+        historico: localStorage.getItem("historico"),
+        nomes: {
+          timeA: localStorage.getItem("nomeTimeA"),
+          timeB: localStorage.getItem("nomeTimeB")
+        },
+        lastBackup: new Date().toISOString()
+      };
+      
+      try {
+        localStorage.setItem(backupKey, JSON.stringify(currentData));
+        console.log('Backup automático realizado:', currentData.lastBackup);
+      } catch (error) {
+        console.error('Erro no backup automático:', error);
+      }
+    }, 30000); // 30 segundos
+  }
+
   function exportarBackup() {
     const dados = {
       versao: "1.0",
@@ -1400,6 +1477,9 @@ const PlacarApp = (function() {
         renderJogadores();
         showToast("Backup importado com sucesso!", "success");
         
+        // Fazer novo backup dos dados restaurados
+        fazerBackupAutomatico();
+        
       } catch (error) {
         showToast("Erro ao importar backup", "error");
         console.error(error);
@@ -1411,19 +1491,24 @@ const PlacarApp = (function() {
 
   // ===== PWA =====
   function configurarPWA() {
+    // CORREÇÃO 4: Melhor configuração do PWA
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       state.deferredPrompt = e;
       
       const installBtn = document.getElementById('installBtn');
       if (installBtn) {
-        installBtn.style.display = 'block';
-        
+        // Mostrar após 5 segundos para não atrapalhar
         setTimeout(() => {
-          if (installBtn.style.display === 'block') {
-            installBtn.style.display = 'none';
-          }
-        }, 30000);
+          installBtn.style.display = 'block';
+          
+          // Esconder após 30 segundos
+          setTimeout(() => {
+            if (installBtn.style.display === 'block') {
+              installBtn.style.display = 'none';
+            }
+          }, 30000);
+        }, 5000);
       }
     });
     
@@ -1435,9 +1520,11 @@ const PlacarApp = (function() {
       showToast('App instalado com sucesso!', 'success');
     });
     
+    // Verificar se já está instalado
     if (window.matchMedia('(display-mode: standalone)').matches) {
       const installBtn = document.getElementById('installBtn');
       if (installBtn) installBtn.style.display = 'none';
+      console.log('Rodando como PWA instalado');
     }
   }
 
@@ -1451,6 +1538,7 @@ const PlacarApp = (function() {
           showToast('Instalando...', 'success');
         } else {
           console.log('Usuário recusou a instalação');
+          showToast('Instalação cancelada', 'info');
         }
         
         state.deferredPrompt = null;
@@ -1462,7 +1550,7 @@ const PlacarApp = (function() {
     }
   }
 
-  // ===== BACKUP DE DADOS =====
+  // ===== BACKUP DE DADOS INICIAL =====
   function verificarBackupDados() {
     const backupKey = 'placar_backup_v1';
     
@@ -1481,6 +1569,7 @@ const PlacarApp = (function() {
           
           if (parsed.jogadores && parsed.jogadores !== 'null' && parsed.jogadores !== '[]') {
             localStorage.setItem("jogadores", parsed.jogadores);
+            state.jogadores = JSON.parse(parsed.jogadores);
           }
           
           if (parsed.historico && parsed.historico !== 'null' && parsed.historico !== '[]') {
@@ -1489,10 +1578,12 @@ const PlacarApp = (function() {
           
           if (parsed.nomes && parsed.nomes.timeA) {
             localStorage.setItem("nomeTimeA", parsed.nomes.timeA);
+            state.nomeA = parsed.nomes.timeA;
           }
           
           if (parsed.nomes && parsed.nomes.timeB) {
             localStorage.setItem("nomeTimeB", parsed.nomes.timeB);
+            state.nomeB = parsed.nomes.timeB;
           }
           
           console.log('Dados restaurados do backup!');
@@ -1500,7 +1591,7 @@ const PlacarApp = (function() {
         }
       }
       
-      // Sempre fazer backup atual
+      // Sempre fazer backup inicial
       const currentData = {
         jogadores: localStorage.getItem("jogadores"),
         historico: localStorage.getItem("historico"),
@@ -1512,7 +1603,7 @@ const PlacarApp = (function() {
       };
       
       localStorage.setItem(backupKey, JSON.stringify(currentData));
-      console.log('Backup realizado:', currentData.lastBackup);
+      console.log('Backup inicial realizado:', currentData.lastBackup);
       
     } catch (error) {
       console.error('Erro no backup:', error);
@@ -1527,20 +1618,20 @@ const PlacarApp = (function() {
     carregarNomesTimes();
     renderJogadores();
     
-    // CORREÇÃO 2: Esconder botão desfazer no início
+    // CORREÇÃO 3: Esconder botão desfazer no início
     esconderUndo();
     
-    // Mostrar botão de backup
-    const backupBtn = document.getElementById('backupBtn');
-    if (backupBtn) {
-      backupBtn.style.display = 'block';
-    }
+    // CORREÇÃO 2: Botão de backup flutuante foi REMOVIDO
+    // (só mantemos a aba "Backup")
     
     // Verificar e restaurar backup
     verificarBackupDados();
     
     // Configurar PWA
     configurarPWA();
+    
+    // CORREÇÃO 8: Iniciar sistema de backup automático
+    fazerBackupAutomatico();
     
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
