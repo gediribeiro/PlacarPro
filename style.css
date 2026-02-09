@@ -430,7 +430,7 @@ section.active {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 52px;
+  width: 68px;
 }
 
 .btn-controle {
