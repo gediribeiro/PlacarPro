@@ -1,3 +1,4 @@
+const APP_VERSION = 'v2024.01.15';
 const PlacarApp = (function() {
   const state = {
     jogadores: JSON.parse(localStorage.getItem("jogadores")) || ['Jogador 1', 'Jogador 2', 'Jogador 3'],
@@ -95,6 +96,120 @@ const PlacarApp = (function() {
         resolve(false);
       }
     });
+  }
+
+  // ===== SERVICE WORKER E CONTROLE DE VERSÃO =====
+  function initServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      // Registra o Service Worker
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => {
+          console.log(`[PlacarApp] Versão ${APP_VERSION} registrada`);
+          
+          // Monitora atualizações
+          registration.addEventListener('updatefound', () => {
+            console.log('[PlacarApp] Nova versão do Service Worker encontrada!');
+            
+            const newWorker = registration.installing;
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Nova versão disponível!
+                console.log('[PlacarApp] Nova versão pronta!');
+                showUpdateNotification();
+              }
+            });
+          });
+          
+          // Verifica se já tem uma nova versão esperando
+          if (registration.waiting) {
+            showUpdateNotification();
+          }
+          
+          // Verifica atualizações periodicamente (a cada 30 minutos)
+          setInterval(() => {
+            registration.update();
+          }, 30 * 60 * 1000);
+        })
+        .catch(error => {
+          console.error('[PlacarApp] Erro no Service Worker:', error);
+        });
+      
+      // Escuta mensagens do Service Worker
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.type === 'NEW_VERSION') {
+          console.log('[PlacarApp] Nova versão solicitada pelo Service Worker');
+          showUpdateNotification();
+        }
+      });
+      
+      // Recarrega quando o Service Worker assume controle
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    }
+  }
+  
+  function showUpdateNotification() {
+    // Mostra apenas uma vez por dia
+    const today = new Date().toDateString();
+    const lastShown = localStorage.getItem('last_update_notification');
+    
+    if (lastShown !== today) {
+      // Espera um pouco para não atrapalhar a inicialização
+      setTimeout(() => {
+        const toast = showToast(
+          '🔄 Nova versão disponível! Clique para atualizar.',
+          'warning',
+          5000
+        );
+        
+        // Fecha outros toasts se houver
+        document.querySelectorAll('.toast').forEach(t => {
+          if (t !== toast) t.remove();
+        });
+        
+        // Ao clicar no toast, atualiza
+        toast.onclick = () => {
+          localStorage.setItem('last_update_notification', today);
+          
+          // Força o Service Worker a atualizar
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage('skipWaiting');
+          }
+          
+          // Recarrega após um breve delay
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+        };
+        
+        // Mesmo se não clicar, marca como mostrado
+        setTimeout(() => {
+          localStorage.setItem('last_update_notification', today);
+        }, 5000);
+      }, 2000);
+    }
+  }
+  
+  function checkForUpdates() {
+    // Verifica se há mudanças nos arquivos principais
+    const files = ['index.html', 'style.css', 'app.js'];
+    const currentChecksum = localStorage.getItem('app_checksum');
+    
+    // Cria um checksum simples baseado na versão
+    const newChecksum = btoa(APP_VERSION + files.join('')).substr(0, 32);
+    
+    if (currentChecksum && currentChecksum !== newChecksum) {
+      console.log('[PlacarApp] Detectada mudança nos arquivos');
+      showUpdateNotification();
+    }
+    
+    localStorage.setItem('app_checksum', newChecksum);
   }
 
   // ===== NAVEGAÇÃO =====
@@ -1643,9 +1758,24 @@ const PlacarApp = (function() {
     console.log('PlacarApp inicializado com sucesso!');
   }
 
-  // ===== INTERFACE PÚBLICA =====
+    // ===== INTERFACE PÚBLICA =====
   return {
-    init: init,
+    init: function() {
+      // Inicializações existentes
+      if (typeof init === 'function') {
+        init(); // Chama a função init original se existir
+      }
+      
+      // Inicializações adicionais
+      renderJogadores();
+      
+      // Service Worker e atualizações
+      initServiceWorker();
+      checkForUpdates();
+      
+      // Outras inicializações que você já tenha
+      // (carregarPartidaSalva, setupPWA, etc.)
+    },
     trocarTab: trocarTab,
     addJogador: addJogador,
     removerJogador: removerJogador,
