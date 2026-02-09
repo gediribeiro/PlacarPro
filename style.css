@@ -358,8 +358,8 @@ section.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 30px 0;
+  gap: 8px;
+  padding: 16px 0;
   position: relative;
   z-index: 1;
 }
@@ -373,9 +373,9 @@ section.active {
 }
 
 .placar-numero {
-  font-size: 64px;
+  font-size: 56px;
   font-weight: 900;
-  min-width: 90px;
+  min-width: 80px;
   text-align: center;
   color: var(--text-primary);
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -383,13 +383,13 @@ section.active {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95), 
     rgba(255, 255, 255, 0.85));
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 18px;
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.15),
     inset 0 2px 8px rgba(255, 255, 255, 0.8),
     inset 0 -2px 8px rgba(0, 0, 0, 0.05);
-  border: 3px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   position: relative;
   overflow: hidden;
 }
@@ -417,35 +417,35 @@ section.active {
 }
 
 .placar-vs {
-  font-size: 33px;
+  font-size: 28px;
   color: var(--text-secondary);
   font-weight: 400;
   opacity: 0.7;
   flex-shrink: 0;
-  padding: 0 8px;
+  padding: 0 6px;
 }
 
 /* BOTÕES DE CONTROLE INTEGRADOS */
 .botoes-controle {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 20px;
+  gap: 8px;
+  width: 52px;
 }
 
 .btn-controle {
-  width: 58px;
-  height: 58px;
+  width: 52px;
+  height: 52px;
   border: none;
-  border-radius: 18px;
+  border-radius: 16px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 68px;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -477,8 +477,8 @@ section.active {
 .btn-gol {
   background: var(--gradient-green);
   color: white;
-  height: 68px;
-  font-size: 30px;
+  height: 60px;
+  font-size: 28px;
 }
 
 .btn-remover {
