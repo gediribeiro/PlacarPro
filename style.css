@@ -163,6 +163,23 @@ body {
     white-space: nowrap;
     position: relative;
     transition: all 0.3s ease;
+    
+    /* 👇 NOVO: Feedback visual ao tocar/clicar */
+    -webkit-tap-highlight-color: transparent; /* Remove highlight azul no mobile */
+    user-select: none; /* Previne seleção de texto ao clicar rápido */
+}
+
+/* 👇 NOVO: Efeito hover (para desktop) */
+.tab-button:hover {
+    color: var(--primary-green);
+    opacity: 0.8;
+}
+
+/* 👇 NOVO: Efeito ao pressionar (todos dispositivos) */
+.tab-button:active {
+    transform: scale(0.95); /* Leve redução */
+    opacity: 0.7;
+    transition: transform 0.1s ease, opacity 0.1s ease; /* Transição mais rápida para feedback tátil */
 }
 
 /* CORREÇÃO 1: Linha verde apenas na aba ativa */
@@ -170,6 +187,10 @@ body {
     color: var(--primary-green);
     font-weight: 700;
     position: relative;
+    
+    /* 👇 NOVO: Remove efeito :active quando já está ativo */
+    transform: scale(1) !important;
+    opacity: 1 !important;
 }
 
 .tab-button.active::after {
@@ -187,6 +208,22 @@ body {
 /* Remover completamente a linha das outras */
 .tab-button:not(.active)::after {
     display: none !important;
+}
+
+/* 👇 NOVO: Para dispositivos com hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+    .tab-button:hover:not(.active)::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30%; /* Mais fina que a ativa */
+        height: 2px;
+        background: var(--primary-green);
+        opacity: 0.5;
+        border-radius: 3px 3px 0 0;
+    }
 }
 
 /* ===== 5. CONTEÚDO PRINCIPAL ===== */
