@@ -1,5 +1,5 @@
 {
-  "version": "v1.0.2", // 👈 Se quiser padronizar
+  "version": "v1.0.3", // 👈 Se quiser padronizar
   "name": "Placar Fut 31",
   "short_name": "Placar",
   "description": "Sistema de placar profissional para futebol - Controle de gols, faltas, ranking e estatísticas",
