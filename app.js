@@ -201,57 +201,8 @@ function trocarTab(tabId, button) {
     if (navigator.vibrate) navigator.vibrate(5);
     console.log(`✅ Aba ativa: ${tabId}`);
 }
-  // ===== JOGADORES =====
-  function addJogador() {
-    const input = document.getElementById('novoJogador');
-    const nome = input.value.trim();
-    
-    if (!nome) {
-      showToast('Digite um nome para o jogador', 'error');
-      return;
-    }
-    
-    if (nome.length > 20) {
-      showToast('Nome muito longo (máx: 20 caracteres)', 'error');
-      return;
-    }
-    
-    if (!/^[a-zA-ZÀ-ÿ0-9\s]+$/.test(nome)) {
-      showToast('Use apenas letras, números e espaços', 'error');
-      return;
-    }
-    
-    if (state.jogadores.includes(nome)) {
-      showToast('Jogador já existe!', 'warning');
-      return;
-    }
-    
-    state.jogadores.push(nome);
-    localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-    
-    input.value = '';
-    input.blur();
-    
-    renderJogadores();
-    fazerBackupAutomatico();
-    
-    if (navigator.vibrate) navigator.vibrate(10);
-    showToast(`${nome} adicionado!`, 'success');
-  }
 
-  async function removerJogador(index) {
-    const nome = state.jogadores[index];
-    
-    if (await confirmAction(`Remover ${nome}?`)) {
-      state.jogadores.splice(index, 1);
-      localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-      renderJogadores();
-      fazerBackupAutomatico();
-      showToast(`${nome} removido`, 'success');
-    }
-  }
-
- // ===== JOGADORES =====
+// ===== JOGADORES =====
 function addJogador() {
     const input = document.getElementById('novoJogador');
     const nome = input.value.trim();
@@ -301,7 +252,7 @@ async function removerJogador(index) {
     }
 }
 
-// ===== EDIÇÃO DE JOGADORES ===== (FUNÇÃO NOVA)
+// ===== EDIÇÃO DE JOGADORES ===== (FUNÇÃO NOVA CORRIGIDA)
 async function editarNomeJogador(index) {
     const nomeAtual = state.jogadores[index];
     
@@ -333,46 +284,74 @@ async function editarNomeJogador(index) {
     const nomeAntigo = state.jogadores[index];
     state.jogadores[index] = nomeFormatado;
     
-    // 1. Atualiza histórico de GOLS
+    // 🔄 ATUALIZAÇÃO 1: Sistema "historicaGols" (timeline do jogo atual)
     state.historicaGols.forEach(evento => {
         if (evento.jogador === nomeAntigo) {
             evento.jogador = nomeFormatado;
         }
     });
     
-    // 2. Atualiza histórico de FALTAS
+    // 🔄 ATUALIZAÇÃO 2: Sistema "historicaFaltas" (timeline do jogo atual)
     state.historicaFaltas.forEach(evento => {
         if (evento.jogador === nomeAntigo) {
             evento.jogador = nomeFormatado;
         }
     });
     
-    // 3. Salva no localStorage
+    // 🔄 ATUALIZAÇÃO 3: Sistema "historico" (ranking, histórico, estatísticas) - CRÍTICO!
+    const historicoCompleto = JSON.parse(localStorage.getItem("historico")) || [];
+    historicoCompleto.forEach(partida => {
+        // Atualiza gols nas partidas salvas
+        if (partida.gols) {
+            Object.keys(partida.gols).forEach(jogador => {
+                if (jogador === nomeAntigo) {
+                    const dadosGol = partida.gols[nomeAntigo];
+                    delete partida.gols[nomeAntigo];
+                    partida.gols[nomeFormatado] = dadosGol;
+                }
+            });
+        }
+        
+        // Atualiza faltas nas partidas salvas
+        if (partida.faltas && partida.faltas.jogadores) {
+            Object.keys(partida.faltas.jogadores).forEach(jogador => {
+                if (jogador === nomeAntigo) {
+                    const qtdFaltas = partida.faltas.jogadores[nomeAntigo];
+                    delete partida.faltas.jogadores[nomeAntigo];
+                    partida.faltas.jogadores[nomeFormatado] = qtdFaltas;
+                }
+            });
+        }
+        
+        // Atualiza craque da partida
+        if (partida.craque === nomeAntigo) {
+            partida.craque = nomeFormatado;
+        }
+    });
+    
+    // 💾 SALVA TODOS OS SISTEMAS
     localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
     localStorage.setItem("historicaGols", JSON.stringify(state.historicaGols));
     localStorage.setItem("historicaFaltas", JSON.stringify(state.historicaFaltas));
+    localStorage.setItem("historico", JSON.stringify(historicoCompleto)); // 🔄 NOVO!
     
-    // 4. FORÇAR ATUALIZAÇÃO COMPLETA DO APP
+    // 🎨 ATUALIZA A INTERFACE
     renderJogadores();
-    if (typeof ranking === 'function') ranking();
-    if (typeof historico === 'function') historico();
-    if (typeof atualizarSelectsJogadores === 'function') atualizarSelectsJogadores();
     
-    // 5. Se tiver partida ativa, forçar recálculo
-    if (state.partidaAtiva) {
-        // Forçar re-render se necessário
-        const placarA = document.getElementById('scoreA');
-        const placarB = document.getElementById('scoreB');
-        if (placarA) placarA.textContent = state.placar[0];
-        if (placarB) placarB.textContent = state.placar[1];
-    }
+    // OBSERVAÇÃO IMPORTANTE:
+    // Não chamamos ranking() ou historico() aqui porque
+    // 1) Essas abas podem estar ocultas
+    // 2) A função trocarTab() já chama elas quando a aba for aberta
+    // 3) Os dados no localStorage já estão atualizados
     
-    // 6. Backup automático
+    // 📊 Backup automático
     fazerBackupAutomatico();
     
-    // Feedback
+    // 🎉 Feedback
     if (navigator.vibrate) navigator.vibrate(10);
     showToast(`Editado: ${nomeAntigo} → ${nomeFormatado}`, 'success');
+    
+    console.log(`Jogador editado em TODOS os sistemas: "${nomeAntigo}" → "${nomeFormatado}"`);
 }
 
 function renderJogadores() {
@@ -418,7 +397,9 @@ function renderJogadores() {
         li.appendChild(divBotoes);
         lista.appendChild(li);
     });
-}
+}  
+  
+  
   // ===== NOMES DOS TIMES =====
   function editarNomeTime(time) {
     fecharPopup();
