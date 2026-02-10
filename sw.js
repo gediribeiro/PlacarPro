@@ -2,10 +2,10 @@
 // NÃO precisa mudar a versão manualmente para atualizações de código!
 
 // Mude as linhas 2-3 do seu sw.js para:
-const APP_VERSION = 'v1.0.2'; // 👈 MUDAR SEMPRE
+const APP_VERSION = 'v1.0.3'; // 👈 MUDAR SEMPRE
 const CACHE_NAME = `placar-fut-cache-${APP_VERSION}`;
 const DYNAMIC_CACHE_NAME = `placar-fut-dynamic-${APP_VERSION}`;
-const SW_VERSION = 'v1.0.2'; // MUDAR SEMPRE QUE ATUALIZAR O SW
+const SW_VERSION = 'v1.0.3'; // MUDAR SEMPRE QUE ATUALIZAR O SW
 
 // Arquivos ESSENCIAIS para funcionamento offline (cacheados na instalação)
 const CORE_ASSETS = [
