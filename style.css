@@ -1750,3 +1750,71 @@ body.clean-bg {
             );
     }
 }
+
+/* ===== BOTÕES DE JOGADORES ===== */
+.players-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.players-list li:hover {
+  transform: translateX(4px);
+  background: rgba(15, 184, 88, 0.05);
+}
+
+.player-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-grow: 1;
+}
+
+.player-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.player-actions button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* Botão Editar (✏️) */
+.player-actions button:first-child {
+  background: rgba(15, 184, 88, 0.1);
+  color: var(--primary-green);
+}
+
+.player-actions button:first-child:active {
+  background: var(--primary-green);
+  color: white;
+  transform: scale(0.9);
+}
+
+/* Botão Remover (❌) */
+.player-actions button:last-child {
+  background: rgba(255, 71, 87, 0.1);
+  color: var(--primary-red);
+}
+
+.player-actions button:last-child:active {
+  background: var(--primary-red);
+  color: white;
+  transform: scale(0.9);
+}
