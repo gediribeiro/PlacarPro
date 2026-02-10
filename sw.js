@@ -1,7 +1,7 @@
 // ===== SERVICE WORKER COM AUTO-UPDATE =====
 // Versão dinâmica baseada na data (sempre diferente)
 
-const APP_VERSION = 'v2026.02.09-3'; // MUDE SEMPRE QUE ATUALIZAR O APP
+const APP_VERSION = 'v2026.02.09-4'; // MUDE SEMPRE QUE ATUALIZAR O APP
 const CACHE_NAME = `placar-fut-cache-${APP_VERSION}`;
 
 // URLs para cache (tudo que precisa funcionar offline)
