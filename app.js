@@ -1718,15 +1718,27 @@ function exibirVersao() {
 
 // ===== SPLASH SCREEN & INICIALIZAÇÃO =====
 function iniciarAppComSplash() {
+    // 👇 OPÇÃO: Controle para mostrar só 1x por dia (descomente se quiser)
+    // const hoje = new Date().toDateString();
+    // const ultimaVez = localStorage.getItem('ultimaSplash');
+    // if (ultimaVez === hoje) {
+    //     // Já viu hoje, inicia direto
+    //     PlacarApp.init();
+    //     exibirVersao();
+    //     return;
+    // }
+    // localStorage.setItem('ultimaSplash', hoje);
+    // 👆 FIM DA OPÇÃO
+    
     // 1. Função para esconder a splash screen
     function esconderSplash() {
         const splash = document.getElementById('splashScreen');
         if (splash) {
             splash.classList.add('hidden');
-            // Remove completamente após animação
+            // Remove completamente após animação MAIS LENTA
             setTimeout(() => {
                 splash.style.display = 'none';
-            }, 500);
+            }, 800); // 👈 Aumentado de 500 para 800ms
         }
     }
     
@@ -1736,9 +1748,9 @@ function iniciarAppComSplash() {
         exibirVersao();
     }
     
-    // 3. Controla tempo mínimo da splash (1.5 segundos)
+    // 3. Controla tempo mínimo da splash MAIS LONGO
     const tempoMinimoSplash = new Promise(resolve => {
-        setTimeout(resolve, 1500);
+        setTimeout(resolve, 2000); // 👈 Aumentado de 1500 para 2000ms (2 segundos)
     });
     
     // 4. Verifica se o DOM já está pronto
