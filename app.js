@@ -1,4 +1,4 @@
-const APP_VERSION = 'v2026.02.09';
+const APP_VERSION = 'v2026.02.09-3';
 const PlacarApp = (function() {
   const state = {
     jogadores: JSON.parse(localStorage.getItem("jogadores")) || ['Jogador 1', 'Jogador 2', 'Jogador 3'],
@@ -1255,10 +1255,32 @@ function resetarTimeline() {
     
     lista.innerHTML = '';
     
-    [...historico].reverse().forEach(partida => {
+    // Converter para array e reverter para mostrar as mais recentes primeiro
+    const historicoReverso = [...historico].reverse();
+    
+    historicoReverso.forEach((partida, indexReverso) => {
+      // Calcular o índice original no array (sem reverse)
+      const indexOriginal = historico.length - 1 - indexReverso;
+      
       const times = partida.nomeTimes || { A: "Time A", B: "Time B" };
       const craque = partida.craque || "—";
       const placar = partida.placar || [0, 0];
+      
+      // Calcular artilheiro para mostrar no card
+      let artilheiroTexto = "—";
+      if (partida.gols) {
+        let maxGols = 0;
+        let melhorJogador = "—";
+        Object.entries(partida.gols).forEach(([jogador, dados]) => {
+          if (dados.q > maxGols) {
+            maxGols = dados.q;
+            melhorJogador = jogador;
+          }
+        });
+        if (maxGols > 0) {
+          artilheiroTexto = `${melhorJogador} (${maxGols})`;
+        }
+      }
       
       const item = document.createElement('div');
       item.className = 'historico-item';
@@ -1296,7 +1318,11 @@ function resetarTimeline() {
           <span>${escapeHTML(times.B)}</span>
         </div>
         <div class="historico-info">
-          <span class="historico-craque">🏆 <strong>${escapeHTML(craque)}</strong></span>
+          <span class="historico-craque">🏆 <strong>${escapeHTML(artilheiroTexto)}</strong></span>
+          <!-- BOTÃO DE COMPARTILHAR ADICIONADO -->
+          <button class="historico-share-btn" onclick="compartilharPartidaHistorico(${indexOriginal})" title="Compartilhar">
+              📤
+          </button>
         </div>
         <div class="historico-details">
           <div class="historico-gols">
@@ -1321,14 +1347,148 @@ function resetarTimeline() {
     });
   }
 
-  async function limparHistorico() {
-    if (await confirmAction("Apagar TODO o histórico? Esta ação não pode ser desfeita.")) {
-      localStorage.removeItem("historico");
-      historico();
-      fazerBackupAutomatico(); // CORREÇÃO 8: Backup automático
-      showToast('Histórico apagado!', 'success');
+ // ===== COMPARTILHAR PARTIDA =====
+function mostrarCardCompartilhamento() {
+    if (!state.partida) {
+        showToast('Nenhum jogo para compartilhar!', 'error');
+        return;
     }
-  }
+    
+    // Calcular artilheiro
+    const golsPorJogador = {};
+    state.historicaGols.forEach(gol => {
+        golsPorJogador[gol.jogador] = (golsPorJogador[gol.jogador] || 0) + 1;
+    });
+    
+    let artilheiroNome = '—';
+    let artilheiroNumero = '0';
+    let maxGols = 0;
+    Object.entries(golsPorJogador).forEach(([jogador, gols]) => {
+        if (gols > maxGols) {
+            maxGols = gols;
+            artilheiroNome = jogador.toUpperCase();
+            artilheiroNumero = gols.toString();
+        }
+    });
+    
+    // Calcular rei das faltas
+    const faltasPorJogador = {};
+    state.historicaFaltas.forEach(falta => {
+        faltasPorJogador[falta.jogador] = (faltasPorJogador[falta.jogador] || 0) + 1;
+    });
+    
+    let faltasNome = '—';
+    let faltasNumero = '0';
+    let maxFaltas = 0;
+    Object.entries(faltasPorJogador).forEach(([jogador, faltas]) => {
+        if (faltas > maxFaltas) {
+            maxFaltas = faltas;
+            faltasNome = jogador.toUpperCase();
+            faltasNumero = faltas.toString();
+        }
+    });
+    
+    // Atualizar card
+    document.getElementById('shareTimeA').textContent = state.nomeA;
+    document.getElementById('shareTimeB').textContent = state.nomeB;
+    document.getElementById('sharePlacar').textContent = `${state.placar.A} × ${state.placar.B}`;
+    
+    // Atualizar destaques
+    document.getElementById('shareArtilheiroNome').textContent = artilheiroNome;
+    document.getElementById('shareArtilheiroNumero').textContent = artilheiroNumero;
+    document.getElementById('shareFaltasNome').textContent = faltasNome;
+    document.getElementById('shareFaltasNumero').textContent = faltasNumero;
+    
+    const data = new Date().toLocaleDateString('pt-BR');
+    const minutos = Math.floor(state.segundos / 60);
+    const segundos = state.segundos % 60;
+    const duracao = `${minutos}:${segundos.toString().padStart(2, '0')}`;
+    
+    document.getElementById('shareData').textContent = data;
+    document.getElementById('shareDuracao').textContent = duracao;
+    
+    // Mostrar modal
+    document.getElementById('shareModal').classList.add('show');
+    
+    showToast('Card gerado! Tire um print para compartilhar.', 'success');
+}
+
+function compartilharPartidaHistorico(index) {
+    const historico = JSON.parse(localStorage.getItem("historico")) || [];
+    
+    if (index < 0 || index >= historico.length) {
+        showToast('Partida não encontrada!', 'error');
+        return;
+    }
+    
+    const partida = historico[index];
+    mostrarCardPartida(partida);
+}
+
+function mostrarCardPartida(partida) {
+    // Calcular artilheiro
+    let artilheiroNome = '—';
+    let artilheiroNumero = '0';
+    let maxGols = 0;
+    
+    if (partida.gols) {
+        Object.entries(partida.gols).forEach(([jogador, dados]) => {
+            if (dados.q > maxGols) {
+                maxGols = dados.q;
+                artilheiroNome = jogador.toUpperCase();
+                artilheiroNumero = dados.q.toString();
+            }
+        });
+    }
+    
+    // Calcular rei das faltas
+    let faltasNome = '—';
+    let faltasNumero = '0';
+    let maxFaltas = 0;
+    
+    if (partida.faltas && partida.faltas.jogadores) {
+        Object.entries(partida.faltas.jogadores).forEach(([jogador, qtd]) => {
+            if (qtd > maxFaltas) {
+                maxFaltas = qtd;
+                faltasNome = jogador.toUpperCase();
+                faltasNumero = qtd.toString();
+            }
+        });
+    }
+    
+    // Atualizar card
+    const times = partida.nomeTimes || { A: "Time A", B: "Time B" };
+    const placar = partida.placar || [0, 0];
+    
+    document.getElementById('shareTimeA').textContent = times.A;
+    document.getElementById('shareTimeB').textContent = times.B;
+    document.getElementById('sharePlacar').textContent = `${placar[0]} × ${placar[1]}`;
+    
+    // Atualizar destaques
+    document.getElementById('shareArtilheiroNome').textContent = artilheiroNome;
+    document.getElementById('shareArtilheiroNumero').textContent = artilheiroNumero;
+    document.getElementById('shareFaltasNome').textContent = faltasNome;
+    document.getElementById('shareFaltasNumero').textContent = faltasNumero;
+    
+    // Format data e duração
+    const data = partida.data ? partida.data.split(',')[0] : new Date().toLocaleDateString('pt-BR');
+    const duracao = partida.duracao ? 
+        `${Math.floor(partida.duracao / 60)}:${String(partida.duracao % 60).padStart(2, '0')}` : 
+        '—';
+    
+    document.getElementById('shareData').textContent = data;
+    document.getElementById('shareDuracao').textContent = duracao;
+    
+    // Mostrar modal
+    document.getElementById('shareModal').classList.add('show');
+    
+    showToast('Card gerado! Tire um print para compartilhar.', 'success');
+}
+
+function fecharShareModal(event) {
+    if (event) event.stopPropagation();
+    document.getElementById('shareModal').classList.remove('show');
+}
 
   // ===== ESTATÍSTICAS =====
   function estatisticas() {
