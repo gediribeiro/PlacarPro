@@ -638,11 +638,11 @@ body {
     border-radius: var(--border-radius-md);
     background: var(--bg-card);
     color: var(--text-primary);
-    font-size: var(--font-size-md);
+    font-size: 16px !important; /* 👈 CORRIGIDO - Previne zoom iOS */
     font-family: var(--font-family);
     transition: all 0.3s ease;
     margin-bottom: var(--space-md);
-    font-size: 16px !important; /* Previne zoom automático no iOS */
+    min-height: 44px; /* 👈 OPÇÃO: Adicionar para touch target */
 }
 
 .player-input:focus,
