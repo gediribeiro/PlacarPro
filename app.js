@@ -1718,6 +1718,21 @@ function exibirVersao() {
 
 // ===== SPLASH SCREEN & INICIALIZAÇÃO =====
 function iniciarAppComSplash() {
+    // 👇 NOVO: Atualiza versão na splash screen
+    function atualizarVersaoNaSplash() {
+        const elementoVersao = document.querySelector('.splash-content .version');
+        if (elementoVersao) {
+            elementoVersao.textContent = APP_VERSION; // Pega v1.0.1 automaticamente
+        }
+    }
+    
+    // Executa a atualização imediatamente
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', atualizarVersaoNaSplash);
+    } else {
+        atualizarVersaoNaSplash();
+    }
+    
     // 👇 OPÇÃO: Controle para mostrar só 1x por dia (descomente se quiser)
     // const hoje = new Date().toDateString();
     // const ultimaVez = localStorage.getItem('ultimaSplash');
