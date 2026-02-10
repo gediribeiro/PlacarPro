@@ -1,4 +1,4 @@
-const APP_VERSION = 'v2026.02.10.1';
+const APP_VERSION = 'v2026.02.10.2';
 const PlacarApp = (function() {
   const state = {
     jogadores: JSON.parse(localStorage.getItem("jogadores")) || ['Jogador 1', 'Jogador 2', 'Jogador 3'],
@@ -172,57 +172,34 @@ const PlacarApp = (function() {
 
   // ===== NAVEGAÇÃO =====
 function trocarTab(tabId, button) {
-    // Fecha todos os popups abertos
-    fecharPopup();
-    fecharPopupFalta();
-    fecharPopupRemover();
-    fecharPopupNome();
+    // Fecha popups
+    fecharPopup(); fecharPopupFalta(); fecharPopupRemover(); fecharPopupNome();
     
-    // 1. Remove a classe 'active' de TODAS as seções (abas de conteúdo)
-    document.querySelectorAll("section").forEach(section => {
-        section.classList.remove("active");
-    });
+    // 1. Remove 'active' de TODAS as seções
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
     
-    // 2. CORREÇÃO AQUI: Seleciona os botões CORRETAMENTE
-    // Tente esta linha primeiro:
-    document.querySelectorAll(".abamento button").forEach(btn => {
+    // 2. CORREÇÃO CRÍTICA: Remove 'active' de TODOS os botões
+    document.querySelectorAll(".abamento button, nav button, .tabs button").forEach(btn => {
         btn.classList.remove("active");
     });
     
-    // Se ainda não funcionar, tente esta (mais abrangente):
-    // document.querySelectorAll("button.tab-button, .tabs button, .abamento button, nav button").forEach(btn => {
-    //     btn.classList.remove("active");
-    // });
-    
-    // 3. Adiciona 'active' na nova aba de conteúdo
-    document.getElementById(tabId).classList.add("active");
-    
-    // 4. Adiciona 'active' no botão clicado
+    // 3. Adiciona 'active' nos elementos corretos
+    const tabElement = document.getElementById(tabId);
+    if (tabElement) tabElement.classList.add("active");
     button.classList.add("active");
     
-    // 5. Executa funções específicas de cada aba
-    switch(tabId) {
-        case 'ranking':
-            ranking();
-            break;
-        case 'historico':
-            historico();
-            break;
-        case 'stats':
-            estatisticas();
-            break;
-        case 'comparar':
-            carregarComparacao();
-            break;
-        case 'backup':
-            // Nada específico para backup
-            break;
-    }
+    // 4. Funções específicas
+    const actions = {
+        'ranking': ranking,
+        'historico': historico,
+        'stats': estatisticas,
+        'comparar': carregarComparacao
+    };
+    if (actions[tabId]) actions[tabId]();
     
-    // 6. Feedback tátil (se suportado)
+    // Feedback
     if (navigator.vibrate) navigator.vibrate(5);
-    
-    console.log(`Aba trocada para: ${tabId}`);
+    console.log(`✅ Aba ativa: ${tabId}`);
 }
 
   // ===== JOGADORES =====
@@ -1734,7 +1711,7 @@ function trocarTab(tabId, button) {
 function exibirVersao() {
     const versaoEl = document.getElementById('versaoApp');
     if (versaoEl) {
-        versaoEl.textContent = APP_VERSION; // 'v2026.02.10.1'
+        versaoEl.textContent = APP_VERSION; // 'v2026.02.10.2'
         console.log('Versão exibida:', APP_VERSION);
     }
 }
