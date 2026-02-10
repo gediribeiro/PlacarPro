@@ -171,42 +171,59 @@ const PlacarApp = (function() {
   }
 
   // ===== NAVEGAÇÃO =====
-  function trocarTab(tabId, button) {
+function trocarTab(tabId, button) {
+    // Fecha todos os popups abertos
     fecharPopup();
     fecharPopupFalta();
     fecharPopupRemover();
     fecharPopupNome();
     
+    // 1. Remove a classe 'active' de TODAS as seções (abas de conteúdo)
     document.querySelectorAll("section").forEach(section => {
-      section.classList.remove("active");
+        section.classList.remove("active");
     });
     
-    document.querySelectorAll(".tabs button").forEach(btn => {
-      btn.classList.remove("active");
+    // 2. CORREÇÃO AQUI: Seleciona os botões CORRETAMENTE
+    // Tente esta linha primeiro:
+    document.querySelectorAll(".abamento button").forEach(btn => {
+        btn.classList.remove("active");
     });
     
+    // Se ainda não funcionar, tente esta (mais abrangente):
+    // document.querySelectorAll("button.tab-button, .tabs button, .abamento button, nav button").forEach(btn => {
+    //     btn.classList.remove("active");
+    // });
+    
+    // 3. Adiciona 'active' na nova aba de conteúdo
     document.getElementById(tabId).classList.add("active");
+    
+    // 4. Adiciona 'active' no botão clicado
     button.classList.add("active");
     
+    // 5. Executa funções específicas de cada aba
     switch(tabId) {
-      case 'ranking':
-        ranking();
-        break;
-      case 'historico':
-        historico();
-        break;
-      case 'stats':
-        estatisticas();
-        break;
-      case 'comparar':
-        carregarComparacao();
-        break;
-      case 'backup':
-        break;
+        case 'ranking':
+            ranking();
+            break;
+        case 'historico':
+            historico();
+            break;
+        case 'stats':
+            estatisticas();
+            break;
+        case 'comparar':
+            carregarComparacao();
+            break;
+        case 'backup':
+            // Nada específico para backup
+            break;
     }
     
+    // 6. Feedback tátil (se suportado)
     if (navigator.vibrate) navigator.vibrate(5);
-  }
+    
+    console.log(`Aba trocada para: ${tabId}`);
+}
 
   // ===== JOGADORES =====
   function addJogador() {
