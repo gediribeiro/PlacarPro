@@ -781,30 +781,25 @@ function renderJogadores() {
       const ranking = obterRankingGeral();
       
       } else {
-  // Obtém ranking de gols
-  const rankingGols = obterRankingGeral();
-  
-  // Ordena jogadores: quem tem mais gols primeiro, depois ordem alfabética
-  const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
-    const golsA = rankingGols[a] || 0;
-    const golsB = rankingGols[b] || 0;
+  } else {
+    // Obtém ranking de gols
+    const rankingGols = obterRankingGeral();
     
-    if (golsA !== golsB) {
-      return golsB - golsA; // Maior gols primeiro
-    }
-    return a.localeCompare(b); // Alfabético se empate
-  });
-  
-  jogadoresOrdenados.forEach(jogador => {
-    const button = document.createElement('button');
+    // Ordena jogadores: mais gols primeiro, depois alfabético
+    const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
+        const golsA = rankingGols[a] || 0;
+        const golsB = rankingGols[b] || 0;
+        if (golsA !== golsB) return golsB - golsA;
+        return a.localeCompare(b);
+    });
     
-    // Mostra estatística ao lado (opcional, mas recomendado)
-    const gols = rankingGols[jogador] || 0;
-    button.textContent = gols > 0 ? `${jogador} (${gols})` : jogador;
-    
-    button.onclick = () => registrarGol(jogador);
-    popup.appendChild(button);
-  });
+    jogadoresOrdenados.forEach(jogador => {
+        const button = document.createElement('button');
+        const gols = rankingGols[jogador] || 0;
+        button.textContent = gols > 0 ? `${jogador} (${gols})` : jogador;
+        button.onclick = () => registrarGol(jogador);
+        popup.appendChild(button);
+    });
 }
     
     document.getElementById('popupJogador').classList.add('show');
