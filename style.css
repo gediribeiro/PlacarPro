@@ -1126,7 +1126,6 @@ button:active {
 /* 👇 MELHORIA: Espaçamento consistente para containers principais */
 .container,
 .tab-content,
-.placar-card,
 .app-main .content-section {
     padding: 20px;
 }
