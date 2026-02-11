@@ -2033,3 +2033,22 @@ if (document.readyState === 'loading') {
         }
     }
 })();
+
+// ===== FORÇAR PWA iOS APÓS CARREGAMENTO =====
+setTimeout(() => {
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  
+  if (isIOS && isSafari) {
+    console.log('📱 iOS Safari detectado - Verificando PWA...');
+    
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const hasSW = !!navigator.serviceWorker?.controller;
+    
+    if (!isStandalone) {
+      console.log('⚠️ iOS não está em tela cheia');
+      console.log('💡 Use: Compartilhar → "Adicionar à Tela de Início"');
+      console.log('🔧 SW ativo:', hasSW ? '✅ Sim' : '❌ Não');
+    }
+  }
+}, 3000);
