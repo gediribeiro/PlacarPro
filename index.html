@@ -74,7 +74,6 @@
     <main class="app-main">
         <!-- SEÇÃO JOGO -->
         <section id="jogo" class="content-section active">
-            <!-- PLACAR (agora com classe utilitária p-xl) -->
             <div class="scoreboard-container p-xl">
                 <!-- CABEÇALHO DOS TIMES -->
                 <div class="teams-header">
@@ -197,7 +196,6 @@
                 </button>
             </div>
             <div id="listaHistorico" class="history-container"></div>
-            <!-- Cada .historico-item receberá p-lg via JS ou pode ser adicionado manualmente nos itens gerados dinamicamente -->
         </section>
 
         <!-- SEÇÃO STATS -->
@@ -301,6 +299,21 @@
             <button class="secondary-btn close-modal-btn" onclick="PlacarApp.fecharPopupNome()">
                 ✖ Cancelar
             </button>
+        </div>
+    </div>
+
+    <!-- ===== NOVO: MODAL DO CARD DE COMPARTILHAMENTO (v1.1.0) ===== -->
+    <div id="modalCardPartida" class="modal-overlay" onclick="PlacarApp.fecharModalCard(event)">
+        <div class="modal-content card-gramado" onclick="event.stopPropagation()">
+            <div id="cardPartidaConteudo"></div>
+            <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: center;">
+                <button class="primary-btn" onclick="PlacarApp.compartilharCard()">
+                    📤 Compartilhar
+                </button>
+                <button class="secondary-btn" onclick="PlacarApp.fecharModalCard()">
+                    ✖ Fechar
+                </button>
+            </div>
         </div>
     </div>
 
