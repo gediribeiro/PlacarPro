@@ -752,8 +752,8 @@ function renderJogadores() {
     // ===== CONTROLE DE GOLS =====
   function aumentarGol(time) {
     if (!state.partida) {
-      showToast('Inicie o jogo primeiro!', 'error');
-      return;
+        showToast('Inicie o jogo primeiro!', 'error');
+        return;
     }
     
     fecharPopupFalta();
@@ -764,7 +764,7 @@ function renderJogadores() {
     
     const popupTitulo = document.getElementById('popupTitulo');
     if (popupTitulo) {
-      popupTitulo.textContent = `⚽ Gol do ${time === 'A' ? state.nomeA : state.nomeB}! Quem fez?`;
+        popupTitulo.textContent = `⚽ Gol do ${time === 'A' ? state.nomeA : state.nomeB}! Quem fez?`;
     }
     
     const popup = document.getElementById('popupJogadores');
@@ -773,38 +773,40 @@ function renderJogadores() {
     popup.innerHTML = '';
     
     if (state.jogadores.length === 0) {
-      const button = document.createElement('button');
-      button.textContent = 'Jogador Desconhecido';
-      button.onclick = () => registrarGol('Jogador Desconhecido');
-      popup.appendChild(button);
-    } else {
-      const ranking = obterRankingGeral();
-      
-      } else {
-  } else {
-    // Obtém ranking de gols
-    const rankingGols = obterRankingGeral();
-    
-    // Ordena jogadores: mais gols primeiro, depois alfabético
-    const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
-        const golsA = rankingGols[a] || 0;
-        const golsB = rankingGols[b] || 0;
-        if (golsA !== golsB) return golsB - golsA;
-        return a.localeCompare(b);
-    });
-    
-    jogadoresOrdenados.forEach(jogador => {
         const button = document.createElement('button');
-        const gols = rankingGols[jogador] || 0;
-        button.textContent = gols > 0 ? `${jogador} (${gols})` : jogador;
-        button.onclick = () => registrarGol(jogador);
+        button.textContent = 'Jogador Desconhecido';
+        button.onclick = () => registrarGol('Jogador Desconhecido');
         popup.appendChild(button);
-    });
-}
+    } else {
+        // 🔥 PEGA O RANKING DE GOLS
+        const rankingGols = obterRankingGeral();
+        
+        // 🔥 ORDENA: MAIS GOLS PRIMEIRO, DEPOIS ALFABÉTICO
+        const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
+            const golsA = rankingGols[a] || 0;
+            const golsB = rankingGols[b] || 0;
+            
+            if (golsA !== golsB) {
+                return golsB - golsA; // Maior gols primeiro
+            }
+            return a.localeCompare(b); // Alfabético se empatar
+        });
+        
+        // 🔥 CRIA OS BOTÕES NA ORDEM CORRETA
+        jogadoresOrdenados.forEach(jogador => {
+            const button = document.createElement('button');
+            const gols = rankingGols[jogador] || 0;
+            
+            // Mostra a quantidade de gols ao lado do nome
+            button.textContent = gols > 0 ? `${jogador} (${gols})` : jogador;
+            
+            button.onclick = () => registrarGol(jogador);
+            popup.appendChild(button);
+        });
+    }
     
     document.getElementById('popupJogador').classList.add('show');
-  }
-
+}
   function registrarGol(jogador) {
     if (!state.timeAtual) return;
     
