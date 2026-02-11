@@ -1762,25 +1762,6 @@ const PlacarApp = (function() {
     document.getElementById('modalCardPartida').classList.add('show');
   }
 
-  function compartilharCard() {
-    const conteudo = document.getElementById('cardPartidaConteudo');
-    
-    // Pega o texto puro (sem HTML) do card
-    const texto = conteudo.innerText;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Placar Fut 31',
-            text: texto,
-            url: window.location.href
-        }).catch(() => {
-            // Usuário cancelou, ignorar
-        });
-    } else {
-        navigator.clipboard.writeText(texto);
-        showToast('📋 Resultado copiado! Agora é só colar.', 'success');
-    }
-  }
 
   function fecharModalCard(event) {
     if (event && event.target.classList.contains('modal-overlay')) {
@@ -2006,7 +1987,6 @@ const PlacarApp = (function() {
     instalarApp: instalarApp,
     // NOVAS FUNÇÕES v1.1.0
     mostrarCardPartida: mostrarCardPartida,
-    compartilharCard: compartilharCard,
     fecharModalCard: fecharModalCard,
     getState: () => ({ ...state })
   };
