@@ -750,7 +750,7 @@ function renderJogadores() {
     }, 800);
   }
     // ===== CONTROLE DE GOLS =====
-  function aumentarGol(time) {
+function aumentarGol(time) {
     if (!state.partida) {
         showToast('Inicie o jogo primeiro!', 'error');
         return;
@@ -792,14 +792,10 @@ function renderJogadores() {
             return a.localeCompare(b); // Alfabético se empatar
         });
         
-        // 🔥 CRIA OS BOTÕES NA ORDEM CORRETA
+        // 🔥 CRIA OS BOTÕES SOMENTE COM O NOME (SEM CONTADOR)
         jogadoresOrdenados.forEach(jogador => {
             const button = document.createElement('button');
-            const gols = rankingGols[jogador] || 0;
-            
-            // Mostra a quantidade de gols ao lado do nome
-            button.textContent = gols > 0 ? `${jogador} (${gols})` : jogador;
-            
+            button.textContent = jogador; // ✅ APENAS O NOME
             button.onclick = () => registrarGol(jogador);
             popup.appendChild(button);
         });
@@ -807,6 +803,7 @@ function renderJogadores() {
     
     document.getElementById('popupJogador').classList.add('show');
 }
+  
   function registrarGol(jogador) {
     if (!state.timeAtual) return;
     
