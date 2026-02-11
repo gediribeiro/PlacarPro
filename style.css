@@ -1557,50 +1557,6 @@ button:active {
 }
 
 
-/* ===== TEMA ESCURO AUTOMÁTICO ===== */
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* FUNDOS */
-        --bg-body: #121212;
-        --bg-card: #1e1e1e;
-        --bg-header: #0a0a0a;
-        --bg-modal: #1e1e1e;
-        
-        /* TEXTOS */
-        --text-primary: #f0f0f0;
-        --text-secondary: #b0b0b0;
-        --text-light: #808080;
-        
-        /* BORDAS */
-        --border-color: #333333;
-        
-        /* SOMBRAS (mais sutis no escuro) */
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-        --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.7);
-    }
-
-    /* Ajuste fino em elementos específicos */
-    .score-number {
-        background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
-        border-color: #444;
-        color: #fff;
-    }
-
-    .team-name-display {
-        background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.1));
-        border-color: rgba(15, 184, 88, 0.3);
-    }
-
-    .historico-item,
-    .stats-card,
-    .input-card {
-        background: #1e1e1e;
-        border-color: #333;
-    }
-}
-
-
 /* ===== 26. RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
     .app-main {
