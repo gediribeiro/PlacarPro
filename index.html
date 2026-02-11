@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -6,10 +8,10 @@
     <meta name="description" content="Sistema de placar profissional Placar Fut 31">
     <meta name="version" content="v1.0.4">
     
-    <!-- ✅ CORREÇÃO: UMA theme-color apenas (iOS precisa de simplicidade) -->
+    <!-- theme-color única para iOS -->
     <meta name="theme-color" content="#1a5f23">
     
-    <!-- Configurações iOS (CRÍTICO para tela cheia) -->
+    <!-- Configurações iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Placar Fut 31">
@@ -32,7 +34,7 @@
     <title>Placar Fut 31</title>
 </head>
 <body class="clean-bg">
-    <!-- ===== SPLASH SCREEN ===== -->
+    <!-- SPLASH SCREEN -->
     <div id="splashScreen">
         <div class="splash-content">
             <div class="logo">⚽</div>
@@ -44,10 +46,8 @@
             <p class="loading-text">Carregando...</p>
         </div>
     </div>
-    
-    <!-- O RESTO DO SEU HTML CONTINUA AQUI... -->
 
-    <!-- ===== HEADER PRINCIPAL ===== -->
+    <!-- HEADER -->
     <header class="app-header">
         <div class="header-container">
             <div class="logo-container">
@@ -57,7 +57,7 @@
         </div>
     </header>
 
-    <!-- ===== BARRA DE ABAS ===== -->
+    <!-- BARRA DE ABAS -->
     <nav class="tabs-navigation">
         <div class="tabs-container">
             <button class="tab-button active" onclick="PlacarApp.trocarTab('jogo', this)">Jogo</button>
@@ -70,19 +70,20 @@
         </div>
     </nav>
 
-    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="app-main">
-        <!-- SEÇÃO: JOGO (PLACAR) -->
+        <!-- SEÇÃO JOGO -->
         <section id="jogo" class="content-section active">
-            <div class="scoreboard-container">
+            <!-- PLACAR (agora com classe utilitária p-xl) -->
+            <div class="scoreboard-container p-xl">
                 <!-- CABEÇALHO DOS TIMES -->
                 <div class="teams-header">
-                    <div class="team-name-display" id="nomeTimeA">Time A</div>
+                    <div class="team-name-display cursor-pointer" id="nomeTimeA">Time A</div>
                     <div class="team-edit-buttons">
                         <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('A')" title="Editar nome Time A">✏️</button>
                         <button class="edit-team-btn" onclick="PlacarApp.editarNomeTime('B')" title="Editar nome Time B">✏️</button>
                     </div>
-                    <div class="team-name-display" id="nomeTimeB">Time B</div>
+                    <div class="team-name-display cursor-pointer" id="nomeTimeB">Time B</div>
                 </div>
 
                 <!-- PLACAR PRINCIPAL -->
@@ -94,15 +95,14 @@
                             <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('A')" title="Remover gol">−</button>
                             <button class="action-btn foul-btn" onclick="PlacarApp.registrarFalta('A')" title="Registrar falta">!</button>
                         </div>
-                        <div class="score-number" id="placarA">0</div>
+                        <div class="score-number cursor-pointer" id="placarA">0</div>
                     </div>
 
-                    <!-- DIVISÓRIA CENTRAL -->
                     <div class="score-divider">×</div>
 
                     <!-- TIME B -->
                     <div class="team-score team-right">
-                        <div class="score-number" id="placarB">0</div>
+                        <div class="score-number cursor-pointer" id="placarB">0</div>
                         <div class="action-buttons">
                             <button class="action-btn goal-btn" onclick="PlacarApp.aumentarGol('B')" title="Gol do Time B">+</button>
                             <button class="action-btn remove-btn" onclick="PlacarApp.diminuirGol('B')" title="Remover gol">−</button>
@@ -111,27 +111,27 @@
                     </div>
                 </div>
 
-                <!-- CRONÔMETRO (MENOR E MAIS PRÓXIMO) -->
+                <!-- CRONÔMETRO -->
                 <div class="timer-section">
                     <div class="game-timer" id="tempo" onclick="PlacarApp.togglePause()">00:00</div>
                 </div>
 
-                <!-- CONTADOR DE FALTAS (MENOR E COM TÍTULO) -->
+                <!-- FALTAS -->
                 <div class="fouls-section">
                     <div class="section-label">Faltas</div>
                     <div class="fouls-counter">
-                        <div class="foul-item">
+                        <div class="foul-item p-md">
                             <span class="foul-team-name" id="nomeFaltaA">Time A</span>
                             <span class="foul-count" id="faltasA">0</span>
                         </div>
-                        <div class="foul-item">
+                        <div class="foul-item p-md">
                             <span class="foul-team-name" id="nomeFaltaB">Time B</span>
                             <span class="foul-count" id="faltasB">0</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- CONTROLES DO JOGO (AGORA DENTRO DO SCOREBOARD) -->
+                <!-- CONTROLES -->
                 <div class="game-controls">
                     <button class="control-btn start-game-btn" id="btnIniciar" onclick="PlacarApp.iniciar()">
                         <span class="btn-icon">▶</span> Iniciar
@@ -143,10 +143,10 @@
                         <span class="btn-icon">⛔</span> Fim
                     </button>
                 </div>
-            </div> <!-- FIM DO SCOREBOARD-CONTAINER -->
+            </div> <!-- /.scoreboard-container -->
 
-            <!-- ===== LINHA DO TEMPO ===== -->
-            <div class="timeline-container">
+            <!-- LINHA DO TEMPO -->
+            <div class="timeline-container p-md">
                 <h3 class="section-subtitle">
                     <i class="fas fa-history"></i> Linha do Tempo
                 </h3>
@@ -155,14 +155,14 @@
                 </ul>
             </div>
 
-            <!-- LISTA DE GOLS DA PARTIDA -->
+            <!-- LISTA DE GOLS -->
             <h3 id="tituloGols" class="section-subtitle hidden">📊 Gols da Partida</h3>
             <ul id="listaGols" class="goals-list"></ul>
         </section>
 
-        <!-- SEÇÃO: JOGADORES -->
+        <!-- SEÇÃO JOGADORES -->
         <section id="jogadores" class="content-section">
-            <div class="input-card">
+            <div class="input-card p-lg">
                 <input type="text" id="novoJogador" class="player-input" 
                        placeholder="Nome do jogador" maxlength="20">
                 <button class="primary-btn add-player-btn" onclick="PlacarApp.addJogador()">
@@ -172,23 +172,23 @@
             <ul id="listaJogadores" class="players-list"></ul>
         </section>
 
-        <!-- SEÇÃO: RANKING -->
+        <!-- SEÇÃO RANKING -->
         <section id="ranking" class="content-section">
-            <div class="stats-card">
+            <div class="stats-card p-lg">
                 <h3 class="card-title">🏆 Ranking de Gols - Geral</h3>
                 <ul id="listaRankingGeral" class="ranking-list"></ul>
             </div>
-            <div class="stats-card">
+            <div class="stats-card p-lg">
                 <h3 class="card-title">📅 Ranking de Gols - Mês</h3>
                 <ul id="listaRankingMes" class="ranking-list"></ul>
             </div>
-            <div class="stats-card">
+            <div class="stats-card p-lg">
                 <h3 class="card-title">⚠️ Ranking de Faltas</h3>
                 <ul id="listaRankingFaltas" class="ranking-list"></ul>
             </div>
         </section>
 
-        <!-- SEÇÃO: HISTÓRICO -->
+        <!-- SEÇÃO HISTÓRICO -->
         <section id="historico" class="content-section">
             <div class="history-header">
                 <h2 class="section-title">📋 Histórico de Partidas</h2>
@@ -197,30 +197,31 @@
                 </button>
             </div>
             <div id="listaHistorico" class="history-container"></div>
+            <!-- Cada .historico-item receberá p-lg via JS ou pode ser adicionado manualmente nos itens gerados dinamicamente -->
         </section>
 
-        <!-- SEÇÃO: STATS -->
+        <!-- SEÇÃO STATS -->
         <section id="stats" class="content-section">
             <h2 class="section-title">📊 Estatísticas</h2>
             <div class="stats-grid">
-                <div class="stats-card">
+                <div class="stats-card p-lg">
                     <h3 class="card-title">📈 Gerais</h3>
                     <div id="statsGerais" class="stats-content"></div>
                 </div>
-                <div class="stats-card">
+                <div class="stats-card p-lg">
                     <h3 class="card-title">🔥 Recentes</h3>
                     <div id="statsRecentes" class="stats-content"></div>
                 </div>
-                <div class="stats-card">
+                <div class="stats-card p-lg">
                     <h3 class="card-title">👤 Por Jogador</h3>
                     <div id="statsPorJogador" class="stats-content"></div>
                 </div>
             </div>
         </section>
 
-        <!-- SEÇÃO: COMPARAR JOGADORES -->
+        <!-- SEÇÃO COMPARAR -->
         <section id="comparar" class="content-section">
-            <div class="stats-card">
+            <div class="stats-card p-lg">
                 <h3 class="card-title">⚖️ Comparar Jogadores</h3>
                 <select id="jogador1" class="player-select">
                     <option value="">Selecione jogador 1</option>
@@ -232,18 +233,16 @@
                     ⚖️ Comparar
                 </button>
             </div>
-            <div id="resultadoComparacao" class="comparison-result"></div>
+            <div id="resultadoComparacao" class="comparison-result p-md"></div>
         </section>
 
-        <!-- SEÇÃO: BACKUP (NOVA) -->
+        <!-- SEÇÃO BACKUP -->
         <section id="backup" class="content-section">
-            <!-- VERSÃO DO APP -->
-            <div class="version-display">
+            <div class="version-display p-lg">
                 <div class="app-title">⚽ Placar Fut 31</div>
-                <div class="app-version">Versão: <span id="appVersion">v2026.02.10.1</span></div>
+                <div class="app-version">Versão: <span id="appVersion">v1.0.4</span></div>
             </div>
-            
-            <div class="stats-card">
+            <div class="stats-card p-lg">
                 <h3 class="card-title">💾 Backup & Restauração</h3>
                 <button class="primary-btn" onclick="PlacarApp.exportarBackup()">
                     📤 Exportar Dados
@@ -260,11 +259,10 @@
         </section>
     </main>
 
-    <!-- ===== POPUPS / MODAIS ===== -->
-    <!-- Popup: Selecionar jogador para gol -->
+    <!-- POPUPS / MODAIS -->
     <div id="popupJogador" class="modal-overlay" onclick="PlacarApp.fecharPopup(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 class="modal-title" id="popupTitulo">⚽ Quem fez o gol?</h3>
+        <div class="modal-content p-xl" onclick="event.stopPropagation()">
+            <h3 class="modal-title">⚽ Quem fez o gol?</h3>
             <div id="popupJogadores" class="players-grid"></div>
             <button class="secondary-btn close-modal-btn" onclick="PlacarApp.fecharPopup()">
                 ✖ Cancelar
@@ -272,10 +270,9 @@
         </div>
     </div>
 
-    <!-- Popup: Selecionar jogador para falta -->
     <div id="popupFalta" class="modal-overlay" onclick="PlacarApp.fecharPopupFalta(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 class="modal-title" id="popupTituloFalta">⚠️ Quem fez a falta?</h3>
+        <div class="modal-content p-xl" onclick="event.stopPropagation()">
+            <h3 class="modal-title">⚠️ Quem fez a falta?</h3>
             <div id="popupJogadoresFalta" class="players-grid"></div>
             <button class="secondary-btn close-modal-btn" onclick="PlacarApp.fecharPopupFalta()">
                 ✖ Cancelar
@@ -283,9 +280,8 @@
         </div>
     </div>
 
-    <!-- Popup: Remover gol específico -->
     <div id="popupRemover" class="modal-overlay" onclick="PlacarApp.fecharPopupRemover(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-content p-xl" onclick="event.stopPropagation()">
             <h3 class="modal-title">🗑️ Remover qual gol?</h3>
             <div id="popupGols" class="players-grid"></div>
             <button class="secondary-btn close-modal-btn" onclick="PlacarApp.fecharPopupRemover()">
@@ -294,10 +290,9 @@
         </div>
     </div>
 
-    <!-- Popup: Editar nome do time -->
     <div id="popupNomeTime" class="modal-overlay" onclick="PlacarApp.fecharPopupNome(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 class="modal-title" id="popupTituloNome">✏️ Editar Nome do Time</h3>
+        <div class="modal-content p-xl" onclick="event.stopPropagation()">
+            <h3 class="modal-title">✏️ Editar Nome do Time</h3>
             <input type="text" id="inputNomeTime" class="team-name-input" 
                    placeholder="Nome do time" maxlength="20">
             <button class="primary-btn confirm-btn" onclick="PlacarApp.salvarNomeTime()">
@@ -309,7 +304,7 @@
         </div>
     </div>
 
-    <!-- Overlay: Animações de jogo -->
+    <!-- OVERLAY DE ANIMAÇÃO -->
     <div id="gameOverlay" class="game-overlay">
         <div class="overlay-content">
             <div class="overlay-icon" id="overlayIcon">⚽</div>
@@ -317,7 +312,7 @@
         </div>
     </div>
 
-    <!-- ===== BOTÕES FLUTUANTES ===== -->
+    <!-- BOTÕES FLUTUANTES -->
     <button id="installBtn" class="floating-btn install-btn" onclick="PlacarApp.instalarApp()">
         📱 Instalar App
     </button>
@@ -325,19 +320,15 @@
         ↶
     </button>
 
-    <!-- ===== SCRIPTS ===== -->
+    <!-- SCRIPTS -->
     <script src="app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Placar Fut 31 - Carregado com sucesso!');
-            
-            // Verificar se é PWA instalado
             if (window.matchMedia('(display-mode: standalone)').matches) {
                 console.log('Rodando como PWA instalado');
             }
-            
-            // Mostrar versão atual
-            document.getElementById('appVersion').textContent = 'v1.0.0';
+            document.getElementById('appVersion').textContent = 'v1.0.4';
         });
     </script>
 </body>
