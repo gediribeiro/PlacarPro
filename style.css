@@ -68,6 +68,11 @@ html, body {
     overflow-x: hidden;
 }
 
+/* 👇 MELHORIA: Rolagem suave */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-md);
@@ -75,6 +80,17 @@ body {
     background-color: var(--bg-body);
     -webkit-font-smoothing: antialiased;
     padding-bottom: 100px;
+}
+
+/* 👇 MELHORIA: Feedback tátil global para botões (suave) */
+button {
+    -webkit-tap-highlight-color: transparent; /* Remove highlight azul no mobile */
+    user-select: none; /* Previne seleção de texto ao clicar rápido */
+    transition: transform 0.1s ease, opacity 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.97);
 }
 
 /* ===== 3. HEADER ===== */
@@ -163,34 +179,25 @@ body {
     white-space: nowrap;
     position: relative;
     transition: all 0.3s ease;
-    min-height: 44px; /* Touch target mínimo para dedos */
-    min-width: 44px;  /* Touch target mínimo para dedos */
-    
-    /* 👇 NOVO: Feedback visual ao tocar/clicar */
-    -webkit-tap-highlight-color: transparent; /* Remove highlight azul no mobile */
-    user-select: none; /* Previne seleção de texto ao clicar rápido */
+    min-height: 44px;
+    min-width: 44px;
 }
 
-/* 👇 NOVO: Efeito hover (para desktop) */
 .tab-button:hover {
     color: var(--primary-green);
     opacity: 0.8;
 }
 
-/* 👇 NOVO: Efeito ao pressionar (todos dispositivos) */
 .tab-button:active {
-    transform: scale(0.85); /* Leve redução */
+    transform: scale(0.85);
     opacity: 0.7;
-    transition: transform 0.1s ease, opacity 0.1s ease; /* Transição mais rápida para feedback tátil */
+    transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
-/* CORREÇÃO 1: Linha verde apenas na aba ativa */
 .tab-button.active {
     color: var(--primary-green);
     font-weight: 700;
     position: relative;
-    
-    /* 👇 NOVO: Remove efeito :active quando já está ativo */
     transform: scale(1) !important;
     opacity: 1 !important;
 }
@@ -207,12 +214,10 @@ body {
     border-radius: 3px 3px 0 0;
 }
 
-/* Remover completamente a linha das outras */
 .tab-button:not(.active)::after {
     display: none !important;
 }
 
-/* 👇 NOVO: Para dispositivos com hover (desktop) */
 @media (hover: hover) and (pointer: fine) {
     .tab-button:hover:not(.active)::after {
         content: '';
@@ -220,7 +225,7 @@ body {
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 30%; /* Mais fina que a ativa */
+        width: 30%;
         height: 2px;
         background: var(--primary-green);
         opacity: 0.5;
@@ -267,7 +272,6 @@ body {
 
 /* ===== 6. PLACAR - CORREÇÕES APLICADAS ===== */
 
-/* CONTAINER DO PLACAR */
 .scoreboard-container {
     background: var(--bg-card);
     border-radius: var(--border-radius-xl);
@@ -277,7 +281,6 @@ body {
     border: 1px solid var(--border-color);
 }
 
-/* CABEÇALHO DOS TIMES */
 .teams-header {
     display: flex;
     align-items: center;
@@ -300,6 +303,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 👇 MELHORIA: cursor indicativo */
+    cursor: pointer;
 }
 
 .team-edit-buttons {
@@ -328,7 +333,6 @@ body {
     transform: scale(0.95);
 }
 
-/* PLACAR PRINCIPAL */
 .main-scoreboard {
     display: flex;
     align-items: center;
@@ -337,7 +341,6 @@ body {
     min-height: 160px;
 }
 
-/* CADA TIME */
 .team-score {
     display: flex;
     align-items: center;
@@ -352,7 +355,6 @@ body {
     justify-content: flex-end;
 }
 
-/* BOTÕES DE AÇÃO */
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -395,7 +397,6 @@ body {
     background: linear-gradient(135deg, #ffa502, #e59400);
 }
 
-/* NÚMERO DO PLACAR */
 .score-number {
     font-size: 56px;
     font-weight: 900;
@@ -408,9 +409,10 @@ body {
     box-shadow: var(--shadow-lg);
     border: 3px solid rgba(255, 255, 255, 0.9);
     font-variant-numeric: tabular-nums;
+    /* 👇 MELHORIA: cursor indicativo */
+    cursor: pointer;
 }
 
-/* DIVISÓRIA CENTRAL */
 .score-divider {
     font-size: 32px;
     color: var(--text-secondary);
@@ -419,7 +421,6 @@ body {
     font-weight: 400;
 }
 
-/* CRONÔMETRO (MENOR E MAIS PRÓXIMO) */
 .timer-section {
     text-align: center;
     margin: var(--space-lg) 0;
@@ -459,7 +460,6 @@ body {
     50% { opacity: 0.8; }
 }
 
-/* CONTADOR DE FALTAS (MENOR E COM TÍTULO) */
 .fouls-section {
     margin-top: var(--space-lg);
 }
@@ -553,7 +553,6 @@ body {
 
 /* ===== 8. COMPONENTES REUTILIZÁVEIS ===== */
 
-/* CARDS */
 .stats-card,
 .input-card {
     background: var(--bg-card);
@@ -572,7 +571,6 @@ body {
     text-align: center;
 }
 
-/* BOTÕES */
 .primary-btn {
     width: 100%;
     padding: var(--space-md) var(--space-lg);
@@ -628,7 +626,6 @@ body {
     transform: scale(0.98);
 }
 
-/* INPUTS */
 .player-input,
 .team-name-input,
 .player-select {
@@ -638,11 +635,11 @@ body {
     border-radius: var(--border-radius-md);
     background: var(--bg-card);
     color: var(--text-primary);
-    font-size: 16px !important; /* 👈 CORRIGIDO - Previne zoom iOS */
+    font-size: 16px !important;
     font-family: var(--font-family);
     transition: all 0.3s ease;
     margin-bottom: var(--space-md);
-    min-height: 44px; /* 👈 OPÇÃO: Adicionar para touch target */
+    min-height: 44px;
 }
 
 .player-input:focus,
@@ -653,7 +650,6 @@ body {
     box-shadow: 0 0 0 3px rgba(15, 184, 88, 0.15);
 }
 
-/* LISTAS */
 .goals-list,
 .players-list,
 .ranking-list {
@@ -1035,7 +1031,7 @@ body {
     z-index: 1000;
     transition: all 0.3s ease;
     box-shadow: var(--shadow-lg);
-    display: none; /* CORREÇÃO 2: Inicialmente escondido */
+    display: none;
 }
 
 .floating-btn:active {
@@ -1075,32 +1071,47 @@ body {
     justify-content: center;
 }
 
-/* REMOVIDO: .backup-btn - CORREÇÃO 2: Botão removido */
-
-/* ===== 15. TOAST NOTIFICATIONS ===== */
+/* ===== 15. TOAST NOTIFICATIONS - MELHORADO ===== */
 .toast {
     position: fixed;
-    bottom: 100px;
+    bottom: 120px; /* 👈 mais pra cima para não colar na borda */
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #333;
+    background: #1e293b; /* cor mais escura e profissional */
     color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 16px 28px; /* 👈 mais espaçoso */
+    border-radius: 40px; /* 👈 mais arredondado */
     z-index: 9999;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35); /* 👈 sombra mais forte */
     opacity: 0;
     transition: all 0.3s ease;
     text-align: center;
-    max-width: 80%;
+    max-width: 85%;
     word-break: break-word;
+    border-left: 5px solid rgba(255,255,255,0.3); /* detalhe */
+    backdrop-filter: blur(4px);
+    font-size: 15px;
+    letter-spacing: 0.3px;
 }
 
-.toast-success { background: var(--primary-green); }
-.toast-error { background: var(--primary-red); }
-.toast-warning { background: var(--primary-yellow); color: #000; }
-.toast-info { background: #3498db; }
+.toast-success {
+    background: linear-gradient(135deg, #0fb858, #0d9c4d);
+    border-left-color: #fff9c4;
+}
+.toast-error {
+    background: linear-gradient(135deg, #ff4757, #e63946);
+    border-left-color: #ffe6e6;
+}
+.toast-warning {
+    background: linear-gradient(135deg, #ffa502, #e59400);
+    color: #fff;
+    border-left-color: #fff3cd;
+}
+.toast-info {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-left-color: #d4e6ff;
+}
 
 @keyframes slideUp {
     from { transform: translateX(-50%) translateY(20px); opacity: 0; }
@@ -1112,28 +1123,73 @@ body {
     display: none !important;
 }
 
+/* 👇 MELHORIA: Espaçamento consistente para containers principais */
+.container,
+.tab-content,
+.placar-card,
+.app-main .content-section {
+    padding: 20px;
+}
+
+/* 👇 MELHORIA: cursor indicativo para nomes de jogadores */
+.jogador-item span:first-child {
+    cursor: pointer;
+}
+
+/* 👇 MELHORIA: highlight quando estiver editando */
+.editing {
+    background-color: #fff9c4 !important;
+    transition: background-color 0.3s ease;
+}
+
 /* ===== 17. ANIMAÇÃO DE GOL ===== */
 .main-scoreboard.gol-animation {
     animation: golCelebration 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes golCelebration {
-    0%, 100% { 
-        transform: scale(1); 
-    }
-    25% { 
-        transform: scale(1.08); 
-        filter: brightness(1.2);
-    }
-    50% { 
-        transform: scale(0.98); 
-    }
-    75% { 
-        transform: scale(1.05); 
-    }
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.08); filter: brightness(1.2); }
+    50% { transform: scale(0.98); }
+    75% { transform: scale(1.05); }
 }
 
-/* ===== 18. RESPONSIVIDADE ===== */
+/* ===== 18. RANKING - MELHORIAS ===== */
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.ranking-table th {
+    background: var(--primary-green);
+    color: white;
+    font-weight: 600;
+    padding: var(--space-md);
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.ranking-table td {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ranking-table tr:hover {
+    background-color: rgba(15, 184, 88, 0.05);
+}
+
+.ranking-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== 19. RESPONSIVIDADE ===== */
 
 /* TABLETS */
 @media (max-width: 768px) {
@@ -1355,7 +1411,7 @@ body {
     border-radius: 3px;
 }
 
-/* ===== NOVAS ADIÇÕES ===== */
+/* ===== 20. NOVAS ADIÇÕES ===== */
 
 /* BACKGROUND SUAVE */
 body.clean-bg {
@@ -1422,7 +1478,6 @@ body.clean-bg {
     background: rgba(255, 255, 255, 0.08);
 }
 
-/* Alinhamento por time */
 .timeline-item.event-left {
     border-left: 4px solid var(--primary-green);
     justify-content: flex-start;
@@ -1466,7 +1521,6 @@ body.clean-bg {
     opacity: 0.7;
 }
 
-/* Scrollbar personalizada para timeline */
 .timeline-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -1481,23 +1535,19 @@ body.clean-bg {
     border-radius: 3px;
 }
 
-/* RESPONSIVIDADE DA TIMELINE */
 @media (max-width: 480px) {
     .timeline-container {
         margin: 15px 5px;
         padding: 12px;
     }
-    
     .timeline-item {
         padding: 8px 12px;
         font-size: 0.9em;
     }
-    
     .event-time {
         min-width: 40px;
         font-size: 0.85em;
     }
-    
     .event-icon {
         min-width: 25px;
         font-size: 1.1em;
@@ -1506,16 +1556,16 @@ body.clean-bg {
 
 /* GARANTE que apenas botões ativos são verdes */
 .abamento button {
-    background-color: #f0f0f0 !important; /* Cinza padrão */
+    background-color: #f0f0f0 !important;
     transition: background-color 0.3s;
 }
 
 .abamento button.active {
-    background-color: #4CAF50 !important; /* Verde APENAS ativo */
+    background-color: #4CAF50 !important;
     color: white !important;
 }
 
-/* ===== SPLASH SCREEN ===== */
+/* ===== 21. SPLASH SCREEN ===== */
 #splashScreen {
     position: fixed;
     top: 0;
@@ -1523,9 +1573,7 @@ body.clean-bg {
     width: 100%;
     height: 100%;
     background: 
-        /* Gramado principal */
         linear-gradient(135deg, #1a5f23 0%, #2e7d32 40%, #4CAF50 100%),
-        /* Linhas do campo - padrão xadrez sutil */
         repeating-linear-gradient(
             90deg,
             transparent,
@@ -1547,11 +1595,10 @@ body.clean-bg {
     justify-content: center;
     z-index: 9999;
     opacity: 1;
-    transition: opacity 0.8s ease-out; /* 👈 Aumentado para 0.8s */
+    transition: opacity 0.8s ease-out;
     overflow: hidden;
 }
 
-/* Linhas do campo mais definidas */
 #splashScreen::before {
     content: '';
     position: absolute;
@@ -1560,21 +1607,18 @@ body.clean-bg {
     right: 0;
     bottom: 0;
     background: 
-        /* Linhas laterais */
         linear-gradient(90deg, 
             transparent 48%, 
             rgba(255, 255, 255, 0.25) 48%, 
             rgba(255, 255, 255, 0.25) 52%, 
             transparent 52%
         ),
-        /* Linhas de fundo */
         linear-gradient(0deg, 
             transparent 48%, 
             rgba(255, 255, 255, 0.25) 48%, 
             rgba(255, 255, 255, 0.25) 52%, 
             transparent 52%
         ),
-        /* Círculo central */
         radial-gradient(
             circle at 50% 50%, 
             transparent 45%, 
@@ -1585,7 +1629,6 @@ body.clean-bg {
     pointer-events: none;
 }
 
-/* Marcas do campo (áreas do gol) */
 #splashScreen::after {
     content: '';
     position: absolute;
@@ -1594,7 +1637,6 @@ body.clean-bg {
     right: 0;
     bottom: 0;
     background: 
-        /* Área esquerda */
         linear-gradient(90deg, 
             rgba(255, 255, 255, 0.1) 5%, 
             transparent 5%, 
@@ -1603,7 +1645,6 @@ body.clean-bg {
             rgba(255, 255, 255, 0.05) 20%, 
             transparent 20%
         ),
-        /* Área direita */
         linear-gradient(90deg, 
             transparent 80%, 
             rgba(255, 255, 255, 0.05) 80%, 
@@ -1630,9 +1671,7 @@ body.clean-bg {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     position: relative;
     z-index: 2;
 }
@@ -1640,10 +1679,8 @@ body.clean-bg {
 .splash-content .logo {
     font-size: 5rem;
     margin-bottom: 15px;
-    animation: bounce 1.5s infinite alternate;
-    filter: 
-        drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4))
-        drop-shadow(0 0 20px rgba(76, 175, 80, 0.3));
+    animation: bounce 1.5s infinite alternate, glow 2s infinite ease-in-out;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(76, 175, 80, 0.3));
     transform-style: preserve-3d;
 }
 
@@ -1651,9 +1688,7 @@ body.clean-bg {
     font-size: 2.5rem;
     margin: 0 0 10px 0;
     font-weight: bold;
-    text-shadow: 
-        0 2px 4px rgba(0, 0, 0, 0.4),
-        0 0 10px rgba(76, 175, 80, 0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(76, 175, 80, 0.2);
     letter-spacing: 0.5px;
 }
 
@@ -1679,7 +1714,7 @@ body.clean-bg {
     height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    border-top-color: #FFD700; /* 👈 Mudado para dourado */
+    border-top-color: #FFD700;
     animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
@@ -1692,14 +1727,9 @@ body.clean-bg {
     font-weight: 300;
 }
 
-/* Animações da splash */
 @keyframes bounce {
-    0% { 
-        transform: translateY(0) scale(1) rotate(0deg);
-    }
-    100% { 
-        transform: translateY(-15px) scale(1.05) rotate(5deg);
-    }
+    0% { transform: translateY(0) scale(1) rotate(0deg); }
+    100% { transform: translateY(-15px) scale(1.05) rotate(5deg); }
 }
 
 @keyframes spin {
@@ -1707,19 +1737,11 @@ body.clean-bg {
     100% { transform: rotate(360deg); }
 }
 
-/* Efeito de brilho suave no logo */
 @keyframes glow {
     0%, 100% { filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5)); }
     50% { filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.8)); }
 }
 
-.splash-content .logo {
-    animation: 
-        bounce 1.5s infinite alternate,
-        glow 2s infinite ease-in-out;
-}
-
-/* Responsivo */
 @media (max-width: 600px) {
     .splash-content .logo { 
         font-size: 4rem; 
@@ -1734,7 +1756,6 @@ body.clean-bg {
         margin: 0 15px;
     }
     #splashScreen::before {
-        /* Linhas mais simples em mobile */
         background: 
             linear-gradient(90deg, 
                 transparent 48%, 
@@ -1751,7 +1772,7 @@ body.clean-bg {
     }
 }
 
-/* ===== BOTÕES DE JOGADORES ===== */
+/* ===== 22. BOTÕES DE JOGADORES ===== */
 .players-list li {
   display: flex;
   justify-content: space-between;
@@ -1795,7 +1816,6 @@ body.clean-bg {
   min-height: 36px;
 }
 
-/* Botão Editar (✏️) */
 .player-actions button:first-child {
   background: rgba(15, 184, 88, 0.1);
   color: var(--primary-green);
@@ -1807,7 +1827,6 @@ body.clean-bg {
   transform: scale(0.9);
 }
 
-/* Botão Remover (❌) */
 .player-actions button:last-child {
   background: rgba(255, 71, 87, 0.1);
   color: var(--primary-red);
