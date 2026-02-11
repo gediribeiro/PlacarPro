@@ -988,14 +988,10 @@ function aumentarGol(time) {
             return a.localeCompare(b); // Alfabético se empatar
         });
         
-        // 🔥 CRIA OS BOTÕES NA ORDEM CORRETA
+        // 🔥 CRIA OS BOTÕES SOMENTE COM O NOME (SEM CONTADOR)
         jogadoresOrdenados.forEach(jogador => {
             const button = document.createElement('button');
-            const faltas = rankingFaltas[jogador] || 0;
-            
-            // Mostra a quantidade de faltas ao lado do nome
-            button.textContent = faltas > 0 ? `${jogador} (${faltas})` : jogador;
-            
+            button.textContent = jogador; // ✅ APENAS O NOME
             button.onclick = () => confirmarFalta(jogador);
             popup.appendChild(button);
         });
