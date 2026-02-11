@@ -1,5 +1,5 @@
 /* =========================================== */
-/* PLACAR FUT 31 - CSS CORRIGIDO E OTIMIZADO  */
+/* PLACAR FUT 31 - CSS PROFISSIONAL           */
 /* =========================================== */
 
 /* ===== 1. VARIÁVEIS E CONFIGURAÇÕES ===== */
@@ -42,6 +42,7 @@
     --space-md: 16px;
     --space-lg: 24px;
     --space-xl: 32px;
+    --space-2xl: 40px;
     
     /* TIPOGRAFIA */
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -68,7 +69,6 @@ html, body {
     overflow-x: hidden;
 }
 
-/* 👇 MELHORIA: Rolagem suave */
 html {
     scroll-behavior: smooth;
 }
@@ -82,10 +82,48 @@ body {
     padding-bottom: 100px;
 }
 
-/* 👇 MELHORIA: Feedback tátil global para botões (suave) */
+/* ===== 3. UTILITÁRIOS ===== */
+
+/* Espaçamento - Padding completo */
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+.p-2xl { padding: var(--space-2xl); }
+
+/* Espaçamento - Padding horizontal */
+.px-xs { padding-left: var(--space-xs); padding-right: var(--space-xs); }
+.px-sm { padding-left: var(--space-sm); padding-right: var(--space-sm); }
+.px-md { padding-left: var(--space-md); padding-right: var(--space-md); }
+.px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
+.px-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+
+/* Espaçamento - Padding vertical */
+.py-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
+.py-sm { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
+.py-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+.py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+.py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+
+/* Margens - utilitários rápidos */
+.mt-auto { margin-top: auto; }
+.mb-auto { margin-bottom: auto; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Display */
+.hidden { display: none !important; }
+.block { display: block; }
+.flex { display: flex; }
+.grid { display: grid; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+
+/* ===== 4. FEEDBACK TÁTIL ===== */
 button {
-    -webkit-tap-highlight-color: transparent; /* Remove highlight azul no mobile */
-    user-select: none; /* Previne seleção de texto ao clicar rápido */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
     transition: transform 0.1s ease, opacity 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -93,7 +131,7 @@ button:active {
     transform: scale(0.97);
 }
 
-/* ===== 3. HEADER ===== */
+/* ===== 5. HEADER ===== */
 .app-header {
     background: linear-gradient(135deg, #1a1a2e, #16213e);
     padding: var(--space-md) 0;
@@ -145,7 +183,7 @@ button:active {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== 4. BARRA DE ABAS - CORRIGIDO ===== */
+/* ===== 6. BARRA DE ABAS ===== */
 .tabs-navigation {
     background: var(--bg-card);
     position: sticky;
@@ -233,7 +271,7 @@ button:active {
     }
 }
 
-/* ===== 5. CONTEÚDO PRINCIPAL ===== */
+/* ===== 7. CONTEÚDO PRINCIPAL ===== */
 .app-main {
     max-width: 800px;
     margin: 0 auto;
@@ -270,12 +308,10 @@ button:active {
     text-align: center;
 }
 
-/* ===== 6. PLACAR - CORREÇÕES APLICADAS ===== */
-
+/* ===== 8. PLACAR ===== */
 .scoreboard-container {
     background: var(--bg-card);
     border-radius: var(--border-radius-xl);
-    padding: var(--space-xl);
     margin-bottom: var(--space-xl);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border-color);
@@ -303,7 +339,6 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* 👇 MELHORIA: cursor indicativo */
     cursor: pointer;
 }
 
@@ -409,7 +444,6 @@ button:active {
     box-shadow: var(--shadow-lg);
     border: 3px solid rgba(255, 255, 255, 0.9);
     font-variant-numeric: tabular-nums;
-    /* 👇 MELHORIA: cursor indicativo */
     cursor: pointer;
 }
 
@@ -485,7 +519,6 @@ button:active {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md);
     background: linear-gradient(135deg, rgba(255, 165, 2, 0.08), rgba(255, 165, 2, 0.04));
     border-radius: var(--border-radius-md);
     border: 1px solid rgba(255, 165, 2, 0.15);
@@ -503,7 +536,7 @@ button:active {
     color: var(--primary-yellow);
 }
 
-/* ===== 7. CONTROLES DO JOGO ===== */
+/* ===== 9. CONTROLES DO JOGO ===== */
 .game-controls {
     display: flex;
     gap: var(--space-md);
@@ -551,13 +584,11 @@ button:active {
     font-size: 18px;
 }
 
-/* ===== 8. COMPONENTES REUTILIZÁVEIS ===== */
-
+/* ===== 10. COMPONENTES REUTILIZÁVEIS ===== */
 .stats-card,
 .input-card {
     background: var(--bg-card);
     border-radius: var(--border-radius-lg);
-    padding: var(--space-lg);
     margin-bottom: var(--space-lg);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
@@ -662,7 +693,6 @@ button:active {
 .ranking-list li {
     background: var(--bg-card);
     border-radius: var(--border-radius-md);
-    padding: var(--space-md);
     margin-bottom: var(--space-sm);
     display: flex;
     justify-content: space-between;
@@ -698,7 +728,7 @@ button:active {
     color: var(--text-white);
 }
 
-/* ===== 9. HISTÓRICO (MELHORADO) ===== */
+/* ===== 11. HISTÓRICO ===== */
 .history-header {
     display: flex;
     flex-direction: column;
@@ -714,7 +744,6 @@ button:active {
 .historico-item {
     background: var(--bg-card);
     border-radius: var(--border-radius-lg);
-    padding: var(--space-lg);
     margin-bottom: var(--space-md);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
@@ -804,7 +833,7 @@ button:active {
     border-bottom: none;
 }
 
-/* ===== 10. STATS (MELHORADO) ===== */
+/* ===== 12. STATS ===== */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -838,7 +867,7 @@ button:active {
     color: var(--text-primary);
 }
 
-/* ===== 11. COMPARAÇÃO DE JOGADORES ===== */
+/* ===== 13. COMPARAÇÃO ===== */
 .comparison-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -849,7 +878,6 @@ button:active {
 .comparison-player {
     background: rgba(15, 184, 88, 0.05);
     border-radius: var(--border-radius-md);
-    padding: var(--space-lg);
     border: 1px solid rgba(15, 184, 88, 0.2);
 }
 
@@ -907,7 +935,7 @@ button:active {
     background: linear-gradient(135deg, #ffa502, #e59400);
 }
 
-/* ===== 12. MODAIS ===== */
+/* ===== 14. MODAIS ===== */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -931,7 +959,6 @@ button:active {
 .modal-content {
     background: var(--bg-modal);
     border-radius: var(--border-radius-xl);
-    padding: var(--space-xl);
     width: 100%;
     max-width: 400px;
     max-height: 85vh;
@@ -982,7 +1009,7 @@ button:active {
     transform: scale(0.95);
 }
 
-/* ===== 13. OVERLAY DE JOGO ===== */
+/* ===== 15. OVERLAY DE JOGO ===== */
 .game-overlay {
     display: none;
     position: fixed;
@@ -1023,7 +1050,7 @@ button:active {
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* ===== 14. BOTÕES FLUTUANTES - CORRIGIDO ===== */
+/* ===== 16. BOTÕES FLUTUANTES ===== */
 .floating-btn {
     position: fixed;
     border: none;
@@ -1071,25 +1098,25 @@ button:active {
     justify-content: center;
 }
 
-/* ===== 15. TOAST NOTIFICATIONS - MELHORADO ===== */
+/* ===== 17. TOAST NOTIFICATIONS ===== */
 .toast {
     position: fixed;
-    bottom: 120px; /* 👈 mais pra cima para não colar na borda */
+    bottom: 120px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #1e293b; /* cor mais escura e profissional */
+    background: #1e293b;
     color: white;
-    padding: 16px 28px; /* 👈 mais espaçoso */
-    border-radius: 40px; /* 👈 mais arredondado */
+    padding: 16px 28px;
+    border-radius: 40px;
     z-index: 9999;
     font-weight: 600;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.35); /* 👈 sombra mais forte */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35);
     opacity: 0;
     transition: all 0.3s ease;
     text-align: center;
     max-width: 85%;
     word-break: break-word;
-    border-left: 5px solid rgba(255,255,255,0.3); /* detalhe */
+    border-left: 5px solid rgba(255,255,255,0.3);
     backdrop-filter: blur(4px);
     font-size: 15px;
     letter-spacing: 0.3px;
@@ -1118,30 +1145,13 @@ button:active {
     to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
-/* ===== 16. UTILITÁRIOS ===== */
-.hidden {
-    display: none !important;
-}
-
-/* 👇 MELHORIA: Espaçamento consistente para containers principais */
-.container,
-.tab-content,
-.app-main .content-section {
-    padding: 20px;
-}
-
-/* 👇 MELHORIA: cursor indicativo para nomes de jogadores */
-.jogador-item span:first-child {
-    cursor: pointer;
-}
-
-/* 👇 MELHORIA: highlight quando estiver editando */
+/* ===== 18. HIGHLIGHT DE EDIÇÃO ===== */
 .editing {
     background-color: #fff9c4 !important;
     transition: background-color 0.3s ease;
 }
 
-/* ===== 17. ANIMAÇÃO DE GOL ===== */
+/* ===== 19. ANIMAÇÃO DE GOL ===== */
 .main-scoreboard.gol-animation {
     animation: golCelebration 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1153,7 +1163,7 @@ button:active {
     75% { transform: scale(1.05); }
 }
 
-/* ===== 18. RANKING - MELHORIAS ===== */
+/* ===== 20. RANKING ===== */
 .ranking-table {
     width: 100%;
     border-collapse: collapse;
@@ -1188,20 +1198,376 @@ button:active {
     border-bottom: none;
 }
 
-/* ===== 19. RESPONSIVIDADE ===== */
+/* ===== 21. TIMELINE ===== */
+.timeline-container {
+    margin: 20px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-/* TABLETS */
+.timeline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.timeline-item {
+    padding: 10px 15px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.timeline-item.event-left {
+    border-left: 4px solid var(--primary-green);
+    justify-content: flex-start;
+}
+
+.timeline-item.event-right {
+    border-left: 4px solid var(--primary-yellow);
+    justify-content: flex-start;
+}
+
+.timeline-item.event-center {
+    border-left: 4px solid var(--primary-red);
+    justify-content: center;
+    text-align: center;
+}
+
+.event-time {
+    font-weight: bold;
+    color: var(--primary-green);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    min-width: 45px;
+}
+
+.event-icon {
+    font-size: 1.2em;
+    min-width: 30px;
+    text-align: center;
+}
+
+.event-text {
+    flex-grow: 1;
+    font-size: 0.95em;
+}
+
+.timeline-empty {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px !important;
+    opacity: 0.7;
+}
+
+.timeline-list::-webkit-scrollbar {
+    width: 6px;
+}
+.timeline-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+.timeline-list::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+/* ===== 22. VERSÃO DISPLAY ===== */
+.version-display {
+    text-align: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(15, 184, 88, 0.1), rgba(15, 184, 88, 0.05));
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(15, 184, 88, 0.2);
+}
+
+.version-display .app-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: var(--primary-green);
+    margin-bottom: 5px;
+}
+
+.version-display .app-version {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* ===== 23. SPLASH SCREEN ===== */
+#splashScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(135deg, #1a5f23 0%, #2e7d32 40%, #4CAF50 100%),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 49%,
+            rgba(255, 255, 255, 0.08) 49%,
+            rgba(255, 255, 255, 0.08) 51%,
+            transparent 51%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 49%,
+            rgba(255, 255, 255, 0.08) 49%,
+            rgba(255, 255, 255, 0.08) 51%,
+            transparent 51%
+        );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.8s ease-out;
+    overflow: hidden;
+}
+
+#splashScreen::before,
+#splashScreen::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+#splashScreen::before {
+    background: 
+        linear-gradient(90deg, 
+            transparent 48%, 
+            rgba(255, 255, 255, 0.25) 48%, 
+            rgba(255, 255, 255, 0.25) 52%, 
+            transparent 52%
+        ),
+        linear-gradient(0deg, 
+            transparent 48%, 
+            rgba(255, 255, 255, 0.25) 48%, 
+            rgba(255, 255, 255, 0.25) 52%, 
+            transparent 52%
+        ),
+        radial-gradient(
+            circle at 50% 50%, 
+            transparent 45%, 
+            rgba(255, 255, 255, 0.15) 45%, 
+            rgba(255, 255, 255, 0.15) 47%, 
+            transparent 47%
+        );
+}
+
+#splashScreen::after {
+    background: 
+        linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.1) 5%, 
+            transparent 5%, 
+            transparent 15%, 
+            rgba(255, 255, 255, 0.05) 15%, 
+            rgba(255, 255, 255, 0.05) 20%, 
+            transparent 20%
+        ),
+        linear-gradient(90deg, 
+            transparent 80%, 
+            rgba(255, 255, 255, 0.05) 80%, 
+            rgba(255, 255, 255, 0.05) 85%, 
+            transparent 85%, 
+            transparent 95%, 
+            rgba(255, 255, 255, 0.1) 95%
+        );
+}
+
+#splashScreen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+    color: white;
+    padding: 25px;
+    max-width: 320px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.splash-content .logo {
+    font-size: 5rem;
+    margin-bottom: 15px;
+    animation: bounce 1.5s infinite alternate, glow 2s infinite ease-in-out;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(76, 175, 80, 0.3));
+    transform-style: preserve-3d;
+}
+
+.splash-content h1 {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(76, 175, 80, 0.2);
+    letter-spacing: 0.5px;
+}
+
+.splash-content .version {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 25px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border-top-color: #FFD700;
+    animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.loading-text {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0) scale(1) rotate(0deg); }
+    100% { transform: translateY(-15px) scale(1.05) rotate(5deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5)); }
+    50% { filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.8)); }
+}
+
+/* ===== 24. BOTÕES DE JOGADORES ===== */
+.players-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.players-list li:hover {
+    transform: translateX(4px);
+    background: rgba(15, 184, 88, 0.05);
+}
+
+.player-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-grow: 1;
+}
+
+.player-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.player-actions button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.player-actions button:first-child {
+    background: rgba(15, 184, 88, 0.1);
+    color: var(--primary-green);
+}
+.player-actions button:first-child:active {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(0.9);
+}
+.player-actions button:last-child {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--primary-red);
+}
+.player-actions button:last-child:active {
+    background: var(--primary-red);
+    color: white;
+    transform: scale(0.9);
+}
+
+/* ===== 25. SCROLLBAR GLOBAL ===== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+/* ===== 26. RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
-    .header-container {
-        padding: 0 var(--space-md);
-    }
-    
     .app-main {
         padding: var(--space-md);
     }
     
     .scoreboard-container {
-        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .scoreboard-container.p-xl {
+        padding: var(--space-lg); /* sobrescreve p-xl para lg */
     }
     
     .score-number {
@@ -1232,18 +1598,12 @@ button:active {
         min-width: 100px;
     }
     
-    .score-divider {
-        font-size: 28px;
-        padding: 0 var(--space-md);
-    }
-    
     .stats-grid,
     .comparison-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* CELULARES */
 @media (max-width: 480px) {
     .app-title {
         font-size: var(--font-size-lg);
@@ -1328,39 +1688,36 @@ button:active {
     .players-grid {
         grid-template-columns: 1fr;
     }
+    
+    .scoreboard-container.p-xl {
+        padding: var(--space-lg); /* consistente */
+    }
 }
 
-/* PAISAGEM */
 @media (orientation: landscape) and (max-height: 500px) {
     .app-header {
         padding: var(--space-sm) 0;
     }
-    
     .tabs-navigation {
         top: 70px;
     }
-    
     .main-scoreboard {
         min-height: 130px;
         padding: var(--space-md) 0;
     }
-    
     .score-number {
         font-size: 36px;
         min-width: 55px;
     }
-    
     .action-btn {
         width: 40px;
         height: 40px;
         font-size: 16px;
     }
-    
     .goal-btn {
         height: 48px;
         font-size: 20px;
     }
-    
     .game-timer {
         font-size: 20px;
         padding: var(--space-xs) var(--space-sm);
@@ -1368,188 +1725,26 @@ button:active {
     }
 }
 
-/* ÁREAS SEGURAS */
 @supports (padding: max(0px)) {
     body {
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
         padding-bottom: max(100px, env(safe-area-inset-bottom));
     }
-    
     .app-header {
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
     }
-    
     .tabs-navigation {
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
     }
-    
     .install-btn {
         bottom: max(var(--space-xl), env(safe-area-inset-bottom) + 10px);
     }
-    
     .undo-btn {
         bottom: max(90px, env(safe-area-inset-bottom) + 70px);
         right: max(var(--space-xl), env(safe-area-inset-right) + 10px);
-    }
-}
-
-/* SCROLLBAR */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--primary-green);
-    border-radius: 3px;
-}
-
-/* ===== 20. NOVAS ADIÇÕES ===== */
-
-/* BACKGROUND SUAVE */
-body.clean-bg {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    min-height: 100vh;
-}
-
-/* VERSÃO DO APP NO BACKUP */
-.version-display {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: linear-gradient(135deg, rgba(15, 184, 88, 0.1), rgba(15, 184, 88, 0.05));
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(15, 184, 88, 0.2);
-}
-
-.version-display .app-title {
-    font-size: 1.4em;
-    font-weight: bold;
-    color: var(--primary-green);
-    margin-bottom: 5px;
-}
-
-.version-display .app-version {
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    font-family: monospace;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 4px 12px;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-/* LINHA DO TEMPO */
-.timeline-container {
-    margin: 20px 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: var(--border-radius-lg);
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.timeline-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-.timeline-item {
-    padding: 10px 15px;
-    margin: 8px 0;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.2s ease;
-}
-
-.timeline-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.timeline-item.event-left {
-    border-left: 4px solid var(--primary-green);
-    justify-content: flex-start;
-}
-
-.timeline-item.event-right {
-    border-left: 4px solid var(--primary-yellow);
-    justify-content: flex-start;
-}
-
-.timeline-item.event-center {
-    border-left: 4px solid var(--primary-red);
-    justify-content: center;
-    text-align: center;
-}
-
-.event-time {
-    font-weight: bold;
-    color: var(--primary-green);
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-    min-width: 45px;
-}
-
-.event-icon {
-    font-size: 1.2em;
-    min-width: 30px;
-    text-align: center;
-}
-
-.event-text {
-    flex-grow: 1;
-    font-size: 0.95em;
-}
-
-.timeline-empty {
-    text-align: center;
-    color: var(--text-secondary);
-    font-style: italic;
-    padding: 20px !important;
-    opacity: 0.7;
-}
-
-.timeline-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.timeline-list::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
-}
-
-.timeline-list::-webkit-scrollbar-thumb {
-    background: var(--primary-green);
-    border-radius: 3px;
-}
-
-@media (max-width: 480px) {
-    .timeline-container {
-        margin: 15px 5px;
-        padding: 12px;
-    }
-    .timeline-item {
-        padding: 8px 12px;
-        font-size: 0.9em;
-    }
-    .event-time {
-        min-width: 40px;
-        font-size: 0.85em;
-    }
-    .event-icon {
-        min-width: 25px;
-        font-size: 1.1em;
     }
 }
 
@@ -1558,281 +1753,12 @@ body.clean-bg {
     background-color: #f0f0f0 !important;
     transition: background-color 0.3s;
 }
-
 .abamento button.active {
     background-color: #4CAF50 !important;
     color: white !important;
 }
 
-/* ===== 21. SPLASH SCREEN ===== */
-#splashScreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        linear-gradient(135deg, #1a5f23 0%, #2e7d32 40%, #4CAF50 100%),
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 49%,
-            rgba(255, 255, 255, 0.08) 49%,
-            rgba(255, 255, 255, 0.08) 51%,
-            transparent 51%
-        ),
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 49%,
-            rgba(255, 255, 255, 0.08) 49%,
-            rgba(255, 255, 255, 0.08) 51%,
-            transparent 51%
-        );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.8s ease-out;
-    overflow: hidden;
-}
-
-#splashScreen::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        linear-gradient(90deg, 
-            transparent 48%, 
-            rgba(255, 255, 255, 0.25) 48%, 
-            rgba(255, 255, 255, 0.25) 52%, 
-            transparent 52%
-        ),
-        linear-gradient(0deg, 
-            transparent 48%, 
-            rgba(255, 255, 255, 0.25) 48%, 
-            rgba(255, 255, 255, 0.25) 52%, 
-            transparent 52%
-        ),
-        radial-gradient(
-            circle at 50% 50%, 
-            transparent 45%, 
-            rgba(255, 255, 255, 0.15) 45%, 
-            rgba(255, 255, 255, 0.15) 47%, 
-            transparent 47%
-        );
-    pointer-events: none;
-}
-
-#splashScreen::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        linear-gradient(90deg, 
-            rgba(255, 255, 255, 0.1) 5%, 
-            transparent 5%, 
-            transparent 15%, 
-            rgba(255, 255, 255, 0.05) 15%, 
-            rgba(255, 255, 255, 0.05) 20%, 
-            transparent 20%
-        ),
-        linear-gradient(90deg, 
-            transparent 80%, 
-            rgba(255, 255, 255, 0.05) 80%, 
-            rgba(255, 255, 255, 0.05) 85%, 
-            transparent 85%, 
-            transparent 95%, 
-            rgba(255, 255, 255, 0.1) 95%
-        );
-    pointer-events: none;
-}
-
-#splashScreen.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.splash-content {
-    text-align: center;
-    color: white;
-    padding: 25px;
-    max-width: 320px;
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 20px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    position: relative;
-    z-index: 2;
-}
-
-.splash-content .logo {
-    font-size: 5rem;
-    margin-bottom: 15px;
-    animation: bounce 1.5s infinite alternate, glow 2s infinite ease-in-out;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(76, 175, 80, 0.3));
-    transform-style: preserve-3d;
-}
-
-.splash-content h1 {
-    font-size: 2.5rem;
-    margin: 0 0 10px 0;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(76, 175, 80, 0.2);
-    letter-spacing: 0.5px;
-}
-
-.splash-content .version {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin-bottom: 25px;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 5px 15px;
-    border-radius: 20px;
-    display: inline-block;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.loading {
-    display: flex;
-    justify-content: center;
-    margin: 25px 0 20px;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    border-top-color: #FFD700;
-    animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.loading-text {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-top: 10px;
-    letter-spacing: 1px;
-    font-weight: 300;
-}
-
-@keyframes bounce {
-    0% { transform: translateY(0) scale(1) rotate(0deg); }
-    100% { transform: translateY(-15px) scale(1.05) rotate(5deg); }
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes glow {
-    0%, 100% { filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5)); }
-    50% { filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.8)); }
-}
-
-@media (max-width: 600px) {
-    .splash-content .logo { 
-        font-size: 4rem; 
-        margin-bottom: 10px;
-    }
-    .splash-content h1 { 
-        font-size: 2rem; 
-    }
-    .splash-content {
-        padding: 20px;
-        max-width: 280px;
-        margin: 0 15px;
-    }
-    #splashScreen::before {
-        background: 
-            linear-gradient(90deg, 
-                transparent 48%, 
-                rgba(255, 255, 255, 0.2) 48%, 
-                rgba(255, 255, 255, 0.2) 52%, 
-                transparent 52%
-            ),
-            linear-gradient(0deg, 
-                transparent 48%, 
-                rgba(255, 255, 255, 0.2) 48%, 
-                rgba(255, 255, 255, 0.2) 52%, 
-                transparent 52%
-            );
-    }
-}
-
-/* ===== 22. BOTÕES DE JOGADORES ===== */
-.players-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border-radius: var(--border-radius-md);
-  margin-bottom: 8px;
-  border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
-}
-
-.players-list li:hover {
-  transform: translateX(4px);
-  background: rgba(15, 184, 88, 0.05);
-}
-
-.player-name {
-  font-weight: 600;
-  color: var(--text-primary);
-  flex-grow: 1;
-}
-
-.player-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.player-actions button {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  min-width: 36px;
-  min-height: 36px;
-}
-
-.player-actions button:first-child {
-  background: rgba(15, 184, 88, 0.1);
-  color: var(--primary-green);
-}
-
-.player-actions button:first-child:active {
-  background: var(--primary-green);
-  color: white;
-  transform: scale(0.9);
-}
-
-.player-actions button:last-child {
-  background: rgba(255, 71, 87, 0.1);
-  color: var(--primary-red);
-}
-
-.player-actions button:last-child:active {
-  background: var(--primary-red);
-  color: white;
-  transform: scale(0.9);
+body.clean-bg {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
 }
