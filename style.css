@@ -83,8 +83,6 @@ body {
 }
 
 /* ===== 3. UTILITÁRIOS ===== */
-
-/* Espaçamento - Padding completo */
 .p-xs { padding: var(--space-xs); }
 .p-sm { padding: var(--space-sm); }
 .p-md { padding: var(--space-md); }
@@ -92,32 +90,27 @@ body {
 .p-xl { padding: var(--space-xl); }
 .p-2xl { padding: var(--space-2xl); }
 
-/* Espaçamento - Padding horizontal */
 .px-xs { padding-left: var(--space-xs); padding-right: var(--space-xs); }
 .px-sm { padding-left: var(--space-sm); padding-right: var(--space-sm); }
 .px-md { padding-left: var(--space-md); padding-right: var(--space-md); }
 .px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
 .px-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
 
-/* Espaçamento - Padding vertical */
 .py-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
 .py-sm { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
 .py-md { padding-top: var(--space-md); padding-bottom: var(--space-md); }
 .py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
 .py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
 
-/* Margens - utilitários rápidos */
 .mt-auto { margin-top: auto; }
 .mb-auto { margin-bottom: auto; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 
-/* Display */
 .hidden { display: none !important; }
 .block { display: block; }
 .flex { display: flex; }
 .grid { display: grid; }
 
-/* Cursor */
 .cursor-pointer { cursor: pointer; }
 
 /* ===== 4. FEEDBACK TÁTIL ===== */
@@ -1556,7 +1549,6 @@ button:active {
     border-radius: 3px;
 }
 
-
 /* ===== 26. RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
     .app-main {
@@ -1568,7 +1560,7 @@ button:active {
     }
     
     .scoreboard-container.p-xl {
-        padding: var(--space-lg); /* sobrescreve p-xl para lg */
+        padding: var(--space-lg);
     }
     
     .score-number {
@@ -1691,7 +1683,7 @@ button:active {
     }
     
     .scoreboard-container.p-xl {
-        padding: var(--space-lg); /* consistente */
+        padding: var(--space-lg);
     }
 }
 
@@ -1749,6 +1741,27 @@ button:active {
     }
 }
 
+/* ===== AJUSTES PÓS-REFATORAÇÃO – CARDS E ESPAÇAMENTOS ===== */
+.stats-card.p-lg {
+    padding: 20px;
+}
+
+.stats-card .ranking-list {
+    margin-top: 12px;
+}
+
+.ranking-list li {
+    padding: 12px 16px;
+}
+
+.historico-item.p-lg {
+    padding: 20px;
+}
+
+.comparison-player.p-lg {
+    padding: 20px;
+}
+
 /* GARANTE que apenas botões ativos são verdes */
 .abamento button {
     background-color: #f0f0f0 !important;
@@ -1764,29 +1777,145 @@ body.clean-bg {
     min-height: 100vh;
 }
 
-/* ===== AJUSTES PÓS-REFATORAÇÃO – CARDS E ESPAÇAMENTOS ===== */
-
-/* 1. RANKING – CARD PRINCIPAL */
-.stats-card.p-lg {
-    padding: 20px; /* Antes 24px – mais equilibrado */
+/* ===== NOVO: BOTÃO DE COMPARTILHAR NO HISTÓRICO (v1.1.0) ===== */
+.share-card-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* 2. RANKING – LISTA DENTRO DO CARD */
-.stats-card .ranking-list {
-    margin-top: 12px; /* Antes 24px – reduz espaçamento */
+.share-card-btn:hover {
+    background: rgba(15, 184, 88, 0.1);
 }
 
-/* 3. RANKING – ITENS DA LISTA */
-.ranking-list li {
-    padding: 12px 16px; /* Antes 16px 16px – mais compacto */
+.share-card-btn:active {
+    transform: scale(0.9);
+    background: rgba(15, 184, 88, 0.2);
 }
 
-/* 4. HISTÓRICO – ITENS (quando tiverem a classe p-lg) */
-.historico-item.p-lg {
-    padding: 20px; /* Para quando adicionarmos a classe no JS */
+/* ===== NOVO: CARD DE GRAMADO PARA COMPARTILHAMENTO (v1.1.0) ===== */
+.card-gramado {
+    background: 
+        linear-gradient(135deg, #1a5f23 0%, #2e7d32 40%, #4CAF50 100%),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 49%,
+            rgba(255, 255, 255, 0.15) 49%,
+            rgba(255, 255, 255, 0.15) 51%,
+            transparent 51%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 49%,
+            rgba(255, 255, 255, 0.15) 49%,
+            rgba(255, 255, 255, 0.15) 51%,
+            transparent 51%
+        );
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: var(--border-radius-xl);
+    padding: 32px 24px;
 }
 
-/* 5. COMPARAÇÃO – BOXES INTERNOS */
-.comparison-player.p-lg {
-    padding: 20px; /* Para quando adicionarmos a classe no JS/HTML */
+.card-gramado h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: white;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.card-placar {
+    font-size: 48px;
+    font-weight: 900;
+    text-align: center;
+    margin: 24px 0 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: rgba(0,0,0,0.2);
+    padding: 16px;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.card-placar span {
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--border-radius-md);
+}
+
+.card-info {
+    font-size: 18px;
+    margin: 12px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-info:last-child {
+    border-bottom: none;
+}
+
+/* ===== TEMA ESCURO AUTOMÁTICO (v1.1.0) ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* FUNDOS */
+        --bg-body: #121212;
+        --bg-card: #1e1e1e;
+        --bg-header: #0a0a0a;
+        --bg-modal: #1e1e1e;
+        
+        /* TEXTOS */
+        --text-primary: #f0f0f0;
+        --text-secondary: #b0b0b0;
+        --text-light: #808080;
+        
+        /* BORDAS */
+        --border-color: #333333;
+        
+        /* SOMBRAS */
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+        --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    .score-number {
+        background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+        border-color: #444;
+        color: #fff;
+    }
+
+    .team-name-display {
+        background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.1));
+        border-color: rgba(15, 184, 88, 0.3);
+    }
+
+    .historico-item,
+    .stats-card,
+    .input-card {
+        background: #1e1e1e;
+        border-color: #333;
+    }
+
+    .card-gramado {
+        border-color: rgba(255,255,255,0.2);
+    }
 }
