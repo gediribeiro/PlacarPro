@@ -1242,8 +1242,7 @@ function renderJogadores() {
       const placar = partida.placar || [0, 0];
       
       const item = document.createElement('div');
-      item.className = 'historico-item';
-      
+        item.className = 'historico-item p-lg';      
       let golsHTML = '';
       if (partida.gols) {
         golsHTML = Object.entries(partida.gols)
@@ -1500,7 +1499,7 @@ function renderJogadores() {
         <h3 class="card-title">⚖️ Comparação: ${jogador1} vs ${jogador2}</h3>
         
         <div class="comparison-grid">
-          <div class="comparison-player">
+          <div class="comparison-player p-lg">
             <h4>${jogador1}</h4>
             <div class="comparison-stat">
               <span class="stat-label">Gols totais:</span>
@@ -1524,7 +1523,7 @@ function renderJogadores() {
             </div>
           </div>
           
-          <div class="comparison-player">
+          <div class="comparison-player p-lg">
             <h4>${jogador2}</h4>
             <div class="comparison-stat">
               <span class="stat-label">Gols totais:</span>
