@@ -1843,33 +1843,36 @@ body.clean-bg {
 }
 
 .card-placar {
-    font-size: 32px;
+    font-size: 28px;  /* antes 32px */
     font-weight: 700;
     text-align: center;
     margin: 20px 0 24px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    gap: 8px;         /* reduzido para caber melhor */
     background: rgba(200, 230, 201, 0.3);
-    padding: 16px;
+    padding: 12px 8px; /* padding horizontal menor */
     border-radius: var(--border-radius-lg);
     border: 1px solid #c8e6c9;
+    flex-wrap: wrap;   /* quebra linha se necessário */
 }
 
 .card-placar span {
-    padding: 6px 12px;
+    padding: 4px 8px;  /* padding menor */
     background: rgba(255, 255, 255, 0.7);
     border-radius: var(--border-radius-md);
-    font-size: 18px;
+    font-size: 18px;   /* tamanho dos nomes dos times */
     color: #1e293b;
+    white-space: nowrap;
 }
 
 .card-placar span:nth-child(2) {
-    font-size: 32px;
+    font-size: 28px;   /* números do placar reduzidos */
     font-weight: 800;
     background: rgba(26, 95, 35, 0.1);
     color: #1a5f23;
+    padding: 4px 12px;
 }
 
 .card-info {
@@ -1940,5 +1943,18 @@ body.clean-bg {
 
     .card-gramado {
         border-color: rgba(255,255,255,0.2);
+    }
+}
+
+@media (max-width: 480px) {
+    .card-placar {
+        font-size: 24px;
+        gap: 4px;
+    }
+    .card-placar span {
+        font-size: 16px;
+    }
+    .card-placar span:nth-child(2) {
+        font-size: 24px;
     }
 }
