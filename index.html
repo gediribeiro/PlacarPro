@@ -363,5 +363,51 @@
             if (versionSpan) versionSpan.textContent = 'v1.2.0';
         });
     </script>
+<!-- ===== TUTORIAL LEQUE – PRIMEIRO ACESSO ===== -->
+<div id="tutorialLeque" class="tutorial-overlay" style="display: none;">
+    <div class="leque-container">
+        <!-- CARTAS SOBREPOSTAS EM LEQUE DIAGONAL -->
+        <div class="leque-deck" id="lequeDeck">
+            <div class="leque-card card-1">
+                <span class="card-icon">⚽</span>
+                <h4>Gols</h4>
+                <p>Use + e – para marcar ou remover gols de cada time.</p>
+            </div>
+            <div class="leque-card card-2">
+                <span class="card-icon">🟨</span>
+                <h4>Faltas</h4>
+                <p>Registre faltas por jogador e controle o ritmo do jogo.</p>
+            </div>
+            <div class="leque-card card-3 active">
+                <span class="card-icon">👥</span>
+                <h4>Jogadores</h4>
+                <p>Adicione, edite nomes e acompanhe rankings.</p>
+                <button class="leque-btn" id="entendiTutorialBtn">✅ Entendi</button>
+            </div>
+            <div class="leque-card card-4">
+                <span class="card-icon">📤</span>
+                <h4>Compartilhar</h4>
+                <p>No histórico, gere cards profissionais com placar e craque.</p>
+            </div>
+            <div class="leque-card card-5">
+                <span class="card-icon">📱</span>
+                <h4>Instalar</h4>
+                <p>Adicione à tela de início e use como app offline.</p>
+            </div>
+        </div>
+
+        <!-- INDICADORES (DOTS) -->
+        <div class="leque-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+        <!-- BOTÃO PULAR -->
+        <button class="leque-skip" id="pularTutorialBtn">⏹ Pular tutorial</button>
+    </div>
+</div>  
 </body>
 </html>
