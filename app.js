@@ -1792,6 +1792,39 @@ const PlacarApp = (function() {
     }
   }
 
+    // ===== v1.2.0: Exportar card do jogo como imagem =====
+  function exportarCardComoImagem() {
+    const modalContent = document.querySelector('#modalCardPartida .modal-content');
+    if (!modalContent) {
+      showToast('Card não encontrado', 'error');
+      return;
+    }
+
+    // Mostra toast de processamento
+    showToast('Gerando imagem...', 'info', 2000);
+
+    html2canvas(modalContent, {
+      scale: 1.8,              // Alta resolução
+      backgroundColor: null,   // Respeita o fundo do card
+      allowTaint: false,
+      useCORS: true,
+      logging: false,
+      windowWidth: modalContent.scrollWidth,
+      windowHeight: modalContent.scrollHeight
+    }).then(canvas => {
+      // Converte canvas para PNG e faz download
+      const link = document.createElement('a');
+      link.download = `placar-fut-card-${new Date().getTime()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      showToast('✅ Imagem salva!', 'success');
+    }).catch(error => {
+      console.error('Erro ao gerar imagem:', error);
+      showToast('Erro ao gerar imagem', 'error');
+    });
+  }
+
   // ===== PWA UNIVERSAL =====
   function configurarPWA() {
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -2009,6 +2042,7 @@ const PlacarApp = (function() {
     // NOVAS FUNÇÕES v1.1.0
     mostrarCardPartida: mostrarCardPartida,
     fecharModalCard: fecharModalCard,
+    exportarCardComoImagem: exportarCardComoImagem,
     getState: () => ({ ...state })
   };
 })();
