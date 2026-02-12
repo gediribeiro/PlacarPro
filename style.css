@@ -55,7 +55,6 @@
     --font-size-3xl: 32px;
     --font-size-4xl: 40px;
 
-    --header-height: 86px; /* ← ALTURA REAL DO SEU HEADER (meça no DevTools) */
 }
 
 /* ===== 2. RESET E BASE ===== */
