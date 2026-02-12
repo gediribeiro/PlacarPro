@@ -2081,12 +2081,14 @@ function iniciarAppComSplash() {
             tempoMinimoSplash.then(() => {
                 esconderSplash();
                 inicializarAppPrincipal();
+                initTutorial();
             });
         });
     } else {
         tempoMinimoSplash.then(() => {
             esconderSplash();
             inicializarAppPrincipal();
+            initTutorial();
         });
     }
 }
