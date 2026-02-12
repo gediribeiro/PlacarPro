@@ -260,20 +260,19 @@
                 <!-- ===== v1.1.0: versão atualizada ===== -->
                 <div class="app-version">Versão: <span id="appVersion">v1.2.0</span></div>
             </div>
-            <div class="stats-card p-lg">
-                <h3 class="card-title">💾 Backup & Restauração</h3>
-                <button class="primary-btn" onclick="PlacarApp.exportarBackup()">
-                    📤 Exportar Dados
-                </button>
-                <button class="secondary-btn" onclick="document.getElementById('importFile').click()">
-                    📥 Importar Dados
-                </button>
-                <input type="file" id="importFile" accept=".json" style="display:none" 
-                       onchange="PlacarApp.importarBackup(event)">
-                <p style="font-size:12px; color:var(--text-secondary); margin-top:10px;">
-                    Salve seus jogadores, histórico e estatísticas
-                </p>
-            </div>
+                <div class="stats-card p-lg">
+        <h3 class="card-title">💾 Backup & Restauração</h3>
+        <button class="primary-btn" onclick="PlacarApp.exportarBackup()">📤 Exportar Dados</button>
+        <button class="secondary-btn" onclick="document.getElementById('importFile').click()">📥 Importar Dados</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="PlacarApp.importarBackup(event)">
+        <p style="font-size:12px; color:var(--text-secondary); margin-top:10px;">
+            Salve seus jogadores, histórico e estatísticas
+        </p>
+        <!-- BOTÃO NOVO -->
+        <button class="secondary-btn" onclick="PlacarApp.mostrarTutorialLeque()" style="margin-top: 15px;">
+            📘 Reexibir tutorial
+        </button>
+    </div>
         </section>
     </main>
 
