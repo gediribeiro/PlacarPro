@@ -2029,6 +2029,13 @@ function extrairNome(nomeComParenteses) {
       if (modal) modal.style.display = 'none';
       if (permanentemente) localStorage.setItem('placar_tutorial_visto', 'sim');
     },
+        // ===== TUTORIAL LEQUE – ABERTURA MANUAL (SEM TRAVA) =====
+    abrirTutorialManual: function() {
+      const modal = document.getElementById('tutorialLeque');
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    },
     getState: () => ({ ...state })
   };
 })();
