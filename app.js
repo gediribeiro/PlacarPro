@@ -1789,15 +1789,163 @@ function extrairNome(nomeComParenteses) {
     }
   }
 
-    // ===== TUTORIAL LEQUE =====
-  function initTutorial() {
+    // ===== TUTORIAL LEQUE – VERSÃO COMPLETA (SETAS + SWIPE + TECLADO) =====
+let lequeIndexAtual = 2; // Sempre começa no índice 2 (carta "Jogadores")
+let touchStartX = 0;
+let touchEndX = 0;
+let touchMoved = false;
+
+// ===== POSICIONA AS CARTAS COM BASE NO ÍNDICE ATIVO =====
+function posicionarCartasLeque(index) {
+    const cartas = document.querySelectorAll('.leque-card');
+    if (!cartas.length) return;
+
+    cartas.forEach((carta, i) => {
+        carta.classList.remove('card-1', 'card-2', 'card-3', 'card-4', 'card-5', 'active');
+        
+        const pos = i - index;
+        let classePosicao = '';
+        
+        if (pos === -2) classePosicao = 'card-1';
+        else if (pos === -1) classePosicao = 'card-2';
+        else if (pos === 0) {
+            classePosicao = 'card-3';
+            carta.classList.add('active');
+        } else if (pos === 1) classePosicao = 'card-4';
+        else if (pos === 2) classePosicao = 'card-5';
+        
+        if (classePosicao) carta.classList.add(classePosicao);
+    });
+
+    atualizarDotsLeque(index);
+}
+
+// ===== ATUALIZA OS DOTS INDICADORES =====
+function atualizarDotsLeque(index) {
+    const dots = document.querySelectorAll('.leque-dots .dot');
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+    });
+}
+
+// ===== PRÓXIMA CARTA =====
+function proximoCarta() {
+    if (lequeIndexAtual < 4) {
+        lequeIndexAtual++;
+        posicionarCartasLeque(lequeIndexAtual);
+    }
+}
+
+// ===== CARTA ANTERIOR =====
+function cartaAnterior() {
+    if (lequeIndexAtual > 0) {
+        lequeIndexAtual--;
+        posicionarCartasLeque(lequeIndexAtual);
+    }
+}
+
+// ===== IR PARA CARTA ESPECÍFICA (CLICK NOS DOTS) =====
+function irParaCarta(index) {
+    if (index >= 0 && index <= 4) {
+        lequeIndexAtual = index;
+        posicionarCartasLeque(index);
+    }
+}
+
+// ===== CONFIGURA SWIPE (TOUCH) =====
+function configurarSwipe() {
+    const deck = document.getElementById('lequeDeck');
+    if (!deck) return;
+
+    deck.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchMoved = false;
+    }, { passive: true });
+
+    deck.addEventListener('touchmove', () => {
+        touchMoved = true;
+    }, { passive: true });
+
+    deck.addEventListener('touchend', (e) => {
+        if (touchMoved) {
+            touchEndX = e.changedTouches[0].screenX;
+            const diffX = touchEndX - touchStartX;
+            
+            // Swipe para direita → carta anterior
+            if (diffX > 50) {
+                cartaAnterior();
+            }
+            // Swipe para esquerda → próxima carta
+            else if (diffX < -50) {
+                proximoCarta();
+            }
+        }
+        touchMoved = false;
+    }, { passive: true });
+}
+
+// ===== CONFIGURA TECLADO (SETAS) =====
+function configurarTeclado() {
+    document.removeEventListener('keydown', handleTeclado); // Remove listener anterior para não duplicar
+    document.addEventListener('keydown', handleTeclado);
+}
+
+function handleTeclado(e) {
+    const modal = document.getElementById('tutorialLeque');
+    if (modal && modal.style.display === 'flex') {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            cartaAnterior();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            proximoCarta();
+        }
+    }
+}
+
+// ===== INICIALIZA TUTORIAL INTERATIVO =====
+function initTutorialInterativo() {
+    const deck = document.getElementById('lequeDeck');
+    if (!deck) return;
+
+    // Reseta o índice para a carta central
+    lequeIndexAtual = 2;
+    
+    // Posiciona as cartas
+    posicionarCartasLeque(lequeIndexAtual);
+
+    // Botões de navegação
+    const btnProximo = document.getElementById('lequeProximoBtn');
+    const btnAnterior = document.getElementById('lequeAnteriorBtn');
+
+    if (btnProximo) btnProximo.onclick = proximoCarta;
+    if (btnAnterior) btnAnterior.onclick = cartaAnterior;
+
+    // Dots clicáveis
+    const dots = document.querySelectorAll('.leque-dots .dot');
+    dots.forEach((dot, i) => {
+        dot.onclick = () => irParaCarta(i);
+    });
+
+    // Configura swipe touch
+    configurarSwipe();
+    
+    // Configura teclado
+    configurarTeclado();
+}
+
+// ===== TUTORIAL AUTOMÁTICO (PRIMEIRO ACESSO) =====
+function initTutorial() {
     setTimeout(() => {
-      if (!localStorage.getItem('placar_tutorial_visto')) {
-        const modal = document.getElementById('tutorialLeque');
-        if (modal) modal.style.display = 'flex';
-      }
+        if (!localStorage.getItem('placar_tutorial_visto')) {
+            const modal = document.getElementById('tutorialLeque');
+            if (modal) {
+                modal.style.display = 'flex';
+                initTutorialInterativo();
+            }
+        }
     }, 1200);
-  }
+}
 
     
   // ===== PWA UNIVERSAL =====
