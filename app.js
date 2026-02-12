@@ -650,7 +650,8 @@ const PlacarApp = (function() {
     };
     state.partida.craque = calcularCraque(golsPorJogador);
     state.partida.duracao = state.segundos;
-    
+
+    state.partida.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5); // ===== GERAR ID ÚNICO PARA A PARTIDA =====
     const historico = JSON.parse(localStorage.getItem("historico")) || [];
     historico.push(state.partida);
     localStorage.setItem("historico", JSON.stringify(historico));
@@ -1259,8 +1260,8 @@ const PlacarApp = (function() {
           .join('');
       }
       
-      // Gerar ID temporário se não tiver
-      const partidaId = partida.id || `${partida.data}-${Date.now()}-${Math.random()}`;
+      // ID da partida
+      const partidaId = partida.id;
       
       item.innerHTML = `
         <div class="historico-header">
