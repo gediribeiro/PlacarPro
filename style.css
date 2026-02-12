@@ -1989,7 +1989,7 @@ body.clean-bg {
 /* TEMA ESCURO AUTOMÁTICO (v1.2.0) - CORREÇÃO GLOBAL */
 /* =========================================== */
 @media (prefers-color-scheme: dark) {
-  /* 1. VARIÁVEIS ESCURAS */
+  /* 1. VARIÁVEIS ESCURAS – SEM !IMPORTANT */
   :root {
     --bg-body: #0a0c10;
     --bg-card: #1e242a;
@@ -2006,7 +2006,7 @@ body.clean-bg {
     --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.9);
   }
 
-  /* 2. RESET ESTRUTURAL – GARANTE FUNDO ESCURO EM TODA A APLICAÇÃO */
+  /* 2. RESET ESTRUTURAL – FUNDO ESCURO GARANTIDO */
   body,
   .app-main,
   .content-section,
@@ -2022,71 +2022,95 @@ body.clean-bg {
     color: var(--text-primary) !important;
   }
 
-    /* ===== PLACAR – TEMA ESCURO ===== */
-.score-number {
-  background: linear-gradient(135deg, #2a2f3a, #1e232a) !important;
-  border-color: #3a4a5a !important;
-  color: #ffffff !important;
-  box-shadow: var(--shadow-md) !important;
-}
-
-.score-divider {
-  color: var(--text-secondary) !important;
-  opacity: 1 !important;
-}
-
-.team-name-display {
-  background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.08)) !important;
-  border-color: rgba(15, 184, 88, 0.4) !important;
-  color: #f0fff0 !important;
-}
-
-.game-timer {
-  background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.1)) !important;
-  border-color: rgba(15, 184, 88, 0.4) !important;
-  color: #e9ecef !important;
-}
-
-.game-timer.tempo-pausado {
-  color: var(--primary-red) !important;
-  border-color: rgba(255, 71, 87, 0.4) !important;
-  background: linear-gradient(135deg, rgba(255, 71, 87, 0.15), rgba(255, 71, 87, 0.08)) !important;
-}
-
   /* 3. HEADER – gradiente próprio */
   .app-header {
-    background: linear-gradient(135deg, #0f1217, #0a0c10);
-    border-bottom-color: var(--primary-green);
+    background: linear-gradient(135deg, #0f1217, #0a0c10) !important;
+    border-bottom-color: var(--primary-green) !important;
   }
 
-  /* 4. TIMELINE – ajuste fino de contraste */
+  /* 4. PLACAR – CORREÇÃO DE VISIBILIDADE */
+  .score-number {
+    background: linear-gradient(135deg, #2a2f3a, #1e232a) !important;
+    border-color: #3a4a5a !important;
+    color: #ffffff !important;
+    box-shadow: var(--shadow-md) !important;
+  }
+
+  .score-divider {
+    color: var(--text-secondary) !important;
+    opacity: 1 !important;
+  }
+
+  .team-name-display {
+    background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.08)) !important;
+    border-color: rgba(15, 184, 88, 0.4) !important;
+    color: #f0fff0 !important;
+  }
+
+  .game-timer {
+    background: linear-gradient(135deg, rgba(15, 184, 88, 0.2), rgba(15, 184, 88, 0.1)) !important;
+    border-color: rgba(15, 184, 88, 0.4) !important;
+    color: #e9ecef !important;
+  }
+
+  .game-timer.tempo-pausado {
+    color: var(--primary-red) !important;
+    border-color: rgba(255, 71, 87, 0.4) !important;
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.15), rgba(255, 71, 87, 0.08)) !important;
+  }
+
+  .foul-item {
+    background: rgba(255, 165, 2, 0.12) !important;
+    border-color: rgba(255, 165, 2, 0.25) !important;
+  }
+
+  .foul-count {
+    color: #ffb347 !important;
+  }
+
+  .edit-team-btn {
+    background: rgba(15, 184, 88, 0.2) !important;
+    border-color: rgba(15, 184, 88, 0.5) !important;
+    color: #a5d6a5 !important;
+  }
+
+  .edit-team-btn:active {
+    background: var(--primary-green) !important;
+    color: white !important;
+  }
+
+  /* 5. TIMELINE – AJUSTE DE CONTRASTE */
   .timeline-container {
     background: rgba(10, 12, 16, 0.95) !important;
     border-color: var(--border-color) !important;
   }
+
   .timeline-item {
     background: rgba(255, 255, 255, 0.04) !important;
   }
+
   .timeline-empty {
     color: var(--text-secondary) !important;
   }
+
   .event-time {
     color: #a5d6a5 !important;
   }
 
-  /* 5. BOTÕES FLUTUANTES – cores otimizadas */
+  /* 6. BOTÕES FLUTUANTES – CORES OTIMIZADAS */
   .install-btn {
-    background: linear-gradient(135deg, #2ea84c, #1e7e34);
-    color: white;
-    box-shadow: 0 4px 14px rgba(46, 168, 76, 0.4);
-  }
-  .undo-btn {
-    background: linear-gradient(135deg, #e68a2e, #c9701e);
-    color: white;
-    box-shadow: 0 4px 14px rgba(230, 138, 46, 0.4);
+    background: linear-gradient(135deg, #2ea84c, #1e7e34) !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(46, 168, 76, 0.4) !important;
   }
 
-  /* 6. SPLASH SCREEN */
+  .undo-btn {
+    background: linear-gradient(135deg, #e68a2e, #c9701e) !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(230, 138, 46, 0.4) !important;
+  }
+
+  /* 7. SPLASH SCREEN */
   #splashScreen {
     background: linear-gradient(135deg, #0a3a1a 0%, #1a4a1a 40%, #2a5a2a 100%),
                 repeating-linear-gradient(90deg,
@@ -2100,33 +2124,60 @@ body.clean-bg {
                   transparent 49%,
                   rgba(255,255,255,0.08) 49%,
                   rgba(255,255,255,0.08) 51%,
-                  transparent 51%);
+                  transparent 51%) !important;
   }
 
-  /* 7. TOASTS – mantido */
+  /* 8. TOASTS */
   .toast {
-    background: #1e293b;
-    color: white;
-    border-left-color: #4a5c6c;
-  }
-  .toast-success {
-    background: linear-gradient(135deg, #0d8a3d, #0a6b2f);
-  }
-  .toast-error {
-    background: linear-gradient(135deg, #b91c1c, #991b1b);
-  }
-  .toast-warning {
-    background: linear-gradient(135deg, #b45309, #92400e);
-  }
-  .toast-info {
-    background: linear-gradient(135deg, #1e5f8e, #1a4d73);
+    background: #1e293b !important;
+    color: white !important;
+    border-left-color: #4a5c6c !important;
   }
 
-  /* 8. PEQUENOS AJUSTES */
+  .toast-success {
+    background: linear-gradient(135deg, #0d8a3d, #0a6b2f) !important;
+  }
+
+  .toast-error {
+    background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+  }
+
+  .toast-warning {
+    background: linear-gradient(135deg, #b45309, #92400e) !important;
+  }
+
+  .toast-info {
+    background: linear-gradient(135deg, #1e5f8e, #1a4d73) !important;
+  }
+
+  /* 9. OPACIDADE DE BOTÕES */
   .control-btn,
   .primary-btn,
   .secondary-btn,
   .danger-btn {
-    opacity: 0.95;
+    opacity: 0.95 !important;
+  }
+
+  /* 10. CORREÇÕES ADICIONAIS */
+  .tab-button.active {
+    color: var(--primary-green) !important;
+  }
+
+  .tab-button.active::after {
+    background: var(--primary-green) !important;
+  }
+
+  .players-list li {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+  }
+
+  .player-name {
+    color: var(--text-primary) !important;
+  }
+
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(6px) !important;
   }
 }
