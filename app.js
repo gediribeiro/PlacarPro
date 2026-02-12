@@ -1,447 +1,218 @@
-// ===== v1.2.0: Versão atualizada =====
+// ============================================================================
+// PLACAR FUT 31 – APP.JS v1.2.0
+// ============================================================================
+
 const APP_VERSION = 'v1.2.0';
 
 const PlacarApp = (function() {
+  // ==========================================================================
+  // 1. ESTADO GLOBAL
+  // ==========================================================================
   const state = {
     jogadores: JSON.parse(localStorage.getItem("jogadores")) || ['Jogador 1', 'Jogador 2', 'Jogador 3'],
-    historicaGols: [],
-    historicaFaltas: [],
-    ultimaAcao: null,
-    placar: { A: 0, B: 0 },
-    faltas: { A: 0, B: 0 },
-    partida: null,
-    timer: null,
-    segundos: 0,
-    pausado: false,
-    timeAtual: null,
-    timeAtualFalta: null,
-    nomeA: "Time A",
-    nomeB: "Time B",
-    timeEditando: null,
-    deferredPrompt: null,
-    undoTimer: null,
-    backupTimer: null,
+    historicaGols: [], historicaFaltas: [], ultimaAcao: null,
+    placar: { A: 0, B: 0 }, faltas: { A: 0, B: 0 },
+    partida: null, timer: null, segundos: 0, pausado: false,
+    timeAtual: null, timeAtualFalta: null,
+    nomeA: "Time A", nomeB: "Time B", timeEditando: null,
+    deferredPrompt: null, undoTimer: null, backupTimer: null,
     eventosTimeline: []
   };
 
-  // ===== FUNÇÕES AUXILIARES =====
-  function escapeHTML(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+  // ==========================================================================
+  // 2. FUNÇÕES AUXILIARES
+  // ==========================================================================
+  const escapeHTML = text => { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; };
 
-  function showToast(message, type = 'info', duration = 3000) {
-    document.querySelectorAll('.toast').forEach(toast => toast.remove());
-    
+  function showToast(msg, type = 'info', dur = 3000) {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    
+    toast.textContent = msg;
     toast.style.cssText = `
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: ${type === 'success' ? '#0fb858' : type === 'error' ? '#ff4757' : type === 'warning' ? '#ffa502' : '#3498db'};
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 9999;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      opacity: 0;
-      transition: all 0.3s ease;
-      text-align: center;
-      max-width: 80%;
-      word-break: break-word;
+      position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+      background:${type==='success'?'#0fb858':type==='error'?'#ff4757':type==='warning'?'#ffa502':'#3498db'};
+      color:white; padding:12px 24px; border-radius:8px; z-index:9999; font-weight:bold;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3); opacity:0; transition:all 0.3s ease;
+      text-align:center; max-width:80%; word-break:break-word;
     `;
-    
     document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateX(-50%) translateY(0)';
-    }, 10);
-    
+    setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)'; }, 10);
     if (navigator.vibrate) navigator.vibrate(30);
-    
     setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(-20px)';
-      setTimeout(() => {
-        if (toast.parentNode) toast.remove();
-      }, 300);
-    }, duration);
-    
-    toast.onclick = () => {
-      toast.style.opacity = '0';
+      toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(-20px)';
       setTimeout(() => toast.remove(), 300);
-    };
-    
+    }, dur);
+    toast.onclick = () => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); };
     return toast;
   }
 
-  function confirmAction(message) {
-    return new Promise((resolve) => {
-      if (window.confirm(message)) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    });
-  }
+  const confirmAction = msg => new Promise(resolve => resolve(window.confirm(msg)));
 
-  // ===== LINHA DO TEMPO =====
+  // ==========================================================================
+  // 3. LINHA DO TEMPO
+  // ==========================================================================
   function adicionarEventoTimeline(tipo, time = null, jogador = null) {
     if (!state.eventosTimeline) state.eventosTimeline = [];
-    
     const min = Math.floor(state.segundos / 60);
     const seg = state.segundos % 60;
-    const tempo = `${min}:${seg.toString().padStart(2, '0')}`;
-    
-    state.eventosTimeline.push({ tempo, tipo, time, jogador });
+    state.eventosTimeline.push({ tempo: `${min}:${seg.toString().padStart(2,'0')}`, tipo, time, jogador });
     atualizarTimeline();
   }
 
   function atualizarTimeline() {
     const lista = document.getElementById('listaTimeline');
     if (!lista) return;
-    
-    if (state.eventosTimeline.length === 0) {
+    if (!state.eventosTimeline.length) {
       lista.innerHTML = '<li class="timeline-empty">Nenhum evento registrado ainda</li>';
       return;
     }
-    
-    const eventosParaMostrar = state.eventosTimeline.slice(-15).reverse();
-    
-    lista.innerHTML = eventosParaMostrar.map(evento => {
-      const icone = 
-        evento.tipo === 'gol' ? '⚽' :
-        evento.tipo === 'falta' ? '🟨' :
-        evento.tipo === 'inicio' ? '▶️' :
-        evento.tipo === 'fim' ? '🏁' :
-        evento.tipo === 'pause' ? '⏸️' :
-        evento.tipo === 'resume' ? '▶️' :
-        evento.tipo === 'reset' ? '🔄' : '📝';
-      
-      let texto = '';
-      let classe = 'event-center';
-      
-      switch(evento.tipo) {
-        case 'gol':
-          texto = evento.jogador ? `${evento.jogador}` : `Time ${evento.time}`;
-          classe = evento.time === 'A' ? 'event-left' : 'event-right';
-          break;
-        case 'falta':
-          texto = evento.jogador ? `${evento.jogador}` : `Time ${evento.time}`;
-          classe = evento.time === 'A' ? 'event-left' : 'event-right';
-          break;
-        case 'inicio':
-          texto = 'Jogo Iniciado';
-          classe = 'event-center';
-          break;
-        case 'fim':
-          texto = 'Jogo Finalizado';
-          classe = 'event-center';
-          break;
-        case 'pause':
-          texto = 'Jogo Pausado';
-          classe = 'event-center';
-          break;
-        case 'resume':
-          texto = 'Jogo Retomado';
-          classe = 'event-center';
-          break;
-        case 'reset':
-          texto = 'Jogo Resetado';
-          classe = 'event-center';
-          break;
-      }
-      
-      return `<li class="timeline-item ${classe}">
-          <span class="event-time">${evento.tempo}'</span>
-          <span class="event-icon">${icone}</span>
-          <span class="event-text">${texto}</span>
-      </li>`;
+    lista.innerHTML = state.eventosTimeline.slice(-15).reverse().map(e => {
+      const icone = e.tipo==='gol'?'⚽': e.tipo==='falta'?'🟨': e.tipo==='inicio'?'▶️': e.tipo==='fim'?'🏁': e.tipo==='pause'?'⏸️': e.tipo==='resume'?'▶️': e.tipo==='reset'?'🔄':'📝';
+      let texto = '', classe = 'event-center';
+      if (e.tipo==='gol'||e.tipo==='falta') { texto = e.jogador || `Time ${e.time}`; classe = e.time==='A'?'event-left':'event-right'; }
+      else if (e.tipo==='inicio') texto = 'Jogo Iniciado';
+      else if (e.tipo==='fim') texto = 'Jogo Finalizado';
+      else if (e.tipo==='pause') texto = 'Jogo Pausado';
+      else if (e.tipo==='resume') texto = 'Jogo Retomado';
+      else if (e.tipo==='reset') texto = 'Jogo Resetado';
+      return `<li class="timeline-item ${classe}"><span class="event-time">${e.tempo}'</span><span class="event-icon">${icone}</span><span class="event-text">${texto}</span></li>`;
     }).join('');
   }
 
-  function resetarTimeline() {
-    state.eventosTimeline = [];
-    atualizarTimeline();
-  }
+  const resetarTimeline = () => { state.eventosTimeline = []; atualizarTimeline(); };
 
-  // ===== NAVEGAÇÃO =====
+  // ==========================================================================
+  // 4. NAVEGAÇÃO ENTRE ABAS
+  // ==========================================================================
   function trocarTab(tabId, button) {
     fecharPopup(); fecharPopupFalta(); fecharPopupRemover(); fecharPopupNome();
-    
     document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-    document.querySelectorAll(".abamento button, nav button, .tabs button").forEach(btn => {
-        btn.classList.remove("active");
-    });
-    
-    const tabElement = document.getElementById(tabId);
-    if (tabElement) tabElement.classList.add("active");
+    document.querySelectorAll(".abamento button, nav button, .tabs button").forEach(btn => btn.classList.remove("active"));
+    document.getElementById(tabId)?.classList.add("active");
     button.classList.add("active");
-    
-    const actions = {
-        'ranking': () => {
-            state.jogadores = JSON.parse(localStorage.getItem("jogadores") || "[]");
-            ranking();
-        },
-        'historico': historico,
-        'stats': estatisticas,
-        'comparar': carregarComparacao
-    };
-    
+    const actions = { 'ranking': () => { state.jogadores = JSON.parse(localStorage.getItem("jogadores")||"[]"); ranking(); }, 'historico': historico, 'stats': estatisticas, 'comparar': carregarComparacao };
     if (actions[tabId]) actions[tabId]();
-    
     if (navigator.vibrate) navigator.vibrate(5);
     console.log(`✅ Aba ativa: ${tabId}`);
   }
 
-  // ===== JOGADORES =====
+  // ==========================================================================
+  // 5. JOGADORES – CRUD
+  // ==========================================================================
   function addJogador() {
     const input = document.getElementById('novoJogador');
     const nome = input.value.trim();
-    
-    if (!nome) {
-        showToast('Digite um nome para o jogador', 'error');
-        return;
-    }
-    
-    if (nome.length > 20) {
-        showToast('Nome muito longo (máx: 20 caracteres)', 'error');
-        return;
-    }
-    
-    if (!/^[a-zA-ZÀ-ÿ0-9\s]+$/.test(nome)) {
-        showToast('Use apenas letras, números e espaços', 'error');
-        return;
-    }
-    
-    if (state.jogadores.includes(nome)) {
-        showToast('Jogador já existe!', 'warning');
-        return;
-    }
-    
+    if (!nome) return showToast('Digite um nome', 'error');
+    if (nome.length>20) return showToast('Máx 20 caracteres', 'error');
+    if (!/^[a-zA-ZÀ-ÿ0-9\s]+$/.test(nome)) return showToast('Use letras, números e espaços', 'error');
+    if (state.jogadores.includes(nome)) return showToast('Jogador já existe', 'warning');
     state.jogadores.push(nome);
     localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-    
-    input.value = '';
-    input.blur();
-    
-    renderJogadores();
-    fazerBackupAutomatico();
-    
+    input.value = ''; input.blur();
+    renderJogadores(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(10);
     showToast(`${nome} adicionado!`, 'success');
   }
 
   async function removerJogador(index) {
     const nome = state.jogadores[index];
-    
     if (await confirmAction(`Remover ${nome}?`)) {
-        state.jogadores.splice(index, 1);
-        localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-        renderJogadores();
-        fazerBackupAutomatico();
-        showToast(`${nome} removido`, 'success');
+      state.jogadores.splice(index,1);
+      localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
+      renderJogadores(); fazerBackupAutomatico();
+      showToast(`${nome} removido`, 'success');
     }
   }
 
-  // ===== EDIÇÃO DE JOGADORES =====
   async function editarNomeJogador(index) {
     const nomeAtual = state.jogadores[index];
-    
-    const novoNome = prompt(`Editar jogador:\n\nNome atual: ${nomeAtual}\n\nDigite o novo nome:`, nomeAtual);
-    
-    if (!novoNome || novoNome.trim() === '') {
-        return;
-    }
-    
-    const nomeFormatado = novoNome.trim();
-    
-    if (nomeFormatado.length > 20) {
-        showToast('Nome muito longo (máx: 20 caracteres)', 'error');
-        return;
-    }
-    
-    if (!/^[a-zA-ZÀ-ÿ0-9\s]+$/.test(nomeFormatado)) {
-        showToast('Use apenas letras, números e espaços', 'error');
-        return;
-    }
-    
-    if (nomeFormatado !== nomeAtual && state.jogadores.includes(nomeFormatado)) {
-        showToast('Já existe um jogador com este nome!', 'warning');
-        return;
-    }
-    
+    const novo = prompt(`Editar jogador:\n\nNome atual: ${nomeAtual}\n\nNovo nome:`, nomeAtual)?.trim();
+    if (!novo) return;
+    if (novo.length>20) return showToast('Máx 20 caracteres','error');
+    if (!/^[a-zA-ZÀ-ÿ0-9\s]+$/.test(novo)) return showToast('Use letras, números e espaços','error');
+    if (novo!==nomeAtual && state.jogadores.includes(novo)) return showToast('Já existe','warning');
     const nomeAntigo = state.jogadores[index];
-    state.jogadores[index] = nomeFormatado;
-    
+    state.jogadores[index] = novo;
+
+    // Atualiza gols/faltas do estado
     if (state.historicaGols) {
-        state.historicaGols.forEach(evento => {
-            if (evento.jogador === nomeAntigo) {
-                evento.jogador = nomeFormatado;
-            }
-        });
-        localStorage.setItem("historicaGols", JSON.stringify(state.historicaGols));
+      state.historicaGols.forEach(e => { if (e.jogador === nomeAntigo) e.jogador = novo; });
+      localStorage.setItem("historicaGols", JSON.stringify(state.historicaGols));
     }
-    
     if (state.historicaFaltas) {
-        state.historicaFaltas.forEach(evento => {
-            if (evento.jogador === nomeAntigo) {
-                evento.jogador = nomeFormatado;
-            }
-        });
-        localStorage.setItem("historicaFaltas", JSON.stringify(state.historicaFaltas));
+      state.historicaFaltas.forEach(e => { if (e.jogador === nomeAntigo) e.jogador = novo; });
+      localStorage.setItem("historicaFaltas", JSON.stringify(state.historicaFaltas));
     }
-    
-    const historicoCompleto = JSON.parse(localStorage.getItem("historico")) || [];
-    let algoFoiAtualizado = false;
-    
-    if (historicoCompleto.length > 0) {
-        historicoCompleto.forEach(partida => {
-            if (partida.gols && typeof partida.gols === 'object') {
-                Object.keys(partida.gols).forEach(jogadorNoHistorico => {
-                    if (jogadorNoHistorico.includes(nomeAntigo)) {
-                        const dadosGol = partida.gols[jogadorNoHistorico];
-                        delete partida.gols[jogadorNoHistorico];
-                        
-                        const parentesesMatch = jogadorNoHistorico.match(/\(\d+\)/);
-                        const novoNomeFinal = parentesesMatch 
-                            ? nomeFormatado + ' ' + parentesesMatch[0]
-                            : nomeFormatado;
-                        
-                        partida.gols[novoNomeFinal] = dadosGol;
-                        algoFoiAtualizado = true;
-                    }
-                });
-            }
-            
-            if (partida.faltas && partida.faltas.jogadores && typeof partida.faltas.jogadores === 'object') {
-                Object.keys(partida.faltas.jogadores).forEach(jogadorNoHistorico => {
-                    if (jogadorNoHistorico.includes(nomeAntigo)) {
-                        const qtdFaltas = partida.faltas.jogadores[jogadorNoHistorico];
-                        delete partida.faltas.jogadores[jogadorNoHistorico];
-                        
-                        const parentesesMatch = jogadorNoHistorico.match(/\(\d+\)/);
-                        const novoNomeFinal = parentesesMatch 
-                            ? nomeFormatado + ' ' + parentesesMatch[0]
-                            : nomeFormatado;
-                        
-                        partida.faltas.jogadores[novoNomeFinal] = qtdFaltas;
-                        algoFoiAtualizado = true;
-                    }
-                });
-            }
-            
-            if (partida.craque && typeof partida.craque === 'string') {
-                if (partida.craque.includes(nomeAntigo)) {
-                    const parentesesMatch = partida.craque.match(/\(\d+\)/);
-                    const novoCraque = parentesesMatch 
-                        ? nomeFormatado + ' ' + parentesesMatch[0]
-                        : nomeFormatado;
-                    
-                    partida.craque = novoCraque;
-                    algoFoiAtualizado = true;
-                }
-            }
-        });
-        
-        if (algoFoiAtualizado) {
-            localStorage.setItem("historico", JSON.stringify(historicoCompleto));
-            console.log(`✅ Histórico atualizado para: ${nomeFormatado}`);
+
+    // Atualiza histórico completo
+    const historicoCompleto = JSON.parse(localStorage.getItem("historico")||"[]");
+    let atualizado = false;
+    historicoCompleto.forEach(p => {
+      if (p.gols) Object.keys(p.gols).forEach(key => {
+        if (key.includes(nomeAntigo)) {
+          const val = p.gols[key]; delete p.gols[key];
+          const match = key.match(/\(\d+\)/);
+          p.gols[match ? `${novo} ${match[0]}` : novo] = val;
+          atualizado = true;
         }
+      });
+      if (p.faltas?.jogadores) Object.keys(p.faltas.jogadores).forEach(key => {
+        if (key.includes(nomeAntigo)) {
+          const val = p.faltas.jogadores[key]; delete p.faltas.jogadores[key];
+          const match = key.match(/\(\d+\)/);
+          p.faltas.jogadores[match ? `${novo} ${match[0]}` : novo] = val;
+          atualizado = true;
+        }
+      });
+      if (p.craque?.includes(nomeAntigo)) {
+        const match = p.craque.match(/\(\d+\)/);
+        p.craque = match ? `${novo} ${match[0]}` : novo;
+        atualizado = true;
+      }
+    });
+    if (atualizado) {
+      localStorage.setItem("historico", JSON.stringify(historicoCompleto));
+      console.log(`✅ Histórico atualizado: ${nomeAntigo} → ${novo}`);
     }
-    
     localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-    renderJogadores();
-    fazerBackupAutomatico();
-    
+    renderJogadores(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(10);
-    showToast(`Editado: ${nomeAntigo} → ${nomeFormatado}`, 'success');
-    
-    console.log(`Jogador editado: "${nomeAntigo}" → "${nomeFormatado}" | Histórico atualizado: ${algoFoiAtualizado}`);
+    showToast(`Editado: ${nomeAntigo} → ${novo}`, 'success');
   }
 
   function renderJogadores() {
     const lista = document.getElementById('listaJogadores');
     if (!lista) return;
-    
     lista.innerHTML = '';
-    
-    state.jogadores.forEach((jogador, index) => {
-        const li = document.createElement('li');
-        
-        const span = document.createElement('span');
-        span.textContent = jogador;
-        span.className = 'player-name';
-        
-        const divBotoes = document.createElement('div');
-        divBotoes.className = 'player-actions';
-        
-        const btnEditar = document.createElement('button');
-        btnEditar.textContent = '✏️';
-        btnEditar.title = 'Editar nome';
-        btnEditar.onclick = (e) => {
-            e.stopPropagation();
-            editarNomeJogador(index);
-        };
-        
-        const btnRemover = document.createElement('button');
-        btnRemover.textContent = '❌';
-        btnRemover.title = 'Remover jogador';
-        btnRemover.onclick = (e) => {
-            e.stopPropagation();
-            removerJogador(index);
-        };
-        
-        divBotoes.appendChild(btnEditar);
-        divBotoes.appendChild(btnRemover);
-        
-        li.appendChild(span);
-        li.appendChild(divBotoes);
-        lista.appendChild(li);
+    state.jogadores.forEach((nome, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="player-name">${escapeHTML(nome)}</span><div class="player-actions"><button title="Editar nome">✏️</button><button title="Remover jogador">❌</button></div>`;
+      li.querySelector('button:first-child').onclick = e => { e.stopPropagation(); editarNomeJogador(i); };
+      li.querySelector('button:last-child').onclick = e => { e.stopPropagation(); removerJogador(i); };
+      lista.appendChild(li);
     });
   }
 
-  // ===== NOMES DOS TIMES =====
+  // ==========================================================================
+  // 6. NOMES DOS TIMES
+  // ==========================================================================
   function editarNomeTime(time) {
-    fecharPopup();
-    fecharPopupFalta();
-    fecharPopupRemover();
-    
+    fecharPopup(); fecharPopupFalta(); fecharPopupRemover();
     state.timeEditando = time;
-    const popupTitulo = document.getElementById('popupTituloNome');
-    if (popupTitulo) {
-      popupTitulo.textContent = `✏️ Editar Nome - ${time === 'A' ? state.nomeA : state.nomeB}`;
-    }
-    
+    const titulo = document.getElementById('popupTituloNome');
+    if (titulo) titulo.textContent = `✏️ Editar Nome - ${time==='A'?state.nomeA:state.nomeB}`;
     const input = document.getElementById('inputNomeTime');
-    if (input) {
-      input.value = time === 'A' ? state.nomeA : state.nomeB;
-    }
-    
+    if (input) input.value = time==='A'?state.nomeA:state.nomeB;
     document.getElementById('popupNomeTime').classList.add('show');
-    setTimeout(() => {
-      if (input) input.focus();
-    }, 100);
+    setTimeout(() => input?.focus(), 100);
   }
 
   function salvarNomeTime() {
     const input = document.getElementById('inputNomeTime');
     if (!input) return;
-    
     const nome = input.value.trim();
-    
-    if (!nome || nome.length > 20) {
-      showToast('Nome inválido (máx: 20 caracteres)', 'error');
-      return;
-    }
-    
+    if (!nome || nome.length>20) return showToast('Nome inválido (máx 20)','error');
     if (state.timeEditando === 'A') {
       state.nomeA = nome;
       document.getElementById('nomeTimeA').textContent = nome;
@@ -453,1122 +224,514 @@ const PlacarApp = (function() {
       document.getElementById('nomeFaltaB').textContent = nome;
       localStorage.setItem("nomeTimeB", nome);
     }
-    
-    fecharPopupNome();
-    fazerBackupAutomatico();
-    
+    fecharPopupNome(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(10);
-    showToast('Nome atualizado!', 'success');
+    showToast('Nome atualizado!','success');
   }
 
   function carregarNomesTimes() {
     state.nomeA = localStorage.getItem("nomeTimeA") || "Time A";
     state.nomeB = localStorage.getItem("nomeTimeB") || "Time B";
-    
-    const nomeTimeAElem = document.getElementById('nomeTimeA');
-    const nomeTimeBElem = document.getElementById('nomeTimeB');
-    const nomeFaltaAElem = document.getElementById('nomeFaltaA');
-    const nomeFaltaBElem = document.getElementById('nomeFaltaB');
-    
-    if (nomeTimeAElem) nomeTimeAElem.textContent = state.nomeA;
-    if (nomeTimeBElem) nomeTimeBElem.textContent = state.nomeB;
-    if (nomeFaltaAElem) nomeFaltaAElem.textContent = state.nomeA;
-    if (nomeFaltaBElem) nomeFaltaBElem.textContent = state.nomeB;
+    const nA = document.getElementById('nomeTimeA'), nB = document.getElementById('nomeTimeB');
+    const fA = document.getElementById('nomeFaltaA'), fB = document.getElementById('nomeFaltaB');
+    if (nA) nA.textContent = state.nomeA;
+    if (nB) nB.textContent = state.nomeB;
+    if (fA) fA.textContent = state.nomeA;
+    if (fB) fB.textContent = state.nomeB;
   }
 
-  // ===== CONTROLE DO JOGO =====
+  // ==========================================================================
+  // 7. CONTROLE DO JOGO
+  // ==========================================================================
   async function iniciar() {
-    if (state.partida) {
-      if (!await confirmAction("Já existe um jogo em andamento. Deseja iniciar um novo?")) {
-        return;
-      }
-    }
-    
+    if (state.partida && !await confirmAction("Já existe um jogo. Iniciar novo?")) return;
     const btn = document.getElementById("btnIniciar");
-    if (btn) {
-      btn.classList.add("btn-animating-green");
-      setTimeout(() => btn.classList.remove("btn-animating-green"), 600);
-    }
-    
-    state.placar = { A: 0, B: 0 };
-    state.faltas = { A: 0, B: 0 };
-    state.historicaGols = [];
-    state.historicaFaltas = [];
-    state.ultimaAcao = null;
-    state.segundos = 0;
-    state.pausado = false;
-    
-    document.getElementById('placarA').textContent = '0';
-    document.getElementById('placarB').textContent = '0';
-    document.getElementById('faltasA').textContent = '0';
-    document.getElementById('faltasB').textContent = '0';
+    btn?.classList.add("btn-animating-green"); setTimeout(()=>btn?.classList.remove("btn-animating-green"),600);
+    state.placar = {A:0,B:0}; state.faltas = {A:0,B:0}; state.historicaGols = []; state.historicaFaltas = [];
+    state.ultimaAcao = null; state.segundos = 0; state.pausado = false;
+    document.getElementById('placarA').textContent = '0'; document.getElementById('placarB').textContent = '0';
+    document.getElementById('faltasA').textContent = '0'; document.getElementById('faltasB').textContent = '0';
     document.getElementById('listaGols').innerHTML = '';
-    document.getElementById('tempo').textContent = '00:00';
-    document.getElementById('tempo').classList.remove('tempo-pausado');
-    
-    const tituloGols = document.getElementById('tituloGols');
-    if (tituloGols) tituloGols.classList.remove('hidden');
-    
-    state.partida = {
-      data: new Date().toLocaleString("pt-BR"),
-      nomeTimes: { A: state.nomeA, B: state.nomeB }
-    };
-    
+    document.getElementById('tempo').textContent = '00:00'; document.getElementById('tempo').classList.remove('tempo-pausado');
+    document.getElementById('tituloGols')?.classList.remove('hidden');
+    state.partida = { data: new Date().toLocaleString("pt-BR"), nomeTimes: { A: state.nomeA, B: state.nomeB } };
     clearInterval(state.timer);
     state.timer = setInterval(() => {
       if (!state.pausado) {
         state.segundos++;
-        const minutos = String(Math.floor(state.segundos / 60)).padStart(2, "0");
-        const segundosStr = String(state.segundos % 60).padStart(2, "0");
-        document.getElementById('tempo').textContent = `${minutos}:${segundosStr}`;
+        const min = String(Math.floor(state.segundos/60)).padStart(2,'0');
+        const seg = String(state.segundos%60).padStart(2,'0');
+        document.getElementById('tempo').textContent = `${min}:${seg}`;
       }
-    }, 1000);
-    
+    },1000);
     adicionarEventoTimeline('inicio');
-    
-    mostrarOverlay("INÍCIO DE JOGO", "⚽", 1500);
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-    showToast('Jogo iniciado!', 'success');
-    
+    mostrarOverlay("INÍCIO DE JOGO","⚽",1500);
+    if (navigator.vibrate) navigator.vibrate([100,50,100]);
+    showToast('Jogo iniciado!','success');
     fazerBackupAutomatico();
   }
 
   function togglePause() {
-    if (!state.partida) {
-      showToast('Inicie um jogo primeiro!', 'error');
-      return;
-    }
-    
+    if (!state.partida) return showToast('Inicie o jogo!','error');
     state.pausado = !state.pausado;
-    
-    if (state.pausado) {
-      adicionarEventoTimeline('pause');
-    } else {
-      adicionarEventoTimeline('resume');
-    }
-    
+    adicionarEventoTimeline(state.pausado?'pause':'resume');
     if (state.pausado) {
       document.getElementById('tempo').classList.add('tempo-pausado');
-      showToast('Jogo pausado', 'warning');
+      showToast('Jogo pausado','warning');
     } else {
       document.getElementById('tempo').classList.remove('tempo-pausado');
-      showToast('Jogo retomado', 'success');
+      showToast('Jogo retomado','success');
     }
-    
     if (navigator.vibrate) navigator.vibrate(10);
   }
 
   async function resetar() {
     resetarTimeline();
-    
-    if (state.partida) {
-      if (!await confirmAction("Resetar jogo atual? Todos os dados serão perdidos.")) {
-        return;
-      }
-    }
-    
-    clearInterval(state.timer);
-    state.timer = null;
-    
-    state.placar = { A: 0, B: 0 };
-    state.faltas = { A: 0, B: 0 };
-    state.historicaGols = [];
-    state.historicaFaltas = [];
-    state.ultimaAcao = null;
-    state.partida = null;
-    state.segundos = 0;
-    state.pausado = false;
-    
-    state.nomeA = "Time A";
-    state.nomeB = "Time B";
-    document.getElementById('nomeTimeA').textContent = "Time A";
-    document.getElementById('nomeTimeB').textContent = "Time B";
-    document.getElementById('nomeFaltaA').textContent = "Time A";
-    document.getElementById('nomeFaltaB').textContent = "Time B";
-    
-    localStorage.removeItem("nomeTimeA");
-    localStorage.removeItem("nomeTimeB");
-    
-    document.getElementById('placarA').textContent = '0';
-    document.getElementById('placarB').textContent = '0';
-    document.getElementById('faltasA').textContent = '0';
-    document.getElementById('faltasB').textContent = '0';
+    if (state.partida && !await confirmAction("Resetar jogo atual? Dados serão perdidos.")) return;
+    clearInterval(state.timer); state.timer = null;
+    state.placar = {A:0,B:0}; state.faltas = {A:0,B:0}; state.historicaGols = []; state.historicaFaltas = [];
+    state.ultimaAcao = null; state.partida = null; state.segundos = 0; state.pausado = false;
+    state.nomeA = "Time A"; state.nomeB = "Time B";
+    document.getElementById('nomeTimeA').textContent = "Time A"; document.getElementById('nomeTimeB').textContent = "Time B";
+    document.getElementById('nomeFaltaA').textContent = "Time A"; document.getElementById('nomeFaltaB').textContent = "Time B";
+    localStorage.removeItem("nomeTimeA"); localStorage.removeItem("nomeTimeB");
+    document.getElementById('placarA').textContent = '0'; document.getElementById('placarB').textContent = '0';
+    document.getElementById('faltasA').textContent = '0'; document.getElementById('faltasB').textContent = '0';
     document.getElementById('listaGols').innerHTML = '';
-    document.getElementById('tempo').textContent = '00:00';
-    document.getElementById('tempo').classList.remove('tempo-pausado');
-    
-    const tituloGols = document.getElementById('tituloGols');
-    if (tituloGols) tituloGols.classList.add('hidden');
-    
+    document.getElementById('tempo').textContent = '00:00'; document.getElementById('tempo').classList.remove('tempo-pausado');
+    document.getElementById('tituloGols')?.classList.add('hidden');
     esconderUndo();
-    
     if (navigator.vibrate) navigator.vibrate(20);
-    showToast('Jogo resetado', 'success');
-    
+    showToast('Jogo resetado','success');
     fazerBackupAutomatico();
   }
 
   async function fim() {
-    if (!state.partida) {
-      showToast('Inicie o jogo primeiro!', 'error');
-      return;
-    }
-    
+    if (!state.partida) return showToast('Inicie o jogo!','error');
     const btn = document.getElementById("btnFim");
-    if (btn) {
-      btn.classList.add("btn-animating-red");
-      setTimeout(() => btn.classList.remove("btn-animating-red"), 600);
-    }
-    
-    clearInterval(state.timer);
-    state.timer = null;
-    
+    btn?.classList.add("btn-animating-red"); setTimeout(()=>btn?.classList.remove("btn-animating-red"),600);
+    clearInterval(state.timer); state.timer = null;
     adicionarEventoTimeline('fim');
-    
+
     const golsPorJogador = {};
-    state.historicaGols.forEach(gol => {
-      if (!golsPorJogador[gol.jogador]) {
-        golsPorJogador[gol.jogador] = { q: 0, t: gol.time };
-      }
-      golsPorJogador[gol.jogador].q++;
-    });
-    
+    state.historicaGols.forEach(g => { if(!golsPorJogador[g.jogador]) golsPorJogador[g.jogador]={q:0,t:g.time}; golsPorJogador[g.jogador].q++; });
     const faltasPorJogador = {};
-    state.historicaFaltas.forEach(falta => {
-      if (!faltasPorJogador[falta.jogador]) {
-        faltasPorJogador[falta.jogador] = 0;
-      }
-      faltasPorJogador[falta.jogador]++;
-    });
-    
+    state.historicaFaltas.forEach(f => { if(!faltasPorJogador[f.jogador]) faltasPorJogador[f.jogador]=0; faltasPorJogador[f.jogador]++; });
+
     state.partida.placar = [state.placar.A, state.placar.B];
     state.partida.gols = golsPorJogador;
-    state.partida.faltas = {
-      A: state.faltas.A,
-      B: state.faltas.B,
-      jogadores: faltasPorJogador
-    };
+    state.partida.faltas = { A: state.faltas.A, B: state.faltas.B, jogadores: faltasPorJogador };
     state.partida.craque = calcularCraque(golsPorJogador);
     state.partida.duracao = state.segundos;
+    state.partida.id = Date.now().toString(36) + Math.random().toString(36).substr(2,5);
 
-    state.partida.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5); // ===== GERAR ID ÚNICO PARA A PARTIDA =====
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
     historico.push(state.partida);
     localStorage.setItem("historico", JSON.stringify(historico));
-    
-    mostrarOverlay("FIM DE JOGO", "🏆", 2000, () => {
-      const mensagem = `Jogo finalizado!\n\n${state.nomeA} ${state.placar.A} × ${state.placar.B} ${state.nomeB}\n\n🏆 Craque: ${state.partida.craque}\n\n⏱️ Duração: ${Math.floor(state.segundos / 60)}:${String(state.segundos % 60).padStart(2, '0')}`;
-      
-      alert(mensagem);
+
+    mostrarOverlay("FIM DE JOGO","🏆",2000,() => {
+      alert(`Jogo finalizado!\n\n${state.nomeA} ${state.placar.A} × ${state.placar.B} ${state.nomeB}\n\n🏆 Craque: ${state.partida.craque}\n\n⏱️ Duração: ${Math.floor(state.segundos/60)}:${String(state.segundos%60).padStart(2,'0')}`);
       resetar();
     });
-    
-    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    if (navigator.vibrate) navigator.vibrate([200,100,200]);
     fazerBackupAutomatico();
   }
 
   function calcularCraque(gols) {
-    let craque = null;
-    let maxGols = 0;
-    
-    Object.entries(gols).forEach(([jogador, dados]) => {
-      if (dados.q > maxGols) {
-        maxGols = dados.q;
-        craque = jogador;
-      }
-    });
-    
-    return craque ? `${craque} (${maxGols})` : "—";
+    let craque = null, max = 0;
+    Object.entries(gols).forEach(([j,d])=> { if(d.q>max) { max=d.q; craque=j; } });
+    return craque ? `${craque} (${max})` : "—";
   }
 
-  // ===== ANIMAÇÕES =====
+  // ==========================================================================
+  // 8. ANIMAÇÕES
+  // ==========================================================================
   function mostrarOverlay(texto, icone, duracao, callback) {
     const overlay = document.getElementById("gameOverlay");
-    const overlayText = document.getElementById("overlayText");
-    const overlayIcon = document.getElementById("overlayIcon");
-    
-    if (!overlay || !overlayText || !overlayIcon) {
-      if (callback) callback();
-      return;
-    }
-    
-    overlayText.textContent = texto;
-    overlayIcon.textContent = icone;
-    
+    const txt = document.getElementById("overlayText"), icon = document.getElementById("overlayIcon");
+    if (!overlay||!txt||!icon) { if(callback) callback(); return; }
+    txt.textContent = texto; icon.textContent = icone;
     overlay.classList.add("show");
-    
-    setTimeout(() => {
-      overlay.classList.remove("show");
-      if (callback) setTimeout(callback, 300);
-    }, duracao);
+    setTimeout(() => { overlay.classList.remove("show"); if(callback) setTimeout(callback,300); }, duracao);
   }
 
   function animarGol() {
-    const placarDiv = document.querySelector('.main-scoreboard');
-    if (!placarDiv) return;
-    
-    placarDiv.classList.add("gol-animation");
-    
-    if (navigator.vibrate) {
-      navigator.vibrate([100, 50, 100, 50, 100]);
-    }
-    
-    setTimeout(() => {
-      placarDiv.classList.remove("gol-animation");
-    }, 800);
+    const div = document.querySelector('.main-scoreboard');
+    if (!div) return;
+    div.classList.add("gol-animation");
+    if (navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+    setTimeout(() => div.classList.remove("gol-animation"),800);
   }
 
-  // ===== CONTROLE DE GOLS (com ordenação por ranking) =====
+  // ==========================================================================
+  // 9. CONTROLE DE GOLS
+  // ==========================================================================
   function aumentarGol(time) {
-    if (!state.partida) {
-        showToast('Inicie o jogo primeiro!', 'error');
-        return;
-    }
-    
-    fecharPopupFalta();
-    fecharPopupRemover();
-    fecharPopupNome();
-    
+    if (!state.partida) return showToast('Inicie o jogo!','error');
+    fecharPopupFalta(); fecharPopupRemover(); fecharPopupNome();
     state.timeAtual = time;
-    
-    const popupTitulo = document.getElementById('popupTitulo');
-    if (popupTitulo) {
-        popupTitulo.textContent = `⚽ Gol do ${time === 'A' ? state.nomeA : state.nomeB}! Quem fez?`;
-    }
-    
+    document.getElementById('popupTitulo')?.setAttribute('textContent', `⚽ Gol do ${time==='A'?state.nomeA:state.nomeB}! Quem fez?`);
     const popup = document.getElementById('popupJogadores');
-    if (!popup) return;
-    
     popup.innerHTML = '';
-    
-    if (state.jogadores.length === 0) {
-        const button = document.createElement('button');
-        button.textContent = 'Jogador Desconhecido';
-        button.onclick = () => registrarGol('Jogador Desconhecido');
-        popup.appendChild(button);
+    if (!state.jogadores.length) {
+      const btn = document.createElement('button');
+      btn.textContent = 'Jogador Desconhecido';
+      btn.onclick = () => registrarGol('Jogador Desconhecido');
+      popup.appendChild(btn);
     } else {
-        const rankingGols = obterRankingGeral();
-        
-        const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
-            const golsA = rankingGols[a] || 0;
-            const golsB = rankingGols[b] || 0;
-            
-            if (golsA !== golsB) {
-                return golsB - golsA;
-            }
-            return a.localeCompare(b);
-        });
-        
-        jogadoresOrdenados.forEach(jogador => {
-            const button = document.createElement('button');
-            button.textContent = jogador;
-            button.onclick = () => registrarGol(jogador);
-            popup.appendChild(button);
-        });
+      const rankingGols = obterRankingGeral();
+      [...state.jogadores].sort((a,b)=>(rankingGols[b]||0)-(rankingGols[a]||0)||a.localeCompare(b)).forEach(j => {
+        const btn = document.createElement('button');
+        btn.textContent = j;
+        btn.onclick = () => registrarGol(j);
+        popup.appendChild(btn);
+      });
     }
-    
     document.getElementById('popupJogador').classList.add('show');
   }
 
   function registrarGol(jogador) {
     if (!state.timeAtual) return;
-    
-    state.ultimaAcao = {
-      tipo: "gol",
-      time: state.timeAtual,
-      jogador: jogador,
-      index: state.historicaGols.length
-    };
-    
+    state.ultimaAcao = { tipo: "gol", time: state.timeAtual, jogador, index: state.historicaGols.length };
     mostrarUndo();
-    
-    if (state.timeAtual === 'A') {
-      state.placar.A++;
-      document.getElementById('placarA').textContent = state.placar.A;
-    } else {
-      state.placar.B++;
-      document.getElementById('placarB').textContent = state.placar.B;
-    }
-    
-    state.historicaGols.push({
-      time: state.timeAtual,
-      jogador: jogador,
-      minuto: Math.floor(state.segundos / 60),
-      timestamp: Date.now()
-    });
-    
+    if (state.timeAtual==='A') { state.placar.A++; document.getElementById('placarA').textContent = state.placar.A; }
+    else { state.placar.B++; document.getElementById('placarB').textContent = state.placar.B; }
+    state.historicaGols.push({ time: state.timeAtual, jogador, minuto: Math.floor(state.segundos/60), timestamp: Date.now() });
     adicionarEventoTimeline('gol', state.timeAtual, jogador);
-    
-    renderGols();
-    animarGol();
-    fecharPopup();
-    
+    renderGols(); animarGol(); fecharPopup();
     fazerBackupAutomatico();
-    showToast(`Gol de ${jogador}!`, 'success');
+    showToast(`Gol de ${jogador}!`,'success');
   }
 
   function renderGols() {
     const lista = document.getElementById('listaGols');
     if (!lista) return;
-      
-    const golsPorJogador = {};
-    state.historicaGols.forEach(gol => {
-      golsPorJogador[gol.jogador] = (golsPorJogador[gol.jogador] || 0) + 1;
-    });
-    
-    const listaOrdenada = Object.entries(golsPorJogador)
-      .sort((a, b) => b[1] - a[1]);
-    
-    lista.innerHTML = '';
-    
-    listaOrdenada.forEach(([jogador, quantidade]) => {
-      const li = document.createElement('li');
-      const span = document.createElement('span');
-      span.textContent = `${jogador} — ${quantidade} gol${quantidade > 1 ? 's' : ''}`;
-      li.appendChild(span);
-      lista.appendChild(li);
-    });
-    
-    const tituloGols = document.getElementById('tituloGols');
-    if (tituloGols) {
-      if (state.historicaGols.length > 0) {
-        tituloGols.classList.remove('hidden');
-      } else {
-        tituloGols.classList.add('hidden');
-      }
-    }
+    const gols = {};
+    state.historicaGols.forEach(g => gols[g.jogador] = (gols[g.jogador]||0)+1);
+    lista.innerHTML = Object.entries(gols).sort((a,b)=>b[1]-a[1]).map(([j,q]) => `<li><span>${j} — ${q} gol${q>1?'s':''}</span></li>`).join('');
+    const titulo = document.getElementById('tituloGols');
+    if (titulo) state.historicaGols.length ? titulo.classList.remove('hidden') : titulo.classList.add('hidden');
   }
 
   function diminuirGol(time) {
-    if (!state.partida) {
-      showToast('Inicie o jogo primeiro!', 'error');
-      return;
-    }
-    
-    if ((time === 'A' && state.placar.A === 0) || (time === 'B' && state.placar.B === 0)) {
-      showToast('Não há gols para remover', 'warning');
-      return;
-    }
-    
-    const ultimosGols = state.historicaGols
-      .map((gol, index) => ({ ...gol, index }))
-      .filter(gol => gol.time === time)
-      .slice(-3)
-      .reverse();
-    
-    if (ultimosGols.length === 0) {
-      showToast('Não há gols específicos para remover', 'warning');
-      return;
-    }
-    
+    if (!state.partida) return showToast('Inicie o jogo!','error');
+    if ((time==='A'&&state.placar.A===0)||(time==='B'&&state.placar.B===0)) return showToast('Não há gols','warning');
+    const ultimos = state.historicaGols.map((g,i)=>({...g,index:i})).filter(g=>g.time===time).slice(-3).reverse();
+    if (!ultimos.length) return showToast('Não há gols específicos','warning');
     const popup = document.getElementById('popupGols');
     if (!popup) return;
-    
-    fecharPopup();
-    fecharPopupFalta();
-    fecharPopupNome();
-    
+    fecharPopup(); fecharPopupFalta(); fecharPopupNome();
     popup.innerHTML = '';
-    
-    ultimosGols.forEach(gol => {
-      const button = document.createElement('button');
-      button.textContent = `${gol.jogador} - ${gol.minuto}min`;
-      button.onclick = () => removerGolEspecifico(gol.index);
-      popup.appendChild(button);
+    ultimos.forEach(g => {
+      const btn = document.createElement('button');
+      btn.textContent = `${g.jogador} - ${g.minuto}min`;
+      btn.onclick = () => removerGolEspecifico(g.index);
+      popup.appendChild(btn);
     });
-    
     document.getElementById('popupRemover').classList.add('show');
   }
 
   function removerGolEspecifico(index) {
     const gol = state.historicaGols[index];
-    
-    if (gol.time === 'A') {
-      state.placar.A = Math.max(0, state.placar.A - 1);
-      document.getElementById('placarA').textContent = state.placar.A;
-    } else {
-      state.placar.B = Math.max(0, state.placar.B - 1);
-      document.getElementById('placarB').textContent = state.placar.B;
-    }
-    
-    state.historicaGols.splice(index, 1);
-    renderGols();
-    
-    fecharPopupRemover();
-    fazerBackupAutomatico();
-    
+    if (gol.time==='A') { state.placar.A = Math.max(0, state.placar.A-1); document.getElementById('placarA').textContent = state.placar.A; }
+    else { state.placar.B = Math.max(0, state.placar.B-1); document.getElementById('placarB').textContent = state.placar.B; }
+    state.historicaGols.splice(index,1);
+    renderGols(); fecharPopupRemover(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(15);
-    showToast('Gol removido', 'warning');
+    showToast('Gol removido','warning');
   }
 
-  // ===== CONTROLE DE FALTAS (com ordenação por ranking, só nome) =====
+  // ==========================================================================
+  // 10. CONTROLE DE FALTAS
+  // ==========================================================================
   function registrarFalta(time) {
-    if (!state.partida) {
-        showToast('Inicie o jogo primeiro!', 'error');
-        return;
-    }
-    
-    fecharPopup();
-    fecharPopupRemover();
-    fecharPopupNome();
-    
+    if (!state.partida) return showToast('Inicie o jogo!','error');
+    fecharPopup(); fecharPopupRemover(); fecharPopupNome();
     state.timeAtualFalta = time;
-    
-    const popupTituloFalta = document.getElementById('popupTituloFalta');
-    if (popupTituloFalta) {
-        popupTituloFalta.textContent = `⚠️ Falta do ${time === 'A' ? state.nomeA : state.nomeB}. Quem fez?`;
-    }
-    
+    document.getElementById('popupTituloFalta')?.setAttribute('textContent', `⚠️ Falta do ${time==='A'?state.nomeA:state.nomeB}. Quem fez?`);
     const popup = document.getElementById('popupJogadoresFalta');
-    if (!popup) return;
-    
     popup.innerHTML = '';
-    
-    if (state.jogadores.length === 0) {
-        const button = document.createElement('button');
-        button.textContent = 'Jogador Desconhecido';
-        button.onclick = () => confirmarFalta('Jogador Desconhecido');
-        popup.appendChild(button);
+    if (!state.jogadores.length) {
+      const btn = document.createElement('button');
+      btn.textContent = 'Jogador Desconhecido';
+      btn.onclick = () => confirmarFalta('Jogador Desconhecido');
+      popup.appendChild(btn);
     } else {
-        const historico = JSON.parse(localStorage.getItem("historico")) || [];
-        const rankingFaltas = {};
-        
-        historico.forEach(partida => {
-            if (partida.faltas && partida.faltas.jogadores) {
-                Object.entries(partida.faltas.jogadores).forEach(([jogador, qtd]) => {
-                    rankingFaltas[jogador] = (rankingFaltas[jogador] || 0) + qtd;
-                });
-            }
-        });
-        
-        const jogadoresOrdenados = [...state.jogadores].sort((a, b) => {
-            const faltasA = rankingFaltas[a] || 0;
-            const faltasB = rankingFaltas[b] || 0;
-            
-            if (faltasA !== faltasB) {
-                return faltasB - faltasA;
-            }
-            return a.localeCompare(b);
-        });
-        
-        jogadoresOrdenados.forEach(jogador => {
-            const button = document.createElement('button');
-            button.textContent = jogador;
-            button.onclick = () => confirmarFalta(jogador);
-            popup.appendChild(button);
-        });
+      const historico = JSON.parse(localStorage.getItem("historico")||"[]");
+      const rankFaltas = {};
+      historico.forEach(p => { if(p.faltas?.jogadores) Object.entries(p.faltas.jogadores).forEach(([j,q])=> rankFaltas[j]=(rankFaltas[j]||0)+q); });
+      [...state.jogadores].sort((a,b)=>(rankFaltas[b]||0)-(rankFaltas[a]||0)||a.localeCompare(b)).forEach(j => {
+        const btn = document.createElement('button');
+        btn.textContent = j;
+        btn.onclick = () => confirmarFalta(j);
+        popup.appendChild(btn);
+      });
     }
-    
     document.getElementById('popupFalta').classList.add('show');
   }
 
   function confirmarFalta(jogador) {
     if (!state.timeAtualFalta) return;
-    
-    state.ultimaAcao = {
-      tipo: "falta",
-      time: state.timeAtualFalta,
-      jogador: jogador,
-      index: state.historicaFaltas.length
-    };
-    
+    state.ultimaAcao = { tipo: "falta", time: state.timeAtualFalta, jogador, index: state.historicaFaltas.length };
     mostrarUndo();
-    
-    if (state.timeAtualFalta === 'A') {
-      state.faltas.A++;
-      document.getElementById('faltasA').textContent = state.faltas.A;
-    } else {
-      state.faltas.B++;
-      document.getElementById('faltasB').textContent = state.faltas.B;
-    }
-    
-    state.historicaFaltas.push({
-      time: state.timeAtualFalta,
-      jogador: jogador,
-      minuto: Math.floor(state.segundos / 60),
-      timestamp: Date.now()
-    });
-    
+    if (state.timeAtualFalta==='A') { state.faltas.A++; document.getElementById('faltasA').textContent = state.faltas.A; }
+    else { state.faltas.B++; document.getElementById('faltasB').textContent = state.faltas.B; }
+    state.historicaFaltas.push({ time: state.timeAtualFalta, jogador, minuto: Math.floor(state.segundos/60), timestamp: Date.now() });
     adicionarEventoTimeline('falta', state.timeAtualFalta, jogador);
-    
-    fecharPopupFalta();
-    fazerBackupAutomatico();
-    
+    fecharPopupFalta(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(10);
-    showToast(`Falta de ${jogador}`, 'warning');
+    showToast(`Falta de ${jogador}`,'warning');
   }
 
-  // ===== DESFAZER AÇÃO =====
+  // ==========================================================================
+  // 11. DESFAZER AÇÃO
+  // ==========================================================================
   function mostrarUndo() {
-    const undoBtn = document.getElementById('undoBtn');
-    if (undoBtn) {
-      undoBtn.style.display = 'block';
-    }
-    
+    const btn = document.getElementById('undoBtn');
+    if (btn) btn.style.display = 'block';
     clearTimeout(state.undoTimer);
-    
-    state.undoTimer = setTimeout(() => {
-      esconderUndo();
-    }, 5000);
+    state.undoTimer = setTimeout(esconderUndo, 5000);
   }
-
-  function esconderUndo() {
-    const undoBtn = document.getElementById('undoBtn');
-    if (undoBtn) {
-      undoBtn.style.display = 'none';
-    }
-    state.ultimaAcao = null;
-  }
-
+  function esconderUndo() { const btn = document.getElementById('undoBtn'); if (btn) btn.style.display = 'none'; state.ultimaAcao = null; }
   function desfazer() {
     if (!state.ultimaAcao) return;
-    
-    if (state.ultimaAcao.tipo === "gol") {
-      if (state.ultimaAcao.time === 'A') {
-        state.placar.A = Math.max(0, state.placar.A - 1);
-        document.getElementById('placarA').textContent = state.placar.A;
-      } else {
-        state.placar.B = Math.max(0, state.placar.B - 1);
-        document.getElementById('placarB').textContent = state.placar.B;
-      }
-      
-      state.historicaGols.splice(state.ultimaAcao.index, 1);
+    if (state.ultimaAcao.tipo==="gol") {
+      if (state.ultimaAcao.time==='A') { state.placar.A = Math.max(0,state.placar.A-1); document.getElementById('placarA').textContent = state.placar.A; }
+      else { state.placar.B = Math.max(0,state.placar.B-1); document.getElementById('placarB').textContent = state.placar.B; }
+      state.historicaGols.splice(state.ultimaAcao.index,1);
       renderGols();
-      
-    } else if (state.ultimaAcao.tipo === "falta") {
-      if (state.ultimaAcao.time === 'A') {
-        state.faltas.A = Math.max(0, state.faltas.A - 1);
-        document.getElementById('faltasA').textContent = state.faltas.A;
-      } else {
-        state.faltas.B = Math.max(0, state.faltas.B - 1);
-        document.getElementById('faltasB').textContent = state.faltas.B;
-      }
-      
-      state.historicaFaltas.splice(state.ultimaAcao.index, 1);
+    } else if (state.ultimaAcao.tipo==="falta") {
+      if (state.ultimaAcao.time==='A') { state.faltas.A = Math.max(0,state.faltas.A-1); document.getElementById('faltasA').textContent = state.faltas.A; }
+      else { state.faltas.B = Math.max(0,state.faltas.B-1); document.getElementById('faltasB').textContent = state.faltas.B; }
+      state.historicaFaltas.splice(state.ultimaAcao.index,1);
     }
-    
-    esconderUndo();
-    fazerBackupAutomatico();
-    
+    esconderUndo(); fazerBackupAutomatico();
     if (navigator.vibrate) navigator.vibrate(15);
-    showToast('Ação desfeita', 'success');
+    showToast('Ação desfeita','success');
   }
 
-  // ===== POPUPS =====
-  function fecharPopup(event) {
-    if (event) event.stopPropagation();
-    const popup = document.getElementById('popupJogador');
-    if (popup) popup.classList.remove('show');
-    state.timeAtual = null;
-  }
+  // ==========================================================================
+  // 12. POPUPS (MODAIS)
+  // ==========================================================================
+  const fecharPopup = (e) => { e?.stopPropagation(); document.getElementById('popupJogador')?.classList.remove('show'); state.timeAtual = null; };
+  const fecharPopupFalta = (e) => { e?.stopPropagation(); document.getElementById('popupFalta')?.classList.remove('show'); state.timeAtualFalta = null; };
+  const fecharPopupRemover = (e) => { e?.stopPropagation(); document.getElementById('popupRemover')?.classList.remove('show'); };
+  const fecharPopupNome = (e) => { e?.stopPropagation(); document.getElementById('popupNomeTime')?.classList.remove('show'); state.timeEditando = null; };
 
-  function fecharPopupFalta(event) {
-    if (event) event.stopPropagation();
-    const popup = document.getElementById('popupFalta');
-    if (popup) popup.classList.remove('show');
-    state.timeAtualFalta = null;
-  }
-
-  function fecharPopupRemover(event) {
-    if (event) event.stopPropagation();
-    const popup = document.getElementById('popupRemover');
-    if (popup) popup.classList.remove('show');
-  }
-
-  function fecharPopupNome(event) {
-    if (event) event.stopPropagation();
-    const popup = document.getElementById('popupNomeTime');
-    if (popup) popup.classList.remove('show');
-    state.timeEditando = null;
-  }
-
-  // ===== RANKING =====
+  // ==========================================================================
+  // 13. RANKINGS
+  // ==========================================================================
   function obterRankingGeral() {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
-    const ranking = {};
-    
-    historico.forEach(partida => {
-      Object.entries(partida.gols || {}).forEach(([jogador, dados]) => {
-        ranking[jogador] = (ranking[jogador] || 0) + dados.q;
-      });
-    });
-    
-    return ranking;
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
+    const rank = {};
+    historico.forEach(p => Object.entries(p.gols||{}).forEach(([j,d])=> rank[j]=(rank[j]||0)+d.q));
+    return rank;
   }
 
   function ranking() {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
-    
-    const rankingGeral = obterRankingGeral();
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
+    // Ranking geral
+    const rankGeral = obterRankingGeral();
     const listaGeral = document.getElementById('listaRankingGeral');
-    
     if (listaGeral) {
-      if (Object.keys(rankingGeral).length === 0) {
-        listaGeral.innerHTML = '<li>Nenhum gol registrado ainda.</li>';
-      } else {
+      if (!Object.keys(rankGeral).length) listaGeral.innerHTML = '<li>Nenhum gol registrado ainda.</li>';
+      else {
         listaGeral.innerHTML = '';
-        
-        Object.entries(rankingGeral)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10)
-          .forEach(([jogador, gols], index) => {
-            const li = document.createElement('li');
-            const medalha = index === 0 ? '🥇' : 
-                           index === 1 ? '🥈' : 
-                           index === 2 ? '🥉' : `${index + 1}º`;
-            
-            const spanNome = document.createElement('span');
-            spanNome.textContent = `${medalha} ${jogador}`;
-            
-            const spanGols = document.createElement('span');
-            spanGols.textContent = `${gols} gol${gols > 1 ? 's' : ''}`;
-            
-            li.appendChild(spanNome);
-            li.appendChild(spanGols);
-            listaGeral.appendChild(li);
-          });
-      }
-    }
-    
-    const hoje = new Date();
-    const mesAtual = hoje.getMonth();
-    const anoAtual = hoje.getFullYear();
-    
-    const partidasMes = historico.filter(partida => {
-      try {
-        const dataStr = partida.data.split(",")[0].trim();
-        const partes = dataStr.split("/");
-        
-        if (partes.length !== 3) return false;
-        
-        const mes = parseInt(partes[1], 10);
-        const ano = parseInt(partes[2], 10);
-        
-        return (mes - 1) === mesAtual && ano === anoAtual;
-      } catch (error) {
-        return false;
-      }
-    });
-    
-    const rankingMes = {};
-    partidasMes.forEach(partida => {
-      Object.entries(partida.gols || {}).forEach(([jogador, dados]) => {
-        rankingMes[jogador] = (rankingMes[jogador] || 0) + dados.q;
-      });
-    });
-    
-    const listaMes = document.getElementById('listaRankingMes');
-    if (listaMes) {
-      if (Object.keys(rankingMes).length === 0) {
-        listaMes.innerHTML = `<li>Sem partidas em ${mesAtual + 1}/${anoAtual}</li>`;
-      } else {
-        listaMes.innerHTML = '';
-        
-        Object.entries(rankingMes)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10)
-          .forEach(([jogador, gols], index) => {
-            const li = document.createElement('li');
-            const medalha = index === 0 ? '🥇' : 
-                           index === 1 ? '🥈' : 
-                           index === 2 ? '🥉' : `${index + 1}º`;
-            
-            const spanNome = document.createElement('span');
-            spanNome.textContent = `${medalha} ${jogador}`;
-            
-            const spanGols = document.createElement('span');
-            spanGols.textContent = `${gols} gol${gols > 1 ? 's' : ''}`;
-            
-            li.appendChild(spanNome);
-            li.appendChild(spanGols);
-            listaMes.appendChild(li);
-          });
-      }
-    }
-    
-    const rankingFaltas = {};
-    historico.forEach(partida => {
-      if (partida.faltas && partida.faltas.jogadores) {
-        Object.entries(partida.faltas.jogadores).forEach(([jogador, faltas]) => {
-          rankingFaltas[jogador] = (rankingFaltas[jogador] || 0) + faltas;
+        Object.entries(rankGeral).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([j,g],i)=>{
+          const m = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;
+          listaGeral.innerHTML += `<li><span>${m} ${j}</span><span>${g} gol${g>1?'s':''}</span></li>`;
         });
       }
+    }
+    // Ranking mês
+    const hoje = new Date(), mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+    const partidasMes = historico.filter(p => {
+      try { const d=p.data.split(",")[0].trim().split("/"); return parseInt(d[1],10)-1===mesAtual && parseInt(d[2],10)===anoAtual; } catch(e){ return false; }
     });
-    
+    const rankMes = {};
+    partidasMes.forEach(p => Object.entries(p.gols||{}).forEach(([j,d])=> rankMes[j]=(rankMes[j]||0)+d.q));
+    const listaMes = document.getElementById('listaRankingMes');
+    if (listaMes) {
+      if (!Object.keys(rankMes).length) listaMes.innerHTML = `<li>Sem partidas em ${mesAtual+1}/${anoAtual}</li>`;
+      else {
+        listaMes.innerHTML = '';
+        Object.entries(rankMes).sort((a,b)=>b[1]-a[1]).slice(0,10).forEach(([j,g],i)=>{
+          const m = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}º`;
+          listaMes.innerHTML += `<li><span>${m} ${j}</span><span>${g} gol${g>1?'s':''}</span></li>`;
+        });
+      }
+    }
+    // Ranking faltas
+    const rankFaltas = {};
+    historico.forEach(p => { if(p.faltas?.jogadores) Object.entries(p.faltas.jogadores).forEach(([j,q])=> rankFaltas[j]=(rankFaltas[j]||0)+q); });
     const listaFaltas = document.getElementById('listaRankingFaltas');
     if (listaFaltas) {
-      if (Object.keys(rankingFaltas).length === 0) {
-        listaFaltas.innerHTML = '<li>Nenhuma falta registrada ainda.</li>';
-      } else {
+      if (!Object.keys(rankFaltas).length) listaFaltas.innerHTML = '<li>Nenhuma falta registrada ainda.</li>';
+      else {
         listaFaltas.innerHTML = '';
-        
-        Object.entries(rankingFaltas)
-          .sort((a, b) => b[1] - a[1])
-          .forEach(([jogador, faltas]) => {
-            const li = document.createElement('li');
-            const spanNome = document.createElement('span');
-            spanNome.textContent = jogador;
-            
-            const spanFaltas = document.createElement('span');
-            spanFaltas.textContent = `${faltas} falta${faltas > 1 ? 's' : ''}`;
-            
-            li.appendChild(spanNome);
-            li.appendChild(spanFaltas);
-            listaFaltas.appendChild(li);
-          });
+        Object.entries(rankFaltas).sort((a,b)=>b[1]-a[1]).forEach(([j,f])=> {
+          listaFaltas.innerHTML += `<li><span>${j}</span><span>${f} falta${f>1?'s':''}</span></li>`;
+        });
       }
     }
   }
 
-  // ===== HISTÓRICO (COM BOTÃO DE COMPARTILHAR) =====
+  // ==========================================================================
+  // 14. HISTÓRICO DE PARTIDAS
+  // ==========================================================================
   function historico() {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
     const lista = document.getElementById('listaHistorico');
-    
     if (!lista) return;
-    
-    if (historico.length === 0) {
-      lista.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">Nenhuma partida registrada ainda</div>';
-      return;
-    }
-    
+    if (!historico.length) { lista.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">Nenhuma partida registrada ainda</div>'; return; }
     lista.innerHTML = '';
-    
-    [...historico].reverse().forEach(partida => {
-      const times = partida.nomeTimes || { A: "Time A", B: "Time B" };
-      const craque = partida.craque || "—";
-      const placar = partida.placar || [0, 0];
-      
+    [...historico].reverse().forEach(p => {
+      const times = p.nomeTimes || { A: "Time A", B: "Time B" };
+      const craque = p.craque || "—";
+      const placar = p.placar || [0,0];
+      const golsHTML = p.gols ? Object.entries(p.gols).map(([j,d])=> `<div class="gol-item"><span>${escapeHTML(j)}</span><span>${d.q} gol${d.q>1?'s':''}</span></div>`).join('') : '';
+      const faltasHTML = p.faltas?.jogadores ? Object.entries(p.faltas.jogadores).map(([j,q])=> `<div class="gol-item"><span>${escapeHTML(j)}</span><span>${q} falta${q>1?'s':''}</span></div>`).join('') : '';
       const item = document.createElement('div');
       item.className = 'historico-item p-lg';
-      
-      let golsHTML = '';
-      if (partida.gols) {
-        golsHTML = Object.entries(partida.gols)
-          .map(([jogador, dados]) => 
-            `<div class="gol-item"><span>${escapeHTML(jogador)}</span><span>${dados.q} gol${dados.q > 1 ? 's' : ''}</span></div>`
-          )
-          .join('');
-      }
-      
-      let faltasHTML = '';
-      if (partida.faltas && partida.faltas.jogadores) {
-        faltasHTML = Object.entries(partida.faltas.jogadores)
-          .map(([jogador, qtd]) => 
-            `<div class="gol-item"><span>${escapeHTML(jogador)}</span><span>${qtd} falta${qtd > 1 ? 's' : ''}</span></div>`
-          )
-          .join('');
-      }
-      
-      // ID da partida
-      const partidaId = partida.id;
-      
+      item.dataset.partidaId = p.id;
       item.innerHTML = `
         <div class="historico-header">
-          <span class="historico-data">${escapeHTML(partida.data)}</span>
-          <div style="display: flex; align-items: center;">
-            <button class="share-card-btn" onclick="PlacarApp.mostrarCardPartida('${partidaId}')" title="Compartilhar">📤</button>
+          <span class="historico-data">${escapeHTML(p.data)}</span>
+          <div style="display:flex; align-items:center;">
+            <button class="share-card-btn" onclick="PlacarApp.mostrarCardPartida('${p.id}')" title="Compartilhar">📤</button>
             <span class="expand-icon">▼</span>
           </div>
         </div>
         <div class="historico-placar">
-          <span>${escapeHTML(times.A)}</span>
-          <span>${placar[0]}</span>
-          <span class="vs">×</span>
-          <span>${placar[1]}</span>
-          <span>${escapeHTML(times.B)}</span>
+          <span>${escapeHTML(times.A)}</span><span>${placar[0]}</span><span class="vs">×</span><span>${placar[1]}</span><span>${escapeHTML(times.B)}</span>
         </div>
-        <div class="historico-info">
-          <span class="historico-craque">🏆 <strong>${escapeHTML(craque)}</strong></span>
-        </div>
+        <div class="historico-info"><span class="historico-craque">🏆 <strong>${escapeHTML(craque)}</strong></span></div>
         <div class="historico-details">
-          <div class="historico-gols">
-            <h5>⚽ Gols da Partida</h5>
-            ${golsHTML || '<div class="gol-item"><span>Nenhum gol registrado</span></div>'}
-          </div>
-          ${faltasHTML ? `
-            <div class="historico-gols" style="background:rgba(255,165,2,0.05);margin-top:8px;">
-              <h5>⚠️ Faltas</h5>
-              ${faltasHTML}
-            </div>
-          ` : ''}
+          <div class="historico-gols"><h5>⚽ Gols da Partida</h5>${golsHTML||'<div class="gol-item"><span>Nenhum gol</span></div>'}</div>
+          ${faltasHTML?`<div class="historico-gols" style="background:rgba(255,165,2,0.05);margin-top:8px;"><h5>⚠️ Faltas</h5>${faltasHTML}</div>`:''}
         </div>
       `;
-      
-      // Adiciona ID ao item para referência
-      item.dataset.partidaId = partidaId;
-      
       item.addEventListener('click', (e) => {
-        // Não expandir se clicou no botão de compartilhar
-        if (e.target.classList.contains('share-card-btn') || e.target.closest('.share-card-btn')) {
-          return;
-        }
+        if (e.target.classList.contains('share-card-btn')||e.target.closest('.share-card-btn')) return;
         item.classList.toggle('expanded');
         if (navigator.vibrate) navigator.vibrate(5);
       });
-      
       lista.appendChild(item);
     });
   }
 
   async function limparHistorico() {
-    if (await confirmAction("Apagar TODO o histórico? Esta ação não pode ser desfeita.")) {
+    if (await confirmAction("Apagar TODO o histórico? Não pode ser desfeito.")) {
       localStorage.removeItem("historico");
-      historico();
-      fazerBackupAutomatico();
-      showToast('Histórico apagado!', 'success');
+      historico(); fazerBackupAutomatico();
+      showToast('Histórico apagado!','success');
     }
   }
 
-  // ===== ESTATÍSTICAS =====
+  // ==========================================================================
+  // 15. ESTATÍSTICAS
+  // ==========================================================================
   function estatisticas() {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
-    
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
     const totalJogos = historico.length;
-    let totalGols = 0;
-    let totalFaltas = 0;
-    let golsPorTime = { A: 0, B: 0 };
-    let vitoriasPorTime = { A: 0, B: 0, empates: 0 };
-    
-    historico.forEach(partida => {
-      Object.entries(partida.gols || {}).forEach(([jogador, dados]) => {
-        totalGols += dados.q;
-        if (dados.t === 'A') golsPorTime.A += dados.q;
-        if (dados.t === 'B') golsPorTime.B += dados.q;
-      });
-      
-      if (partida.faltas) {
-        totalFaltas += (partida.faltas.A || 0) + (partida.faltas.B || 0);
-      }
-      
-      const placar = partida.placar || [0, 0];
-      if (placar[0] > placar[1]) vitoriasPorTime.A++;
-      else if (placar[1] > placar[0]) vitoriasPorTime.B++;
-      else vitoriasPorTime.empates++;
+    let totalGols = 0, totalFaltas = 0, golsTime = {A:0,B:0}, vitorias = {A:0,B:0,empates:0};
+    historico.forEach(p => {
+      Object.entries(p.gols||{}).forEach(([j,d])=> { totalGols+=d.q; if(d.t==='A') golsTime.A+=d.q; else if(d.t==='B') golsTime.B+=d.q; });
+      if(p.faltas) totalFaltas += (p.faltas.A||0)+(p.faltas.B||0);
+      const placar = p.placar||[0,0];
+      if(placar[0]>placar[1]) vitorias.A++;
+      else if(placar[1]>placar[0]) vitorias.B++;
+      else vitorias.empates++;
     });
-    
-    const mediaGols = totalJogos > 0 ? (totalGols / totalJogos).toFixed(1) : '0';
-    
+    const mediaGols = totalJogos ? (totalGols/totalJogos).toFixed(1) : '0';
     const statsGerais = document.getElementById('statsGerais');
-    if (statsGerais) {
-      statsGerais.innerHTML = `
-        <div class="stat-row">
-          <span class="stat-label">Total de Jogos</span>
-          <span class="stat-value">${totalJogos}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Total de Gols</span>
-          <span class="stat-value">${totalGols}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Média de Gols/Jogo</span>
-          <span class="stat-value">${mediaGols}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Total de Faltas</span>
-          <span class="stat-value">${totalFaltas}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Vitórias ${state.nomeA}</span>
-          <span class="stat-value">${vitoriasPorTime.A}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Vitórias ${state.nomeB}</span>
-          <span class="stat-value">${vitoriasPorTime.B}</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Empates</span>
-          <span class="stat-value">${vitoriasPorTime.empates}</span>
-        </div>
-      `;
-    }
-    
+    if (statsGerais) statsGerais.innerHTML = `
+      <div class="stat-row"><span class="stat-label">Total de Jogos</span><span class="stat-value">${totalJogos}</span></div>
+      <div class="stat-row"><span class="stat-label">Total de Gols</span><span class="stat-value">${totalGols}</span></div>
+      <div class="stat-row"><span class="stat-label">Média de Gols/Jogo</span><span class="stat-value">${mediaGols}</span></div>
+      <div class="stat-row"><span class="stat-label">Total de Faltas</span><span class="stat-value">${totalFaltas}</span></div>
+      <div class="stat-row"><span class="stat-label">Vitórias ${state.nomeA}</span><span class="stat-value">${vitorias.A}</span></div>
+      <div class="stat-row"><span class="stat-label">Vitórias ${state.nomeB}</span><span class="stat-value">${vitorias.B}</span></div>
+      <div class="stat-row"><span class="stat-label">Empates</span><span class="stat-value">${vitorias.empates}</span></div>
+    `;
     const statsRecentes = document.getElementById('statsRecentes');
     if (statsRecentes) {
       const ultimas5 = historico.slice(-5).reverse();
-      let html = '';
-      
-      if (ultimas5.length === 0) {
-        html = '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem partidas recentes</div>';
-      } else {
-        ultimas5.forEach(partida => {
-          const times = partida.nomeTimes || { A: "Time A", B: "Time B" };
-          const placar = partida.placar || [0, 0];
-          const data = partida.data.split(',')[0];
-          
-          html += `
-            <div class="stat-row">
-              <span class="stat-label">${data}</span>
-              <span class="stat-value">${placar[0]}×${placar[1]}</span>
-            </div>
-          `;
-        });
-      }
-      
-      statsRecentes.innerHTML = html;
+      statsRecentes.innerHTML = ultimas5.length ? ultimas5.map(p => {
+        const times = p.nomeTimes || {A:'Time A',B:'Time B'};
+        const placar = p.placar || [0,0];
+        return `<div class="stat-row"><span class="stat-label">${p.data.split(',')[0]}</span><span class="stat-value">${placar[0]}×${placar[1]}</span></div>`;
+      }).join('') : '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem partidas recentes</div>';
     }
-    
     const statsPorJogador = document.getElementById('statsPorJogador');
     if (statsPorJogador) {
-      const rankingGeral = obterRankingGeral();
-      const top5 = Object.entries(rankingGeral)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-      
-      let html = '';
-      
-      if (top5.length === 0) {
-        html = '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem dados de jogadores</div>';
-      } else {
-        top5.forEach(([jogador, gols], index) => {
-          const medalha = index === 0 ? '🥇' : 
-                         index === 1 ? '🥈' : 
-                         index === 2 ? '🥉' : '🏅';
-          
-          html += `
-            <div class="stat-row">
-              <span class="stat-label">${medalha} ${jogador}</span>
-              <span class="stat-value">${gols} gol${gols > 1 ? 's' : ''}</span>
-            </div>
-          `;
-        });
-      }
-      
-      statsPorJogador.innerHTML = html;
+      const top5 = Object.entries(obterRankingGeral()).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      statsPorJogador.innerHTML = top5.length ? top5.map(([j,g],i)=> {
+        const medalha = i===0?'🥇':i===1?'🥈':i===2?'🥉':'🏅';
+        return `<div class="stat-row"><span class="stat-label">${medalha} ${j}</span><span class="stat-value">${g} gol${g>1?'s':''}</span></div>`;
+      }).join('') : '<div style="text-align:center;color:var(--text-secondary);padding:10px;">Sem dados de jogadores</div>';
     }
   }
 
-  // ===== COMPARAÇÃO DE JOGADORES =====
+  // ==========================================================================
+  // 16. COMPARAÇÃO DE JOGADORES
+  // ==========================================================================
   function carregarComparacao() {
-    const select1 = document.getElementById('jogador1');
-    const select2 = document.getElementById('jogador2');
-    
-    if (!select1 || !select2) return;
-    
-    select1.innerHTML = '<option value="">Selecione jogador 1</option>';
-    select2.innerHTML = '<option value="">Selecione jogador 2</option>';
-    
-    state.jogadores.forEach(jogador => {
-      select1.innerHTML += `<option value="${escapeHTML(jogador)}">${escapeHTML(jogador)}</option>`;
-      select2.innerHTML += `<option value="${escapeHTML(jogador)}">${escapeHTML(jogador)}</option>`;
+    const s1 = document.getElementById('jogador1'), s2 = document.getElementById('jogador2');
+    if (!s1||!s2) return;
+    s1.innerHTML = '<option value="">Selecione jogador 1</option>';
+    s2.innerHTML = '<option value="">Selecione jogador 2</option>';
+    state.jogadores.forEach(j => {
+      s1.innerHTML += `<option value="${escapeHTML(j)}">${escapeHTML(j)}</option>`;
+      s2.innerHTML += `<option value="${escapeHTML(j)}">${escapeHTML(j)}</option>`;
     });
   }
 
-  function calcularComparacao(jogador1, jogador2) {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
-    
-    let statsJ1 = { gols: 0, faltas: 0, partidas: 0, craque: 0 };
-    let statsJ2 = { gols: 0, faltas: 0, partidas: 0, craque: 0 };
-    
-    historico.forEach(partida => {
-      if (partida.gols && partida.gols[jogador1]) {
-        statsJ1.gols += partida.gols[jogador1].q;
-        statsJ1.partidas++;
-      }
-      if (partida.gols && partida.gols[jogador2]) {
-        statsJ2.gols += partida.gols[jogador2].q;
-        statsJ2.partidas++;
-      }
-      
-      if (partida.faltas && partida.faltas.jogadores) {
-        if (partida.faltas.jogadores[jogador1]) {
-          statsJ1.faltas += partida.faltas.jogadores[jogador1];
-        }
-        if (partida.faltas.jogadores[jogador2]) {
-          statsJ2.faltas += partida.faltas.jogadores[jogador2];
-        }
-      }
-      
-      if (partida.craque && partida.craque.includes(jogador1)) {
-        statsJ1.craque++;
-      }
-      if (partida.craque && partida.craque.includes(jogador2)) {
-        statsJ2.craque++;
-      }
-    });
-    
-    return { jogador1: statsJ1, jogador2: statsJ2 };
+  function calcularComparacao(j1, j2) {
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
+    const stats = (nome) => {
+      let gols=0, faltas=0, partidas=0, craque=0;
+      historico.forEach(p => {
+        if(p.gols && p.gols[nome]) { gols += p.gols[nome].q; partidas++; }
+        if(p.faltas?.jogadores && p.faltas.jogadores[nome]) faltas += p.faltas.jogadores[nome];
+        if(p.craque && p.craque.includes(nome)) craque++;
+      });
+      return { gols, faltas, partidas, craque };
+    };
+    return { jogador1: stats(j1), jogador2: stats(j2) };
   }
 
-  function mostrarComparacao(jogador1, jogador2, stats) {
-    const resultadoDiv = document.getElementById('resultadoComparacao');
-    if (!resultadoDiv) return;
-    
-    const mediaJ1 = stats.jogador1.partidas > 0 ? (stats.jogador1.gols / stats.jogador1.partidas).toFixed(2) : '0';
-    const mediaJ2 = stats.jogador2.partidas > 0 ? (stats.jogador2.gols / stats.jogador2.partidas).toFixed(2) : '0';
-    
-    let vencedor = '';
-    if (stats.jogador1.gols > stats.jogador2.gols) {
-      vencedor = `${jogador1} tem mais gols!`;
-    } else if (stats.jogador2.gols > stats.jogador1.gols) {
-      vencedor = `${jogador2} tem mais gols!`;
-    } else {
-      vencedor = 'Empate em número de gols!';
-    }
-    
-    resultadoDiv.innerHTML = `
+  function mostrarComparacao(j1, j2, s) {
+    const div = document.getElementById('resultadoComparacao');
+    if (!div) return;
+    const media1 = s.jogador1.partidas ? (s.jogador1.gols/s.jogador1.partidas).toFixed(2) : '0';
+    const media2 = s.jogador2.partidas ? (s.jogador2.gols/s.jogador2.partidas).toFixed(2) : '0';
+    const vencedor = s.jogador1.gols>s.jogador2.gols ? `${j1} tem mais gols!` : s.jogador2.gols>s.jogador1.gols ? `${j2} tem mais gols!` : 'Empate em gols!';
+    const totalGols = s.jogador1.gols + s.jogador2.gols || 1;
+    div.innerHTML = `
       <div class="stats-card p-lg">
-        <h3 class="card-title">⚖️ Comparação: ${jogador1} vs ${jogador2}</h3>
-        
+        <h3 class="card-title">⚖️ Comparação: ${j1} vs ${j2}</h3>
         <div class="comparison-grid">
-          <div class="comparison-player p-lg">
-            <h4>${jogador1}</h4>
-            <div class="comparison-stat">
-              <span class="stat-label">Gols totais:</span>
-              <span class="stat-value">${stats.jogador1.gols}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Média por jogo:</span>
-              <span class="stat-value">${mediaJ1}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Faltas:</span>
-              <span class="stat-value">${stats.jogador1.faltas}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Vezes craque:</span>
-              <span class="stat-value">${stats.jogador1.craque}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Partidas com gol:</span>
-              <span class="stat-value">${stats.jogador1.partidas}</span>
-            </div>
+          <div class="comparison-player p-lg"><h4>${j1}</h4>
+            <div class="comparison-stat"><span class="stat-label">Gols totais:</span><span class="stat-value">${s.jogador1.gols}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Média/jogo:</span><span class="stat-value">${media1}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Faltas:</span><span class="stat-value">${s.jogador1.faltas}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Vezes craque:</span><span class="stat-value">${s.jogador1.craque}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Partidas com gol:</span><span class="stat-value">${s.jogador1.partidas}</span></div>
           </div>
-          
-          <div class="comparison-player p-lg">
-            <h4>${jogador2}</h4>
-            <div class="comparison-stat">
-              <span class="stat-label">Gols totais:</span>
-              <span class="stat-value">${stats.jogador2.gols}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Média por jogo:</span>
-              <span class="stat-value">${mediaJ2}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Faltas:</span>
-              <span class="stat-value">${stats.jogador2.faltas}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Vezes craque:</span>
-              <span class="stat-value">${stats.jogador2.craque}</span>
-            </div>
-            <div class="comparison-stat">
-              <span class="stat-label">Partidas com gol:</span>
-              <span class="stat-value">${stats.jogador2.partidas}</span>
-            </div>
+          <div class="comparison-player p-lg"><h4>${j2}</h4>
+            <div class="comparison-stat"><span class="stat-label">Gols totais:</span><span class="stat-value">${s.jogador2.gols}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Média/jogo:</span><span class="stat-value">${media2}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Faltas:</span><span class="stat-value">${s.jogador2.faltas}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Vezes craque:</span><span class="stat-value">${s.jogador2.craque}</span></div>
+            <div class="comparison-stat"><span class="stat-label">Partidas com gol:</span><span class="stat-value">${s.jogador2.partidas}</span></div>
           </div>
         </div>
-        
         <div class="comparison-result">
           <h4>🏆 Resultado: ${vencedor}</h4>
           <div class="progress-bar">
-            <div class="progress-fill" style="width: ${stats.jogador1.gols + stats.jogador2.gols === 0 ? 50 : (stats.jogador1.gols / (stats.jogador1.gols + stats.jogador2.gols)) * 100}%">
-              ${jogador1}: ${stats.jogador1.gols} gols
-            </div>
-            <div class="progress-fill" style="width: ${stats.jogador1.gols + stats.jogador2.gols === 0 ? 50 : (stats.jogador2.gols / (stats.jogador1.gols + stats.jogador2.gols)) * 100}%">
-              ${jogador2}: ${stats.jogador2.gols} gols
-            </div>
+            <div class="progress-fill" style="width:${(s.jogador1.gols/totalGols)*100}%">${j1}: ${s.jogador1.gols} gols</div>
+            <div class="progress-fill" style="width:${(s.jogador2.gols/totalGols)*100}%">${j2}: ${s.jogador2.gols} gols</div>
           </div>
         </div>
       </div>
@@ -1576,50 +739,30 @@ const PlacarApp = (function() {
   }
 
   function compararJogadores() {
-    const jogador1 = document.getElementById('jogador1').value;
-    const jogador2 = document.getElementById('jogador2').value;
-    
-    if (!jogador1 || !jogador2) {
-      showToast('Selecione dois jogadores', 'error');
-      return;
-    }
-    
-    if (jogador1 === jogador2) {
-      showToast('Selecione jogadores diferentes', 'warning');
-      return;
-    }
-    
-    const stats = calcularComparacao(jogador1, jogador2);
-    mostrarComparacao(jogador1, jogador2, stats);
-    
-    showToast('Comparação realizada!', 'success');
+    const j1 = document.getElementById('jogador1').value;
+    const j2 = document.getElementById('jogador2').value;
+    if (!j1||!j2) return showToast('Selecione dois jogadores','error');
+    if (j1===j2) return showToast('Selecione jogadores diferentes','warning');
+    const stats = calcularComparacao(j1,j2);
+    mostrarComparacao(j1,j2,stats);
+    showToast('Comparação realizada!','success');
   }
 
-  // ===== BACKUP =====
+  // ==========================================================================
+  // 17. BACKUP E RESTAURAÇÃO
+  // ==========================================================================
   function fazerBackupAutomatico() {
-    if (state.backupTimer) {
-      clearTimeout(state.backupTimer);
-    }
-    
+    clearTimeout(state.backupTimer);
     state.backupTimer = setTimeout(() => {
       const backupKey = 'placar_backup_auto';
-      const currentData = {
+      const current = {
         jogadores: localStorage.getItem("jogadores"),
         historico: localStorage.getItem("historico"),
-        nomes: {
-          timeA: localStorage.getItem("nomeTimeA"),
-          timeB: localStorage.getItem("nomeTimeB")
-        },
+        nomes: { timeA: localStorage.getItem("nomeTimeA"), timeB: localStorage.getItem("nomeTimeB") },
         lastBackup: new Date().toISOString(),
         appVersion: APP_VERSION
       };
-      
-      try {
-        localStorage.setItem(backupKey, JSON.stringify(currentData));
-        console.log('Backup automático realizado:', currentData.lastBackup);
-      } catch (error) {
-        console.error('Erro no backup automático:', error);
-      }
+      try { localStorage.setItem(backupKey, JSON.stringify(current)); console.log('Backup auto:', current.lastBackup); } catch(e) { console.error('Erro backup auto:', e); }
     }, 30000);
   }
 
@@ -1628,686 +771,387 @@ const PlacarApp = (function() {
       versao: "1.0",
       dataBackup: new Date().toISOString(),
       jogadores: state.jogadores,
-      historico: JSON.parse(localStorage.getItem("historico") || "[]"),
+      historico: JSON.parse(localStorage.getItem("historico")||"[]"),
       nomeTimeA: state.nomeA,
       nomeTimeB: state.nomeB
     };
-    
-    const blob = new Blob([JSON.stringify(dados, null, 2)], {type: "application/json"});
+    const blob = new Blob([JSON.stringify(dados,null,2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = `placar-fut-backup-${new Date().toLocaleDateString('pt-BR')}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.href = url; a.download = `placar-fut-backup-${new Date().toLocaleDateString('pt-BR')}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
-    showToast("Backup exportado com sucesso!", "success");
+    showToast("Backup exportado!", "success");
   }
 
   async function importarBackup(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
-    if (!await confirmAction("Importar dados? Isso substituirá seus dados atuais.")) {
-      event.target.value = "";
-      return;
-    }
-    
+    if (!await confirmAction("Importar dados? Substituirá dados atuais.")) { event.target.value=""; return; }
     const reader = new FileReader();
     reader.onload = function(e) {
       try {
         const dados = JSON.parse(e.target.result);
-        
-        if (dados.versao !== "1.0") {
-          showToast("Versão do backup incompatível", "error");
-          return;
-        }
-        
+        if (dados.versao !== "1.0") { showToast("Versão incompatível","error"); return; }
         state.jogadores = dados.jogadores || [];
         localStorage.setItem("jogadores", JSON.stringify(state.jogadores));
-        
-        if (dados.historico) {
-          localStorage.setItem("historico", JSON.stringify(dados.historico));
-        }
-        
+        if (dados.historico) localStorage.setItem("historico", JSON.stringify(dados.historico));
         if (dados.nomeTimeA) {
           state.nomeA = dados.nomeTimeA;
           localStorage.setItem("nomeTimeA", dados.nomeTimeA);
           document.getElementById('nomeTimeA').textContent = dados.nomeTimeA;
           document.getElementById('nomeFaltaA').textContent = dados.nomeTimeA;
         }
-        
         if (dados.nomeTimeB) {
           state.nomeB = dados.nomeTimeB;
           localStorage.setItem("nomeTimeB", dados.nomeTimeB);
           document.getElementById('nomeTimeB').textContent = dados.nomeTimeB;
           document.getElementById('nomeFaltaB').textContent = dados.nomeTimeB;
         }
-        
         renderJogadores();
-        showToast("Backup importado com sucesso!", "success");
-        
+        showToast("Backup importado!","success");
         fazerBackupAutomatico();
-        
-      } catch (error) {
-        showToast("Erro ao importar backup", "error");
-        console.error(error);
-      }
+      } catch(err) { showToast("Erro ao importar","error"); console.error(err); }
       event.target.value = "";
     };
     reader.readAsText(file);
   }
 
-  // ===== NOVAS FUNÇÕES DE COMPARTILHAMENTO (v1.1.0) =====
-  
-// ===== v1.2.0: Função otimizada para extrair nome (remove parênteses) =====
-const REGEX_PARENTESES = /\s*\([^)]*\)/g; // Compilada para melhor performance
-function extrairNome(nomeComParenteses) {
-  // Validação completa: não é string, vazio, ou placeholder
-  if (typeof nomeComParenteses !== 'string' || !nomeComParenteses.trim() || nomeComParenteses === '—') {
-    return '—';
+  // ==========================================================================
+  // 18. COMPARTILHAMENTO (CARD PROFISSIONAL)
+  // ==========================================================================
+  const REGEX_PARENTESES = /\s*\([^)]*\)/g;
+  function extrairNome(n) {
+    if (typeof n !== 'string' || !n.trim() || n==='—') return '—';
+    const limpo = n.replace(REGEX_PARENTESES,'').trim();
+    return limpo || '—';
   }
 
-  // Remove tudo que está entre parênteses (incluindo espaços antes)
-  const nomeLimpo = nomeComParenteses.replace(REGEX_PARENTESES, '').trim();
-
-  // Se após a limpeza ficar vazio, retorna placeholder
-  return nomeLimpo || '—';
-}
-
-      function mostrarCardPartida(partidaId) {
-    const historico = JSON.parse(localStorage.getItem("historico")) || [];
-    
-    let partida = historico.find(p => p.id === partidaId);
-    if (!partida) {
-      partida = historico[historico.length - 1];
-      if (!partida) {
-        showToast('Nenhuma partida encontrada', 'error');
-        return;
-      }
-    }
-    
-    const conteudo = document.getElementById('cardPartidaConteudo');
-    const times = partida.nomeTimes || { A: 'Time A', B: 'Time B' };
-    const placar = partida.placar || [0, 0];
-    const craqueCompleto = partida.craque || '—';
-    const faltasJogadores = partida.faltas?.jogadores || {};
-    
-    const craqueNome = extrairNome(craqueCompleto);
-    
-    let maisFaltoso = '—';
-    let maxFaltas = 0;
-    Object.entries(faltasJogadores).forEach(([jogador, qtd]) => {
-      if (qtd > maxFaltas) {
-        maxFaltas = qtd;
-        maisFaltoso = extrairNome(jogador);
-      }
-    });
-    
-    const duracao = partida.duracao || 0;
-    const minutos = Math.floor(duracao / 60);
-    const segundos = duracao % 60;
-    const tempoFormatado = `${minutos}:${segundos.toString().padStart(2, '0')}`;
-    
-    const data = partida.data ? partida.data.split(',')[0] : new Date().toLocaleDateString('pt-BR');
-    
-    conteudo.innerHTML = `
-        <h2>⚽ PLACAR FUT 31</h2>
-        <div class="card-placar">
-            <span>${times.A}</span>
-            <span>${placar[0]} x ${placar[1]}</span>
-            <span>${times.B}</span>
-        </div>
-        <div class="card-info">
-            <span>🏆 CRAQUE:</span>
-            <span>${craqueNome}</span>
-        </div>
-        <div class="card-info">
-            <span>🟨 MAIS FALTOSO:</span>
-            <span>${maisFaltoso}</span>
-        </div>
-        <div class="card-info">
-            <span>⏱️ DURAÇÃO:</span>
-            <span>${tempoFormatado}</span>
-        </div>
-        <div class="card-info">
-            <span>📅 DATA:</span>
-            <span>${data}</span>
-        </div>
+  function mostrarCardPartida(partidaId) {
+    const historico = JSON.parse(localStorage.getItem("historico")||"[]");
+    let p = historico.find(p=>p.id===partidaId) || historico[historico.length-1];
+    if (!p) { showToast('Nenhuma partida','error'); return; }
+    const times = p.nomeTimes || {A:'Time A',B:'Time B'};
+    const placar = p.placar || [0,0];
+    const craque = extrairNome(p.craque || '—');
+    let maisFaltoso = '—', max = 0;
+    Object.entries(p.faltas?.jogadores||{}).forEach(([j,q])=> { if(q>max) { max=q; maisFaltoso = extrairNome(j); } });
+    const duracao = p.duracao || 0;
+    const tempo = `${Math.floor(duracao/60)}:${String(duracao%60).padStart(2,'0')}`;
+    const data = p.data ? p.data.split(',')[0] : new Date().toLocaleDateString('pt-BR');
+    document.getElementById('cardPartidaConteudo').innerHTML = `
+      <h2>⚽ PLACAR FUT 31</h2>
+      <div class="card-placar"><span>${times.A}</span><span>${placar[0]} x ${placar[1]}</span><span>${times.B}</span></div>
+      <div class="card-info"><span>🏆 CRAQUE:</span><span>${craque}</span></div>
+      <div class="card-info"><span>🟨 MAIS FALTOSO:</span><span>${maisFaltoso}</span></div>
+      <div class="card-info"><span>⏱️ DURAÇÃO:</span><span>${tempo}</span></div>
+      <div class="card-info"><span>📅 DATA:</span><span>${data}</span></div>
     `;
-    
     document.getElementById('modalCardPartida').classList.add('show');
   }
 
-  function fecharModalCard(event) {
-    if (event && event.target.classList.contains('modal-overlay')) {
-        document.getElementById('modalCardPartida').classList.remove('show');
-    } else {
-        document.getElementById('modalCardPartida').classList.remove('show');
-    }
+  function fecharModalCard(e) {
+    if (e && e.target.classList.contains('modal-overlay')) document.getElementById('modalCardPartida').classList.remove('show');
+    else document.getElementById('modalCardPartida').classList.remove('show');
   }
 
-    // ===== TUTORIAL LEQUE – VERSÃO COMPLETA (SETAS + SWIPE + TECLADO) =====
-let lequeIndexAtual = 2; // Sempre começa no índice 2 (carta "Jogadores")
-let touchStartX = 0;
-let touchEndX = 0;
-let touchMoved = false;
+  // ==========================================================================
+  // 19. TUTORIAL LEQUE (SETAS, SWIPE, TECLADO)
+  // ==========================================================================
+  let lequeIndexAtual = 2, touchStartX = 0, touchEndX = 0, touchMoved = false;
 
-// ===== POSICIONA AS CARTAS COM BASE NO ÍNDICE ATIVO =====
-function posicionarCartasLeque(index) {
+  function posicionarCartasLeque(index) {
     const cartas = document.querySelectorAll('.leque-card');
     if (!cartas.length) return;
-
     cartas.forEach((carta, i) => {
-        carta.classList.remove('card-1', 'card-2', 'card-3', 'card-4', 'card-5', 'active');
-        
-        const pos = i - index;
-        let classePosicao = '';
-        
-        if (pos === -2) classePosicao = 'card-1';
-        else if (pos === -1) classePosicao = 'card-2';
-        else if (pos === 0) {
-            classePosicao = 'card-3';
-            carta.classList.add('active');
-        } else if (pos === 1) classePosicao = 'card-4';
-        else if (pos === 2) classePosicao = 'card-5';
-        
-        if (classePosicao) carta.classList.add(classePosicao);
+      carta.classList.remove('card-1','card-2','card-3','card-4','card-5','active');
+      const pos = i - index;
+      let classe = '';
+      if (pos === -2) classe = 'card-1';
+      else if (pos === -1) classe = 'card-2';
+      else if (pos === 0) { classe = 'card-3'; carta.classList.add('active'); }
+      else if (pos === 1) classe = 'card-4';
+      else if (pos === 2) classe = 'card-5';
+      if (classe) carta.classList.add(classe);
     });
-
-    atualizarDotsLeque(index);
-}
-
-// ===== ATUALIZA OS DOTS INDICADORES =====
-function atualizarDotsLeque(index) {
     const dots = document.querySelectorAll('.leque-dots .dot');
-    dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
-    });
-}
+    dots.forEach((d,i)=> d.classList.toggle('active', i===index));
+  }
 
-// ===== PRÓXIMA CARTA =====
-function proximoCarta() {
-    if (lequeIndexAtual < 4) {
-        lequeIndexAtual++;
-        posicionarCartasLeque(lequeIndexAtual);
-    }
-}
+  const proximoCarta = () => { if (lequeIndexAtual < 4) { lequeIndexAtual++; posicionarCartasLeque(lequeIndexAtual); } };
+  const cartaAnterior = () => { if (lequeIndexAtual > 0) { lequeIndexAtual--; posicionarCartasLeque(lequeIndexAtual); } };
+  const irParaCarta = (idx) => { if (idx>=0 && idx<=4) { lequeIndexAtual = idx; posicionarCartasLeque(idx); } };
 
-// ===== CARTA ANTERIOR =====
-function cartaAnterior() {
-    if (lequeIndexAtual > 0) {
-        lequeIndexAtual--;
-        posicionarCartasLeque(lequeIndexAtual);
-    }
-}
-
-// ===== IR PARA CARTA ESPECÍFICA (CLICK NOS DOTS) =====
-function irParaCarta(index) {
-    if (index >= 0 && index <= 4) {
-        lequeIndexAtual = index;
-        posicionarCartasLeque(index);
-    }
-}
-
-// ===== CONFIGURA SWIPE (TOUCH) =====
-function configurarSwipe() {
+  function configurarSwipe() {
     const deck = document.getElementById('lequeDeck');
     if (!deck) return;
-
-    deck.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchMoved = false;
+    deck.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchMoved = false; }, { passive: true });
+    deck.addEventListener('touchmove', () => { touchMoved = true; }, { passive: true });
+    deck.addEventListener('touchend', e => {
+      if (touchMoved) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchEndX - touchStartX;
+        if (diff > 50) cartaAnterior();
+        else if (diff < -50) proximoCarta();
+      }
+      touchMoved = false;
     }, { passive: true });
+  }
 
-    deck.addEventListener('touchmove', () => {
-        touchMoved = true;
-    }, { passive: true });
-
-    deck.addEventListener('touchend', (e) => {
-        if (touchMoved) {
-            touchEndX = e.changedTouches[0].screenX;
-            const diffX = touchEndX - touchStartX;
-            
-            // Swipe para direita → carta anterior
-            if (diffX > 50) {
-                cartaAnterior();
-            }
-            // Swipe para esquerda → próxima carta
-            else if (diffX < -50) {
-                proximoCarta();
-            }
-        }
-        touchMoved = false;
-    }, { passive: true });
-}
-
-// ===== CONFIGURA TECLADO (SETAS) =====
-function configurarTeclado() {
-    document.removeEventListener('keydown', handleTeclado); // Remove listener anterior para não duplicar
-    document.addEventListener('keydown', handleTeclado);
-}
-
-function handleTeclado(e) {
+  function handleTeclado(e) {
     const modal = document.getElementById('tutorialLeque');
-    if (modal && modal.style.display === 'flex') {
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            cartaAnterior();
-        } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            proximoCarta();
-        }
+    if (modal?.style.display === 'flex') {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); cartaAnterior(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); proximoCarta(); }
     }
-}
+  }
+  function configurarTeclado() { document.removeEventListener('keydown', handleTeclado); document.addEventListener('keydown', handleTeclado); }
 
-// ===== INICIALIZA TUTORIAL INTERATIVO =====
-function initTutorialInterativo() {
+  function initTutorialInterativo() {
     const deck = document.getElementById('lequeDeck');
     if (!deck) return;
-
-    // Reseta o índice para a carta central
     lequeIndexAtual = 2;
-    
-    // Posiciona as cartas
-    posicionarCartasLeque(lequeIndexAtual);
-
-    // Botões de navegação
-    const btnProximo = document.getElementById('lequeProximoBtn');
-    const btnAnterior = document.getElementById('lequeAnteriorBtn');
-
-    if (btnProximo) btnProximo.onclick = proximoCarta;
-    if (btnAnterior) btnAnterior.onclick = cartaAnterior;
-
-    // Dots clicáveis
-    const dots = document.querySelectorAll('.leque-dots .dot');
-    dots.forEach((dot, i) => {
-        dot.onclick = () => irParaCarta(i);
-    });
-
-    // Configura swipe touch
+    posicionarCartasLeque(2);
+    const btnProx = document.getElementById('lequeProximoBtn');
+    const btnAnt = document.getElementById('lequeAnteriorBtn');
+    if (btnProx) btnProx.onclick = proximoCarta;
+    if (btnAnt) btnAnt.onclick = cartaAnterior;
+    document.querySelectorAll('.leque-dots .dot').forEach((dot,i)=> { dot.onclick = () => irParaCarta(i); });
     configurarSwipe();
-    
-    // Configura teclado
     configurarTeclado();
-}
+  }
 
-// ===== TUTORIAL AUTOMÁTICO (PRIMEIRO ACESSO) =====
-function initTutorial() {
+  function initTutorial() {
     setTimeout(() => {
-        if (!localStorage.getItem('placar_tutorial_visto')) {
-            const modal = document.getElementById('tutorialLeque');
-            if (modal) {
-                modal.style.display = 'flex';
-                initTutorialInterativo();
-            }
-        }
+      if (!localStorage.getItem('placar_tutorial_visto')) {
+        const modal = document.getElementById('tutorialLeque');
+        if (modal) { modal.style.display = 'flex'; initTutorialInterativo(); }
+      }
     }, 1200);
-}
+  }
 
-    
-  // ===== PWA UNIVERSAL =====
+  // ==========================================================================
+  // 20. PWA UNIVERSAL
+  // ==========================================================================
   function configurarPWA() {
     const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    
-    console.log(`📱 Plataforma: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'} | PWA: ${isStandalone ? 'Sim ✅' : 'Não'}`);
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        state.deferredPrompt = e;
-        
-        const installBtn = document.getElementById('installBtn');
-        if (installBtn && !isIOS) {
-            setTimeout(() => {
-                installBtn.style.display = 'block';
-                
-                setTimeout(() => {
-                    if (installBtn.style.display === 'block') {
-                        installBtn.style.display = 'none';
-                    }
-                }, 30000);
-            }, 5000);
-        }
+    console.log(`📱 Plataforma: ${isIOS?'iOS':isAndroid?'Android':'Desktop'} | PWA: ${isStandalone?'Sim ✅':'Não'}`);
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      state.deferredPrompt = e;
+      const btn = document.getElementById('installBtn');
+      if (btn && !isIOS) {
+        setTimeout(() => { btn.style.display = 'block'; setTimeout(()=>{ if(btn.style.display==='block') btn.style.display='none'; },30000); },5000);
+      }
     });
-    
     window.addEventListener('appinstalled', () => {
-        console.log('📱 PWA instalado!');
-        const installBtn = document.getElementById('installBtn');
-        if (installBtn) installBtn.style.display = 'none';
-        state.deferredPrompt = null;
-        showToast('App instalado com sucesso! ✅', 'success');
+      console.log('📱 PWA instalado!');
+      const btn = document.getElementById('installBtn');
+      if (btn) btn.style.display = 'none';
+      state.deferredPrompt = null;
+      showToast('App instalado! ✅','success');
     });
-    
     if (isStandalone) {
-        const installBtn = document.getElementById('installBtn');
-        if (installBtn) installBtn.style.display = 'none';
-        console.log('📱 Rodando como PWA instalado');
-        document.body.classList.add('pwa-installed');
+      document.getElementById('installBtn')?.style.display = 'none';
+      console.log('📱 Rodando como PWA instalado');
+      document.body.classList.add('pwa-installed');
     }
-    
     if (isIOS && !isStandalone) {
-        setTimeout(() => {
-            console.log('💡 iOS: Use "Compartilhar" → "Adicionar à Tela de Início" para tela cheia');
-        }, 3000);
+      setTimeout(() => console.log('💡 iOS: Use "Compartilhar" → "Adicionar à Tela de Início"'), 3000);
     }
   }
 
   function instalarApp() {
     if (state.deferredPrompt) {
-        state.deferredPrompt.prompt();
-        
-        state.deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('📱 Usuário aceitou a instalação');
-                showToast('Instalando... ⏳', 'success');
-            } else {
-                console.log('📱 Usuário recusou a instalação');
-                showToast('Instalação cancelada', 'info');
-            }
-            
-            state.deferredPrompt = null;
-            const installBtn = document.getElementById('installBtn');
-            if (installBtn) installBtn.style.display = 'none';
-        });
+      state.deferredPrompt.prompt();
+      state.deferredPrompt.userChoice.then(choice => {
+        if (choice.outcome === 'accepted') { console.log('📱 Instalação aceita'); showToast('Instalando... ⏳','success'); }
+        else { console.log('📱 Instalação recusada'); showToast('Instalação cancelada','info'); }
+        state.deferredPrompt = null;
+        document.getElementById('installBtn')?.style.display = 'none';
+      });
     } else {
-        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        
-        if (isIOS && !isStandalone) {
-            showToast('📲 iOS: Use "Compartilhar" → "Adicionar à Tela de Início"', 'info', 5000);
-        } else if (isStandalone) {
-            showToast('✅ App já instalado!', 'success');
-        } else {
-            showToast('📱 Seu navegador suporta instalação automática', 'info');
-        }
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      if (isIOS && !isStandalone) showToast('📲 iOS: Compartilhar → Adicionar à Tela de Início','info',5000);
+      else if (isStandalone) showToast('✅ App já instalado!','success');
+      else showToast('📱 Seu navegador suporta instalação','info');
     }
   }
 
-  // ===== INICIALIZAÇÃO =====
+  // ==========================================================================
+  // 21. INICIALIZAÇÃO E BACKUP AUTOMÁTICO
+  // ==========================================================================
+  function verificarBackupDados() {
+    const backupKey = 'placar_backup_v1';
+    try {
+      const jog = localStorage.getItem("jogadores"), hist = localStorage.getItem("historico");
+      if ((!jog||jog==='[]'||jog==='null') || (!hist||hist==='[]'||hist==='null')) {
+        const backup = localStorage.getItem(backupKey);
+        if (backup) {
+          const p = JSON.parse(backup);
+          if (p.jogadores && p.jogadores!=='null' && p.jogadores!=='[]') {
+            localStorage.setItem("jogadores", p.jogadores);
+            state.jogadores = JSON.parse(p.jogadores);
+          }
+          if (p.historico && p.historico!=='null' && p.historico!=='[]') localStorage.setItem("historico", p.historico);
+          if (p.nomes?.timeA) { localStorage.setItem("nomeTimeA", p.nomes.timeA); state.nomeA = p.nomes.timeA; }
+          if (p.nomes?.timeB) { localStorage.setItem("nomeTimeB", p.nomes.timeB); state.nomeB = p.nomes.timeB; }
+          console.log('📂 Dados restaurados do backup!');
+          showToast('📂 Dados restaurados','success');
+        }
+      }
+      const current = {
+        jogadores: localStorage.getItem("jogadores"),
+        historico: localStorage.getItem("historico"),
+        nomes: { timeA: localStorage.getItem("nomeTimeA"), timeB: localStorage.getItem("nomeTimeB") },
+        lastBackup: new Date().toISOString(),
+        appVersion: APP_VERSION
+      };
+      localStorage.setItem(backupKey, JSON.stringify(current));
+      console.log('💾 Backup realizado:', current.lastBackup);
+    } catch (error) { console.error('❌ Erro no backup:', error); }
+  }
+
   function init() {
     console.log('🚀 Inicializando PlacarApp v' + APP_VERSION + '...');
-    
     carregarNomesTimes();
     renderJogadores();
     esconderUndo();
     verificarBackupDados();
     configurarPWA();
     fazerBackupAutomatico();
-    
     if ('serviceWorker' in navigator) {
-        if (navigator.serviceWorker.controller) {
-            console.log('✅ Service Worker já está controlando a página');
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            console.log('📱 Display Mode:', isStandalone ? 'standalone (PWA)' : 'browser');
-        } else {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => {
-                    console.log('✅ Service Worker registrado:', reg.scope);
-                    
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        console.log('🔄 Novo Service Worker encontrado:', newWorker.state);
-                        
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                console.log('🔄 Nova versão disponível! Recarregue para atualizar.');
-                                showToast('🔄 Nova versão disponível!', 'info');
-                            }
-                        });
-                    });
-                })
-                .catch(err => {
-                    console.error('❌ Erro no Service Worker:', err);
-                });
-        }
+      if (navigator.serviceWorker.controller) {
+        console.log('✅ Service Worker já está controlando a página');
+        console.log('📱 Display Mode:', window.matchMedia('(display-mode: standalone)').matches ? 'standalone (PWA)' : 'browser');
+      } else {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('✅ Service Worker registrado:', reg.scope);
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            console.log('🔄 Novo SW encontrado:', newWorker.state);
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 Nova versão disponível! Recarregue para atualizar.');
+                showToast('🔄 Nova versão disponível!','info');
+              }
+            });
+          });
+        }).catch(err => console.error('❌ Erro no SW:', err));
+      }
     }
-    
     console.log('🎉 PlacarApp v' + APP_VERSION + ' inicializado com sucesso!');
   }
 
-  function verificarBackupDados() {
-    const backupKey = 'placar_backup_v1';
-    
-    try {
-        const jogadores = localStorage.getItem("jogadores");
-        const historico = localStorage.getItem("historico");
-        
-        if (!jogadores || jogadores === '[]' || jogadores === 'null' || 
-            !historico || historico === '[]' || historico === 'null') {
-            
-            const backup = localStorage.getItem(backupKey);
-            if (backup) {
-                const parsed = JSON.parse(backup);
-                
-                if (parsed.jogadores && parsed.jogadores !== 'null' && parsed.jogadores !== '[]') {
-                    localStorage.setItem("jogadores", parsed.jogadores);
-                    state.jogadores = JSON.parse(parsed.jogadores);
-                }
-                
-                if (parsed.historico && parsed.historico !== 'null' && parsed.historico !== '[]') {
-                    localStorage.setItem("historico", parsed.historico);
-                }
-                
-                if (parsed.nomes && parsed.nomes.timeA) {
-                    localStorage.setItem("nomeTimeA", parsed.nomes.timeA);
-                    state.nomeA = parsed.nomes.timeA;
-                }
-                
-                if (parsed.nomes && parsed.nomes.timeB) {
-                    localStorage.setItem("nomeTimeB", parsed.nomes.timeB);
-                    state.nomeB = parsed.nomes.timeB;
-                }
-                
-                console.log('📂 Dados restaurados do backup!');
-                showToast('📂 Dados restaurados do backup automático', 'success');
-            }
-        }
-        
-        const currentData = {
-            jogadores: localStorage.getItem("jogadores"),
-            historico: localStorage.getItem("historico"),
-            nomes: {
-                timeA: localStorage.getItem("nomeTimeA"),
-                timeB: localStorage.getItem("nomeTimeB")
-            },
-            lastBackup: new Date().toISOString(),
-            appVersion: APP_VERSION
-        };
-        
-        localStorage.setItem(backupKey, JSON.stringify(currentData));
-        console.log('💾 Backup realizado:', currentData.lastBackup);
-        
-    } catch (error) {
-        console.error('❌ Erro no backup:', error);
-    }
-  }
-
-  // ===== INTERFACE PÚBLICA =====
+  // ==========================================================================
+  // 22. INTERFACE PÚBLICA
+  // ==========================================================================
   return {
-    init: function() {
-        if (typeof init === 'function') {
-            init();
-        }
-        renderJogadores();
-    },
-    trocarTab: trocarTab,
-    addJogador: addJogador,
-    removerJogador: removerJogador,
-    editarNomeTime: editarNomeTime,
-    salvarNomeTime: salvarNomeTime,
-    iniciar: iniciar,
-    togglePause: togglePause,
-    resetar: resetar,
-    fim: fim,
-    aumentarGol: aumentarGol,
-    diminuirGol: diminuirGol,
-    registrarGol: registrarGol,
-    registrarFalta: registrarFalta,
-    confirmarFalta: confirmarFalta,
-    desfazer: desfazer,
-    fecharPopup: fecharPopup,
-    fecharPopupFalta: fecharPopupFalta,
-    fecharPopupRemover: fecharPopupRemover,
-    fecharPopupNome: fecharPopupNome,
-    limparHistorico: limparHistorico,
-    ranking: ranking,
-    historico: historico,
-    estatisticas: estatisticas,
-    compararJogadores: compararJogadores,
-    carregarComparacao: carregarComparacao,
-    exportarBackup: exportarBackup,
-    importarBackup: importarBackup,
-    instalarApp: instalarApp,
-    mostrarCardPartida: mostrarCardPartida,
-    fecharModalCard: fecharModalCard,
-            // ===== TUTORIAL LEQUE – ABERTURA AUTOMÁTICA (COM TRAVA) =====
+    init: function() { if (typeof init === 'function') init(); renderJogadores(); },
+    trocarTab, addJogador, removerJogador, editarNomeTime, salvarNomeTime,
+    iniciar, togglePause, resetar, fim,
+    aumentarGol, diminuirGol, registrarGol, registrarFalta, confirmarFalta,
+    desfazer,
+    fecharPopup, fecharPopupFalta, fecharPopupRemover, fecharPopupNome,
+    limparHistorico, ranking, historico, estatisticas,
+    compararJogadores, carregarComparacao,
+    exportarBackup, importarBackup,
+    instalarApp,
+    mostrarCardPartida, fecharModalCard,
+    // --- Tutorial Leque ---
     mostrarTutorialLeque: function() {
-        const tutorialVisto = localStorage.getItem('placar_tutorial_visto');
-        if (tutorialVisto === 'sim') return;
-        const modal = document.getElementById('tutorialLeque');
-        if (modal) {
-            modal.style.display = 'flex';
-            initTutorialInterativo();
-        }
+      if (localStorage.getItem('placar_tutorial_visto') === 'sim') return;
+      const modal = document.getElementById('tutorialLeque');
+      if (modal) { modal.style.display = 'flex'; initTutorialInterativo(); }
     },
-
-    // ===== FECHAR TUTORIAL =====
     fecharTutorialLeque: function(permanentemente = true) {
-        const modal = document.getElementById('tutorialLeque');
-        if (modal) modal.style.display = 'none';
-        if (permanentemente) localStorage.setItem('placar_tutorial_visto', 'sim');
-        // Remove listener de teclado para não ficar ativo sem necessidade
-        document.removeEventListener('keydown', handleTeclado);
+      const modal = document.getElementById('tutorialLeque');
+      if (modal) modal.style.display = 'none';
+      if (permanentemente) localStorage.setItem('placar_tutorial_visto', 'sim');
+      document.removeEventListener('keydown', handleTeclado);
     },
-
-    // ===== ABERTURA MANUAL (BOTÃO) – SEMPRE ABRE =====
     abrirTutorialManual: function() {
-        const modal = document.getElementById('tutorialLeque');
-        if (modal) {
-            modal.style.display = 'flex';
-            initTutorialInterativo();
-        }
+      const modal = document.getElementById('tutorialLeque');
+      if (modal) { modal.style.display = 'flex'; initTutorialInterativo(); }
     },
     getState: () => ({ ...state })
   };
 })();
 
-// ===== EXIBIR VERSÃO ===== 
+// ==========================================================================
+// 23. EXIBIÇÃO DE VERSÃO E SPLASH SCREEN
+// ==========================================================================
 function exibirVersao() {
-    const versaoEl = document.getElementById('appVersion');
-    if (versaoEl) {
-        versaoEl.textContent = APP_VERSION;
-        console.log('🏷️ Versão exibida:', APP_VERSION);
-    }
+  const el = document.getElementById('appVersion');
+  if (el) { el.textContent = APP_VERSION; console.log('🏷️ Versão exibida:', APP_VERSION); }
 }
 
-// ===== SPLASH SCREEN & INICIALIZAÇÃO =====
 function iniciarAppComSplash() {
-    function atualizarVersaoNaSplash() {
-        const elementoVersao = document.querySelector('.splash-content .version');
-        if (elementoVersao) {
-            elementoVersao.textContent = APP_VERSION;
-        }
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', atualizarVersaoNaSplash);
-    } else {
-        atualizarVersaoNaSplash();
-    }
-    
-    function esconderSplash() {
-        const splash = document.getElementById('splashScreen');
-        if (splash) {
-            splash.classList.add('hidden');
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 800);
-        }
-    }
-    
-    function inicializarAppPrincipal() {
-        PlacarApp.init();
-        exibirVersao();
-    }
-    
-    const tempoMinimoSplash = new Promise(resolve => {
-        setTimeout(resolve, 2000);
+  const atualizarVersaoNaSplash = () => {
+    const ver = document.querySelector('.splash-content .version');
+    if (ver) ver.textContent = APP_VERSION;
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', atualizarVersaoNaSplash);
+  else atualizarVersaoNaSplash();
+
+  function esconderSplash() {
+    const splash = document.getElementById('splashScreen');
+    if (splash) { splash.classList.add('hidden'); setTimeout(() => splash.style.display = 'none', 800); }
+  }
+  function inicializarAppPrincipal() { PlacarApp.init(); exibirVersao(); }
+
+  const tempoMinimoSplash = new Promise(resolve => setTimeout(resolve, 2000));
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      tempoMinimoSplash.then(() => { esconderSplash(); inicializarAppPrincipal(); initTutorial(); });
     });
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            tempoMinimoSplash.then(() => {
-                esconderSplash();
-                inicializarAppPrincipal();
-                initTutorial();
-            });
-        });
-    } else {
-        tempoMinimoSplash.then(() => {
-            esconderSplash();
-            inicializarAppPrincipal();
-            initTutorial();
-        });
-    }
+  } else {
+    tempoMinimoSplash.then(() => { esconderSplash(); inicializarAppPrincipal(); initTutorial(); });
+  }
 }
 
-// ===== INICIALIZAÇÃO FINAL =====
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarAppComSplash);
-} else {
-    iniciarAppComSplash();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciarAppComSplash);
+else iniciarAppComSplash();
 
-// ===== FORÇAR PWA iOS =====
+// ==========================================================================
+// 24. FORÇAR PWA NO IOS E VERIFICAÇÕES EXTRAS
+// ==========================================================================
 (function() {
-    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    
-    if (isIOS && isSafari) {
-        console.log('📱 iOS Safari detectado');
-        
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js', { scope: './' })
-                .then(reg => {
-                    console.log('✅ SW registrado no iOS:', reg.scope);
-                    
-                    setTimeout(() => {
-                        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-                        console.log('📱 Modo atual:', isStandalone ? 'Tela Cheia' : 'Com Barra');
-                        
-                        if (!isStandalone) {
-                            console.log('⚠️ iOS não está reconhecendo como PWA');
-                            console.log('💡 Solução: 1. Limpe cache Safari 2. Reinstale');
-                        }
-                    }, 1000);
-                })
-                .catch(err => {
-                    console.error('❌ SW falhou no iOS:', err);
-                });
-        }
-        
-        if (window.location.search) {
-            console.log('⚠️ Removendo query string para PWA...');
-            window.history.replaceState({}, '', window.location.pathname);
-        }
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  if (isIOS && isSafari) {
+    console.log('📱 iOS Safari detectado');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js', { scope: './' })
+        .then(reg => {
+          console.log('✅ SW registrado no iOS:', reg.scope);
+          setTimeout(() => {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            console.log('📱 Modo atual:', isStandalone ? 'Tela Cheia' : 'Com Barra');
+            if (!isStandalone) console.log('⚠️ iOS não está reconhecendo como PWA\n💡 Solução: 1. Limpe cache Safari 2. Reinstale');
+          }, 1000);
+        })
+        .catch(err => console.error('❌ SW falhou no iOS:', err));
     }
+    if (window.location.search) {
+      console.log('⚠️ Removendo query string para PWA...');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }
 })();
 
 setTimeout(() => {
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
   const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-  
   if (isIOS && isSafari) {
     console.log('📱 iOS Safari detectado - Verificando PWA...');
-    
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const hasSW = !!navigator.serviceWorker?.controller;
-    
     if (!isStandalone) {
       console.log('⚠️ iOS não está em tela cheia');
       console.log('💡 Use: Compartilhar → "Adicionar à Tela de Início"');
@@ -2316,37 +1160,16 @@ setTimeout(() => {
   }
 }, 3000);
 
-// ===== EVENTOS DO TUTORIAL LEQUE (BOTÕES ENTENDI / PULAR) =====
+// ==========================================================================
+// 25. EVENTOS DO TUTORIAL LEQUE (BOTÕES ENTENDI / PULAR)
+// ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Botão "Entendi" (dentro da carta)
-    const entendiBtn = document.getElementById('entendiTutorialBtn');
-    if (entendiBtn) {
-        entendiBtn.addEventListener('click', function() {
-            if (typeof PlacarApp.fecharTutorialLeque === 'function') {
-                PlacarApp.fecharTutorialLeque(true);
-            }
-        });
-    }
-
-    // Botão "Pular"
-    const pularBtn = document.getElementById('pularTutorialBtn');
-    if (pularBtn) {
-        pularBtn.addEventListener('click', function() {
-            if (typeof PlacarApp.fecharTutorialLeque === 'function') {
-                PlacarApp.fecharTutorialLeque(true);
-            }
-        });
-    }
-
-    // Clique fora do modal (fecha sem marcar como visto)
-    const tutorialOverlay = document.getElementById('tutorialLeque');
-    if (tutorialOverlay) {
-        tutorialOverlay.addEventListener('click', function(e) {
-            if (e.target === tutorialOverlay) {
-                if (typeof PlacarApp.fecharTutorialLeque === 'function') {
-                    PlacarApp.fecharTutorialLeque(false);
-                }
-            }
-        });
-    }
+  const entendiBtn = document.getElementById('entendiTutorialBtn');
+  if (entendiBtn) entendiBtn.addEventListener('click', () => PlacarApp.fecharTutorialLeque?.(true));
+  const pularBtn = document.getElementById('pularTutorialBtn');
+  if (pularBtn) pularBtn.addEventListener('click', () => PlacarApp.fecharTutorialLeque?.(true));
+  const overlay = document.getElementById('tutorialLeque');
+  if (overlay) overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) PlacarApp.fecharTutorialLeque?.(false);
+  });
 });
