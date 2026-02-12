@@ -1766,11 +1766,6 @@ const PlacarApp = (function() {
             <span>📅 DATA:</span>
             <span>${data}</span>
         </div>
-        <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: center;">
-            <button class="secondary-btn" onclick="PlacarApp.fecharModalCard()">
-                ✖ Fechar
-            </button>
-        </div>
     `;
     
     document.getElementById('modalCardPartida').classList.add('show');
