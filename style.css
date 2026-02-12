@@ -2014,6 +2014,24 @@ body.clean-bg {
     border-bottom-color: var(--primary-green);
   }
 
+    /* ===== LINHA DO TEMPO – TEMA ESCURO ===== */
+.timeline-container {
+  background: rgba(255, 255, 255, 0.02) !important;  /* mantém !important só aqui se necessário */
+  border-color: var(--border-color) !important;
+}
+
+.timeline-item {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.timeline-empty {
+  color: var(--text-secondary) !important;
+}
+
+.event-time {
+  color: #a5d6a5 !important; /* ou var(--primary-green) se quiser */
+}
+
   /* Botões flutuantes – cores já otimizadas no passo 3 */
   .install-btn {
     background: linear-gradient(135deg, #2ea84c, #1e7e34);
