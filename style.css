@@ -1869,7 +1869,7 @@ body.clean-bg {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
     background: linear-gradient(145deg, rgba(15, 184, 88, 0.05), rgba(15, 184, 88, 0.02));
     padding: 16px 12px;
@@ -1887,17 +1887,55 @@ body.clean-bg {
     color: #1e3a1e;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
     white-space: nowrap;
+    flex: 0 1 auto; /* Não estica, tamanho conforme conteúdo */
 }
 
+/* Nomes dos times - não quebram e tem tamanho máximo */
+.card-placar span:first-child,
+.card-placar span:last-child {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* NÚMEROS DO PLACAR - TAMANHO CONTROLADO */
 .card-placar span:nth-child(2) {
     font-size: 32px;
     font-weight: 800;
     background: linear-gradient(145deg, #0fb858, #0d8a3d);
     color: white;
-    padding: 8px 24px;
+    padding: 8px 16px;  /* Reduzi o padding horizontal */
     border-radius: 50px;
     box-shadow: 0 6px 14px rgba(15, 184, 88, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    min-width: 80px;     /* Largura mínima para 0x0 */
+    max-width: 140px;    /* Largura máxima para 99x99 */
+    text-align: center;
+    flex-shrink: 0;      /* Não encolhe */
+    letter-spacing: 1px; /* Espaçamento para números */
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 480px) {
+    .card-placar {
+        gap: 6px;
+        padding: 12px 8px;
+    }
+    .card-placar span {
+        font-size: 16px;
+        padding: 4px 10px;
+    }
+    .card-placar span:first-child,
+    .card-placar span:last-child {
+        max-width: 100px;
+    }
+    .card-placar span:nth-child(2) {
+        font-size: 26px;
+        padding: 6px 12px;
+        min-width: 70px;
+        max-width: 110px;
+    }
 }
 
 .card-info {
@@ -2029,7 +2067,7 @@ body.clean-bg {
         box-shadow: var(--shadow-md) !important;
     }
 
-    /* ===== CARD DE COMPARTILHAMENTO – TEMA ESCURO ===== */
+        /* ===== CARD DE COMPARTILHAMENTO – TEMA ESCURO ===== */
     .card-gramado {
         background: linear-gradient(145deg, #1e2a1e, #1a2a1a) !important;
         border-color: #2c5e3a !important;
@@ -2045,44 +2083,58 @@ body.clean-bg {
     .card-placar {
         background: rgba(15, 184, 88, 0.12) !important;
         border-color: rgba(15, 184, 88, 0.3) !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        padding: 16px 12px !important;
+        border-radius: 60px !important;
     }
 
     .card-placar span {
         background: rgba(30, 50, 30, 0.9) !important;
         color: #f0fff0 !important;
+        padding: 6px 14px !important;
+        border-radius: 40px !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        flex: 0 1 auto !important;
+        max-width: 140px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     .card-placar span:nth-child(2) {
         background: linear-gradient(145deg, #0d8a3d, #0a6b2f) !important;
         color: white !important;
         box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5) !important;
+        font-size: 32px !important;
+        padding: 8px 16px !important;
+        border-radius: 50px !important;
+        min-width: 80px !important;
+        max-width: 140px !important;
+        text-align: center !important;
+        flex-shrink: 0 !important;
+        letter-spacing: 1px !important;
     }
 
-    .card-info {
-        border-bottom-color: rgba(15, 184, 88, 0.25) !important;
-        color: #d0e0d0 !important;
+    /* Responsividade para telas pequenas no tema escuro */
+    @media (max-width: 480px) {
+        .card-placar {
+            gap: 6px !important;
+            padding: 12px 8px !important;
+        }
+        .card-placar span {
+            font-size: 16px !important;
+            padding: 4px 10px !important;
+            max-width: 100px !important;
+        }
+        .card-placar span:nth-child(2) {
+            font-size: 26px !important;
+            padding: 6px 12px !important;
+            min-width: 70px !important;
+            max-width: 110px !important;
+        }
     }
-
-    .card-info span:first-child {
-        color: #b0e6b0 !important;
-    }
-
-    .card-info span:last-child {
-        background: rgba(15, 184, 88, 0.2) !important;
-        color: #e0f0e0 !important;
-    }
-
-    .card-gramado .secondary-btn {
-        background: rgba(30, 50, 30, 0.8) !important;
-        border-color: rgba(15, 184, 88, 0.4) !important;
-        color: #e0f0e0 !important;
-    }
-
-    .card-gramado .secondary-btn:hover {
-        background: #1e3a1e !important;
-        border-color: #0fb858 !important;
-    }
-
 
     /* (O restante do tema escuro permanece igual ao seu código original) */
     .score-number {
