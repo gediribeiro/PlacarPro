@@ -1986,7 +1986,7 @@ body.clean-bg {
 }
 
 /* =========================================== */
-/* TUTORIAL LEQUE – CARTAS EM DIAGONAL v1.2.0  */
+/* TUTORIAL LEQUE – VERSÃO COMPLETA v1.2.0     */
 /* =========================================== */
 .tutorial-overlay {
     position: fixed;
@@ -2000,11 +2000,11 @@ body.clean-bg {
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    animation: fadeInLeque 0.5s ease-out;
+    animation: fadeInLeque 0.4s ease-out;
 }
 
 .leque-container {
-    max-width: 520px;
+    max-width: 560px;
     width: 90%;
     display: flex;
     flex-direction: column;
@@ -2019,13 +2019,14 @@ body.clean-bg {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    touch-action: pan-y; /* Habilita swipe horizontal */
 }
 
 .leque-card {
     position: absolute;
-    width: 220px;
-    height: 280px;
+    width: 230px;
+    height: 290px;
     background: white;
     border-radius: 24px;
     padding: 24px 18px;
@@ -2033,59 +2034,60 @@ body.clean-bg {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.6);
-    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     transform-origin: bottom center;
     will-change: transform, opacity;
+    backface-visibility: hidden;
 }
 
-/* POSIÇÕES EM LEQUE DIAGONAL */
+/* POSIÇÕES DO LEQUE DINÂMICO */
 .leque-card.card-1 {
-    transform: rotate(-14deg) translateX(-70px) translateY(18px);
+    transform: rotate(-14deg) translateX(-75px) translateY(20px);
     z-index: 1;
     opacity: 0.7;
 }
+
 .leque-card.card-2 {
-    transform: rotate(-7deg) translateX(-35px) translateY(9px);
+    transform: rotate(-7deg) translateX(-38px) translateY(10px);
     z-index: 2;
     opacity: 0.85;
 }
+
 .leque-card.card-3 {
     transform: rotate(0deg) translateX(0) translateY(0);
     z-index: 5;
     opacity: 1;
     border: 3px solid var(--primary-green, #0fb858);
-    box-shadow: 0 20px 40px rgba(15, 184, 88, 0.4);
+    box-shadow: 0 25px 45px rgba(15, 184, 88, 0.4);
 }
+
 .leque-card.card-4 {
-    transform: rotate(7deg) translateX(35px) translateY(9px);
+    transform: rotate(7deg) translateX(38px) translateY(10px);
     z-index: 4;
     opacity: 0.85;
 }
+
 .leque-card.card-5 {
-    transform: rotate(14deg) translateX(70px) translateY(18px);
+    transform: rotate(14deg) translateX(75px) translateY(20px);
     z-index: 3;
     opacity: 0.7;
 }
 
-/* CARD ATIVO */
-.leque-card.active {
-    border: 3px solid #0fb858;
-    box-shadow: 0 25px 45px rgba(15, 184, 88, 0.5);
-}
-
 /* CONTEÚDO DAS CARTAS */
 .leque-card .card-icon {
-    font-size: 56px;
+    font-size: 58px;
     margin-bottom: 16px;
 }
+
 .leque-card h4 {
     font-size: 22px;
     color: #0a4b1a;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 800;
 }
+
 .leque-card p {
     color: #4a5c4a;
     font-size: 14px;
@@ -2108,18 +2110,57 @@ body.clean-bg {
     transition: 0.2s;
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 .leque-btn:hover {
     background: var(--primary-green-dark, #0d9c4d);
     transform: scale(0.97);
 }
 
-/* INDICADORES (DOTS) */
+/* NAVEGAÇÃO */
+.leque-navegacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 20px 0 16px;
+    width: 100%;
+}
+
+.leque-nav-btn {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 26px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.leque-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.08);
+}
+
+.leque-nav-btn:active {
+    transform: scale(0.94);
+}
+
+/* DOTS INDICADORES */
 .leque-dots {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 16px 0 24px;
 }
+
 .leque-dots .dot {
     width: 8px;
     height: 8px;
@@ -2128,6 +2169,7 @@ body.clean-bg {
     transition: all 0.3s ease;
     cursor: pointer;
 }
+
 .leque-dots .dot.active {
     background: var(--primary-green, #0fb858);
     width: 32px;
@@ -2137,7 +2179,7 @@ body.clean-bg {
 /* BOTÃO PULAR */
 .leque-skip {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: white;
     padding: 12px 32px;
     border-radius: 60px;
@@ -2146,10 +2188,12 @@ body.clean-bg {
     cursor: pointer;
     transition: 0.2s;
     backdrop-filter: blur(4px);
+    margin-top: 8px;
 }
+
 .leque-skip:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* TEMA ESCURO */
@@ -2164,27 +2208,53 @@ body.clean-bg {
     .leque-card p {
         color: #cbd5e0;
     }
+    .leque-nav-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #e0e0e0;
+    }
+    .leque-nav-btn:hover {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
 }
 
+/* ANIMAÇÃO DE ENTRADA */
 @keyframes fadeInLeque {
-    from { opacity: 0; transform: scale(0.95); }
+    from { opacity: 0; transform: scale(0.96); }
     to { opacity: 1; transform: scale(1); }
 }
 
 /* RESPONSIVIDADE */
 @media (max-width: 480px) {
     .leque-card {
-        width: 190px;
-        height: 260px;
-        padding: 20px 14px;
+        width: 200px;
+        height: 270px;
+        padding: 20px 16px;
     }
     .leque-card .card-icon {
-        font-size: 48px;
+        font-size: 50px;
     }
-    .leque-card.card-1 { transform: rotate(-12deg) translateX(-50px) translateY(12px); }
-    .leque-card.card-2 { transform: rotate(-6deg) translateX(-25px) translateY(6px); }
-    .leque-card.card-4 { transform: rotate(6deg) translateX(25px) translateY(6px); }
-    .leque-card.card-5 { transform: rotate(12deg) translateX(50px) translateY(12px); }
+    .leque-card h4 {
+        font-size: 20px;
+    }
+    .leque-card.card-1 {
+        transform: rotate(-12deg) translateX(-55px) translateY(15px);
+    }
+    .leque-card.card-2 {
+        transform: rotate(-6deg) translateX(-28px) translateY(8px);
+    }
+    .leque-card.card-4 {
+        transform: rotate(6deg) translateX(28px) translateY(8px);
+    }
+    .leque-card.card-5 {
+        transform: rotate(12deg) translateX(55px) translateY(15px);
+    }
+    .leque-nav-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+    }
 }
 
 
