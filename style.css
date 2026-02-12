@@ -2341,14 +2341,16 @@ body.clean-bg {
         color: #e0e0e0 !important;
     }
 
-    .install-btn {
-        background: linear-gradient(135deg, #0d8a3d, #0a6b2f) !important;
-        color: white !important;
-    }
-    .undo-btn {
-        background: #b45309 !important;
-        color: white !important;
-    }
+   .install-btn {
+    background: linear-gradient(135deg, #2ea84c, #1e7e34) !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(46, 168, 76, 0.4) !important;
+}
+.undo-btn {
+    background: linear-gradient(135deg, #e68a2e, #c9701e) !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(230, 138, 46, 0.4) !important;
+}
 
     .toast {
         background: #1e293b !important;
