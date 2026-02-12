@@ -1,0 +1,9 @@
+Copyright (c) 2026 Gedielson Ribeiro
+
+Este software e todo o seu código-fonte associado são de propriedade exclusiva do autor.
+É permitida a visualização e execução do código para fins de avaliação pessoal.
+Nenhuma parte deste código pode ser copiada, distribuída, modificada ou utilizada,
+total ou parcialmente, para qualquer fim comercial ou não-comercial, sem autorização
+expressa e por escrito do autor.
+
+Para solicitações, entre em contato através do GitHub.
