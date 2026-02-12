@@ -2103,18 +2103,31 @@ body.clean-bg {
         text-overflow: ellipsis !important;
     }
 
-    .card-placar span:nth-child(2) {
+        .card-placar span:nth-child(2) {
         background: linear-gradient(145deg, #0d8a3d, #0a6b2f) !important;
         color: white !important;
         box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5) !important;
         font-size: 32px !important;
-        padding: 8px 16px !important;
+        padding: 8px 20px !important;
         border-radius: 50px !important;
-        min-width: 80px !important;
-        max-width: 140px !important;
+        min-width: 100px !important;
+        max-width: 200px !important;
         text-align: center !important;
         flex-shrink: 0 !important;
-        letter-spacing: 1px !important;
+        letter-spacing: 2px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+
+        /* Ajuste para telas pequenas no tema escuro */
+    @media (max-width: 480px) {
+        .card-placar span:nth-child(2) {
+            font-size: 26px !important;
+            padding: 6px 16px !important;
+            min-width: 85px !important;
+            max-width: 160px !important;
+        }
     }
 
         /* ===== CARD INFO – TEMA ESCURO ===== */
