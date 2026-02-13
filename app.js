@@ -2165,13 +2165,24 @@ function initTutorial() {
     mostrarCardPartida: mostrarCardPartida,
     fecharModalCard: fecharModalCard,
             // ===== TUTORIAL LEQUE – ABERTURA AUTOMÁTICA (COM TRAVA) =====
-    mostrarTutorialLeque: function() {
+        mostrarTutorialLeque: function() {
         const tutorialVisto = localStorage.getItem('placar_tutorial_visto');
         if (tutorialVisto === 'sim') return;
         const modal = document.getElementById('tutorialLeque');
         if (modal) {
             modal.style.display = 'flex';
             initTutorialInterativo();
+        }
+    },
+
+    // ===== ABERTURA MANUAL DO TUTORIAL (SEM TRAVA) =====
+    abrirTutorialManual: function() {
+        const modal = document.getElementById('tutorialLeque');
+        if (modal) {
+            modal.style.display = 'flex';
+            if (typeof initTutorialInterativo === 'function') {
+                initTutorialInterativo();
+            }
         }
     },
 
