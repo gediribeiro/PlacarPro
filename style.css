@@ -178,14 +178,14 @@ button:active {
     letter-spacing: -0.5px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
-    /* ===== ÍCONES DO HEADER (COMPARAR / CONFIG) ===== */
+   /* ===== ÍCONES DO HEADER – MAIORES E MAIS ESPAÇADOS ===== */
 .header-icon-btn {
     background: transparent;
     border: none;
     color: var(--text-white);
-    font-size: 22px;
-    width: 44px;
-    height: 44px;
+    font-size: 26px;        /* ↑ antes 22px */
+    width: 52px;            /* ↑ antes 44px */
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -193,24 +193,24 @@ button:active {
     cursor: pointer;
     transition: background 0.2s ease, transform 0.1s ease;
     -webkit-tap-highlight-color: transparent;
+    margin-left: 8px;       /* ← espaçamento entre eles */
 }
 
 .header-icon-btn:active {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
     transform: scale(0.92);
 }
 
-/* Tema escuro – já herda, mas garantimos */
+/* Tema escuro – herança automática */
 @media (prefers-color-scheme: dark) {
     .header-icon-btn {
         color: var(--text-white);
     }
     .header-icon-btn:active {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.15);
     }
 }
-}
-
+    
 /* ===== 6. BARRA DE ABAS – BOTTOM NAVIGATION (MODELO 5 COM ANIMAÇÃO) ===== */
 .tabs-navigation {
     position: fixed;
