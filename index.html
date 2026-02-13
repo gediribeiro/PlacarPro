@@ -386,6 +386,16 @@
     </div>
 </nav>
 
+    <!-- MODAL DO PERFIL DO JOGADOR (ESTILO FIFA) -->
+<div id="modalPerfilJogador" class="modal-overlay" onclick="PlacarApp.fecharModalPerfil(event)">
+    <div class="modal-content perfil-card" onclick="event.stopPropagation()">
+        <div id="perfilJogadorConteudo"></div>
+        <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: center;">
+            <button class="secondary-btn" onclick="PlacarApp.fecharModalPerfil()">✖ Fechar</button>
+        </div>
+    </div>
+</div>
+
     <!-- SCRIPTS -->
     <script src="app.js"></script>
     <script>
