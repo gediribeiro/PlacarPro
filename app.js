@@ -1795,28 +1795,32 @@ let touchStartX = 0;
 let touchEndX = 0;
 let touchMoved = false;
 
-// ===== POSICIONA AS CARTAS COM BASE NO ÍNDICE ATIVO =====
 function posicionarCartasLeque(index) {
     const cartas = document.querySelectorAll('.leque-card');
     if (!cartas.length) return;
 
-    cartas.forEach((carta, i) => {
+    // Remove todas as classes de posição
+    cartas.forEach(carta => {
         carta.classList.remove('card-1', 'card-2', 'card-3', 'card-4', 'card-5', 'active');
-        
-        const pos = i - index;
-        let classePosicao = '';
-        
-        if (pos === -2) classePosicao = 'card-1';
-        else if (pos === -1) classePosicao = 'card-2';
-        else if (pos === 0) {
-            classePosicao = 'card-3';
-            carta.classList.add('active');
-        } else if (pos === 1) classePosicao = 'card-4';
-        else if (pos === 2) classePosicao = 'card-5';
-        
-        if (classePosicao) carta.classList.add(classePosicao);
     });
 
+    // No próximo ciclo do navegador, adiciona as novas classes (permite transição)
+    requestAnimationFrame(() => {
+        cartas.forEach((carta, i) => {
+            const pos = i - index;
+            let classe = '';
+            if (pos === -2) classe = 'card-1';
+            else if (pos === -1) classe = 'card-2';
+            else if (pos === 0) {
+                classe = 'card-3';
+                carta.classList.add('active');
+            } else if (pos === 1) classe = 'card-4';
+            else if (pos === 2) classe = 'card-5';
+            if (classe) carta.classList.add(classe);
+        });
+    });
+
+    // Atualiza os dots (pode ser feito imediatamente)
     atualizarDotsLeque(index);
 }
 
