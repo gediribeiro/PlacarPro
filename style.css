@@ -140,10 +140,11 @@ button:active {
 .header-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between; /* ← MUDA DE 'CENTER' PARA 'SPACE-BETWEEN' */
     padding: 0 var(--space-lg);
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .logo-container {
@@ -176,6 +177,38 @@ button:active {
     color: var(--text-white);
     letter-spacing: -0.5px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    /* ===== ÍCONES DO HEADER (COMPARAR / CONFIG) ===== */
+.header-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-white);
+    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header-icon-btn:active {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(0.92);
+}
+
+/* Tema escuro – já herda, mas garantimos */
+@media (prefers-color-scheme: dark) {
+    .header-icon-btn {
+        color: var(--text-white);
+    }
+    .header-icon-btn:active {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
 }
 
 /* ===== 6. BARRA DE ABAS – BOTTOM NAVIGATION (MODELO 5 COM ANIMAÇÃO) ===== */
