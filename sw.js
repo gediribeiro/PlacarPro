@@ -1,5 +1,18 @@
-// ===== SERVICE WORKER ATUALIZÁVEL – v1.2.0 =====
-const APP_VERSION = 'v1.2.0';
+// ============================================================================
+// PLACAR PRO – SERVICE WORKER v1.3.0
+// ============================================================================
+// ÍNDICE:
+// 1. CONFIGURAÇÕES E CONSTANTES
+// 2. INSTALAÇÃO (CACHE DE ARQUIVOS ESSENCIAIS)
+// 3. ATIVAÇÃO (LIMPEZA DE CACHES ANTIGOS E CONTROLE)
+// 4. ESTRATÉGIA DE FETCH (NETWORK FIRST + CACHE FIRST PARA EXTERNOS)
+// 5. CONTROLE MANUAL VIA MENSAGENS
+// ============================================================================
+
+// ============================================================================
+// 1. CONFIGURAÇÕES E CONSTANTES
+// ============================================================================
+const APP_VERSION = 'v1.3.0';                    // Atualizado para v1.3.0
 const CACHE_NAME = `placar-fut-cache-${APP_VERSION}`;
 const DYNAMIC_CACHE_NAME = `placar-fut-dynamic-${APP_VERSION}`;
 
@@ -15,12 +28,14 @@ const CORE_ASSETS = [
   './icon-512.png'
 ];
 
-// URLs de terceiros
+// URLs de terceiros (para cache first)
 const EXTERNAL_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
-// ===== INSTALAÇÃO =====
+// ============================================================================
+// 2. INSTALAÇÃO
+// ============================================================================
 self.addEventListener('install', event => {
   console.log(`[SW ${APP_VERSION}] Instalando...`);
   
@@ -42,7 +57,9 @@ self.addEventListener('install', event => {
   );
 });
 
-// ===== ATIVAÇÃO (VERSÃO CORRIGIDA - CACHE PROTEGIDO) =====
+// ============================================================================
+// 3. ATIVAÇÃO (VERSÃO CORRIGIDA - CACHE PROTEGIDO)
+// ============================================================================
 self.addEventListener('activate', event => {
   console.log(`[SW ${APP_VERSION}] Ativando...`);
 
@@ -80,14 +97,16 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ===== ESTRATÉGIA "NETWORK FIRST" =====
+// ============================================================================
+// 4. ESTRATÉGIA DE FETCH
+// ============================================================================
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
   // Ignora requisições não-GET
   if (event.request.method !== 'GET') return;
   
-  // Para arquivos da nossa aplicação
+  // 4.1. ESTRATÉGIA PARA ARQUIVOS DA PRÓPRIA APLICAÇÃO (NETWORK FIRST)
   if (url.origin === self.location.origin) {
     event.respondWith(
       fetch(event.request)
@@ -107,7 +126,7 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Para recursos externos (Cache First)
+  // 4.2. ESTRATÉGIA PARA RECURSOS EXTERNOS (CACHE FIRST)
   if (EXTERNAL_ASSETS.some(assetUrl => event.request.url.startsWith(assetUrl))) {
     event.respondWith(
       caches.match(event.request)
@@ -126,7 +145,9 @@ self.addEventListener('fetch', event => {
   }
 });
 
-// ===== CONTROLE MANUAL =====
+// ============================================================================
+// 5. CONTROLE MANUAL VIA MENSAGENS
+// ============================================================================
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
