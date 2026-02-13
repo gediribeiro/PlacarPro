@@ -243,7 +243,7 @@ button:active {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 8px 4px;
+    padding: 2px 4px;
     border: none;
     background: transparent;
     color: var(--text-secondary);
