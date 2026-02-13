@@ -177,40 +177,36 @@ button:active {
     color: var(--text-white);
     letter-spacing: -0.5px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
+}
   /* ===== ÍCONES DO HEADER – MAIORES E MAIS ESPAÇADOS ===== */
 .header-icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-white);
-    font-size: 40px;
-    width: 80px;
-    height: 80px;
+    background: transparent;        /* remove qualquer fundo */
+    border: none;                   /* remove borda */
+    color: var(--text-white);       /* cor do ícone (branco) */
+    font-size: 36px;                /* ↑ tamanho das linhas */
+    width: 56px;                     /* área de toque */
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
+    transition: transform 0.1s ease;
     -webkit-tap-highlight-color: transparent;
-    margin-left: 20px;
 }
 
+/* Efeito sutil no clique (opcional, mantém feedback) */
 .header-icon-btn:active {
-    background: rgba(255, 255, 255, 0.2);
     transform: scale(0.92);
+    /* sem fundo, só o ícone */
 }
 
-/* Tema escuro – herança automática */
+/* Tema escuro – herda automaticamente */
 @media (prefers-color-scheme: dark) {
     .header-icon-btn {
-        color: var(--text-white);
-    }
-    .header-icon-btn:active {
-        background: rgba(255, 255, 255, 0.15);
+        color: var(--text-white);   /* já branco */
     }
 }
-}
+
     
 /* ===== 6. BARRA DE ABAS – BOTTOM NAVIGATION (MODELO 5 COM ANIMAÇÃO) ===== */
 .tabs-navigation {
