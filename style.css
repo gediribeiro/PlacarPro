@@ -178,95 +178,116 @@ button:active {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== 6. BARRA DE ABAS ===== */
+/* ===== 6. BARRA DE ABAS – BOTTOM NAVIGATION (MODELO 5 COM ANIMAÇÃO) ===== */
 .tabs-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: var(--bg-card);
-    position: sticky;
-    top: 0; /* ← GRUDA EXATAMENTE ABAIXO DO HEADER */
-    z-index: 999;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    border-bottom: none;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+    z-index: 1000;
+    padding: 8px 4px;
 }
 
-/* TODO O RESTO PERMANECE IGUAL */
 .tabs-container {
     display: flex;
-    overflow-x: auto;
-    padding: 0 var(--space-md);
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.tabs-container::-webkit-scrollbar {
-    display: none;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .tab-button {
-    flex: 0 0 auto;
-    padding: var(--space-md) var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
     border: none;
     background: transparent;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
     color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-height: 56px;
+    border-radius: 8px;
     cursor: pointer;
-    white-space: nowrap;
-    position: relative;
-    transition: all 0.3s ease;
-    min-height: 44px;
-    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.tab-button:hover {
-    color: var(--primary-green);
-    opacity: 0.8;
+.tab-button i {
+    font-size: 22px;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
 }
 
-.tab-button:active {
-    transform: scale(0.85);
-    opacity: 0.7;
-    transition: transform 0.1s ease, opacity 0.1s ease;
-}
-
+/* ESTADO ATIVO – ANIMAÇÃO MODELO 5 */
 .tab-button.active {
     color: var(--primary-green);
-    font-weight: 700;
-    position: relative;
-    transform: scale(1) !important;
-    opacity: 1 !important;
 }
 
-.tab-button.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 3px;
-    background: var(--primary-green);
-    border-radius: 3px 3px 0 0;
+.tab-button.active i {
+    color: var(--primary-green);
+    transform: translateY(-4px) scale(1.1);
+    text-shadow: 0 4px 8px rgba(15, 184, 88, 0.3);
 }
 
-.tab-button:not(.active)::after {
+/* Remove os antigos indicadores de aba */
+.tab-button.active::after,
+.tab-button:not(.active)::after,
+.tab-button:hover:not(.active)::after {
     display: none !important;
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .tab-button:hover:not(.active)::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 30%;
-        height: 2px;
-        background: var(--primary-green);
-        opacity: 0.5;
-        border-radius: 3px 3px 0 0;
+/* Ajuste no conteúdo principal para não ficar escondido atrás da barra fixa */
+.app-main {
+    padding-bottom: 90px; /* altura da barra + folga */
+}
+
+/* TEMA ESCURO – garantia, mas já herdado pelas variáveis */
+@media (prefers-color-scheme: dark) {
+    .tabs-navigation {
+        background: var(--bg-card);
+        border-top-color: var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .tab-button i {
+        color: var(--text-secondary);
+    }
+    .tab-button.active i {
+        text-shadow: 0 4px 8px rgba(15, 184, 88, 0.5);
     }
 }
 
+/* Responsividade para telas muito pequenas */
+@media (max-width: 480px) {
+    .tab-button {
+        font-size: 10px;
+        padding: 6px 2px;
+    }
+    .tab-button i {
+        font-size: 20px;
+    }
+    .app-main {
+        padding-bottom: 80px;
+    }
+}
+
+/* Ajuste para telas com notch (iOS) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .tabs-navigation {
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .app-main {
+        padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 80px));
+    }
+}
 /* ===== 7. CONTEÚDO PRINCIPAL ===== */
 .app-main {
     max-width: 800px;
