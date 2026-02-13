@@ -60,14 +60,22 @@
     </div>
 
     <!-- HEADER -->
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo-container">
-                <div class="logo-icon">⚽</div>
-                <h1 class="app-title">Placar Pro</h1>
-            </div>
+<header class="app-header">
+    <div class="header-container">
+        <div class="logo-container">
+            <div class="logo-icon">⚽</div>
+            <h1 class="app-title">Placar Pro</h1>
         </div>
-    </header>
+        <div style="display: flex; gap: 4px; margin-left: auto;">
+            <button class="header-icon-btn" onclick="PlacarApp.trocarTab('comparar', this)" title="Comparar jogadores">
+                <i class="fas fa-scale-balanced"></i>
+            </button>
+            <button class="header-icon-btn" onclick="PlacarApp.trocarTab('backup', this)" title="Configurações">
+                <i class="fas fa-gear"></i>
+            </button>
+        </div>
+    </div>
+</header>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="app-main">
@@ -286,39 +294,31 @@
     <button id="installBtn" class="floating-btn install-btn" onclick="PlacarApp.instalarApp()">📱 Instalar App</button>
     <button id="undoBtn" class="floating-btn undo-btn" onclick="PlacarApp.desfazer()" style="display: none;">↶</button>
 
-    <!-- ===== BARRA DE ABAS – MOVIDA PARA O FINAL (BOTTOM NAVIGATION) ===== -->
-    <nav class="tabs-navigation">
-        <div class="tabs-container">
-            <button class="tab-button active" onclick="PlacarApp.trocarTab('jogo', this)">
-                <i class="fas fa-futbol"></i>
-                <span>Jogo</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('jogadores', this)">
-                <i class="fas fa-users"></i>
-                <span>Elenco</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('ranking', this)">
-                <i class="fas fa-trophy"></i>
-                <span>Artilharia</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('historico', this)">
-                <i class="fas fa-clock-rotate-left"></i>
-                <span>Partidas</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('stats', this)">
-                <i class="fas fa-chart-simple"></i>
-                <span>Estatísticas</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('comparar', this)">
-                <i class="fas fa-scale-balanced"></i>
-                <span>Confronto</span>
-            </button>
-            <button class="tab-button" onclick="PlacarApp.trocarTab('backup', this)">
-                <i class="fas fa-gear"></i>
-                <span>App</span>
-            </button>
-        </div>
-    </nav>
+    <!-- ===== BARRA DE ABAS – BOTTOM NAVIGATION (5 ITENS) ===== -->
+<nav class="tabs-navigation">
+    <div class="tabs-container">
+        <button class="tab-button active" onclick="PlacarApp.trocarTab('jogo', this)">
+            <i class="fas fa-futbol"></i>
+            <span>Jogo</span>
+        </button>
+        <button class="tab-button" onclick="PlacarApp.trocarTab('jogadores', this)">
+            <i class="fas fa-users"></i>
+            <span>Elenco</span>
+        </button>
+        <button class="tab-button" onclick="PlacarApp.trocarTab('ranking', this)">
+            <i class="fas fa-trophy"></i>
+            <span>Artilharia</span>
+        </button>
+        <button class="tab-button" onclick="PlacarApp.trocarTab('historico', this)">
+            <i class="fas fa-clock-rotate-left"></i>
+            <span>Partidas</span>
+        </button>
+        <button class="tab-button" onclick="PlacarApp.trocarTab('stats', this)">
+            <i class="fas fa-chart-simple"></i>
+            <span>Estatísticas</span>
+        </button>
+    </div>
+</nav>
 
     <!-- SCRIPTS -->
     <script src="app.js"></script>
