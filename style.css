@@ -1610,7 +1610,17 @@ button:active {
     transform: scale(0.9);
 }
 
-/* ===== 25. SCROLLBAR GLOBAL ===== */
+/* ===== 25. BOTÕES DA TELA DE MENU ===== */
+#menu .primary-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 18px;
+    padding: 16px;
+}
+
+/* ===== 26. SCROLLBAR GLOBAL ===== */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -1622,7 +1632,7 @@ button:active {
     border-radius: 3px;
 }
 
-/* ===== 26. RESPONSIVIDADE ===== */
+/* ===== 27. RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
     .app-main {
         padding: var(--space-md);
