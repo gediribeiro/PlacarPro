@@ -67,11 +67,8 @@
             <h1 class="app-title">Placar Pro</h1>
         </div>
         <div style="display: flex; gap: 12px; margin-left: auto;">
-            <button class="header-icon-btn" onclick="PlacarApp.trocarTab('comparar', this)" title="Comparar jogadores">
-                <i class="fas fa-scale-balanced"></i>
-            </button>
-            <button class="header-icon-btn" onclick="PlacarApp.trocarTab('backup', this)" title="Configurações">
-                <i class="fas fa-gear"></i>
+            <button class="header-icon-btn" onclick="PlacarApp.trocarTab('menu', this)" title="Menu"> <!-- Botão do Menu (abre a aba 'menu') -->
+                    <i class="fas fa-bars"></i>
             </button>
         </div>
     </div>
@@ -236,6 +233,28 @@
                 <button class="secondary-btn" onclick="PlacarApp.abrirTutorialManual()" style="margin-top: 15px;">📘 Reexibir tutorial</button>
             </div>
         </section>
+
+        <!-- SEÇÃO MENU (acessada pelo ícone de hambúrguer) -->
+<section id="menu" class="content-section">
+    <div class="stats-card p-lg" style="text-align: center;">
+        <h2 class="section-title">☰ Menu</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
+            <button class="primary-btn" onclick="PlacarApp.trocarTab('comparar', this)">
+                <i class="fas fa-scale-balanced" style="margin-right: 8px;"></i> Comparar Jogadores
+            </button>
+            <button class="primary-btn" onclick="PlacarApp.trocarTab('backup', this)">
+                <i class="fas fa-gear" style="margin-right: 8px;"></i> App (Configurações)
+            </button>
+            <button class="primary-btn" onclick="PlacarApp.instalarApp()">
+                <i class="fas fa-download" style="margin-right: 8px;"></i> Instalar App
+            </button>
+            <button class="primary-btn" onclick="PlacarApp.abrirTutorialManual()">
+                <i class="fas fa-question-circle" style="margin-right: 8px;"></i> Ajuda / Tutorial
+            </button>
+            <!-- Aqui você pode adicionar mais itens no futuro -->
+        </div>
+    </div>
+</section>
     </main>
 
     <!-- POPUPS / MODAIS (inalterados) -->
